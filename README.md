@@ -2,6 +2,8 @@
 
 [Barış Özcan](https://barisozcan.com) web sitesinin sayfa düzenlerinden, renk paletinden ve tipografisinden esinlenerek hazırlanmış; saf HTML5, CSS3 ve JavaScript ile yazılmış, kontrol paneline sahip kişisel web sitesi. YouTube videoları, blog yazıları, podcast bölümleri ve remixler tek bir yerden yönetilir.
 
+> 📖 Panelin ve sitenin her özelliğinin adım adım anlatımı: **[KULLANIM-KILAVUZU.md](KULLANIM-KILAVUZU.md)**
+
 ---
 
 ## 🎨 Tasarım ve Renk Paleti
@@ -116,6 +118,7 @@ Akcan Web Site/
 ├── build.js              # Yayın derleyicisi: her sayfa için hazır HTML, sitemap, robots, RSS, llms.txt
 ├── favicon.svg           # Site simgesi
 ├── README.md             # Bu belge
+├── KULLANIM-KILAVUZU.md  # Ayrıntılı kullanım kılavuzu
 ├── .github/workflows/
 │   └── yayin.yml         # GitHub Actions: siteyi derleyip GitHub Pages'te yayınlar
 ├── css/

@@ -990,6 +990,7 @@
       } else if (e.target.closest('[data-dup]')) {
         const copy = JSON.parse(JSON.stringify(item));
         copy.id = S.uid();
+        delete copy.sample; // kopya sizin içeriğinizdir: düzenleyip yayına alabilirsiniz
         copy.title = item.title + ' (kopya)';
         copy.published = false;
         copy.featured = false;
@@ -1119,7 +1120,7 @@
       <div class="vh"><div><h1>${C.title}</h1><p>${C.desc}</p></div>
         <div class="vh-actions">
           <a class="btn btn-ghost" href="#${type}">← ${T.title}</a>
-          <a class="btn btn-ghost" href="index.html${type === 'posts' ? '#/yazilar' : '#/podcast'}" target="_blank">Görüntüle ↗</a>
+          <a class="btn btn-ghost" href="index.html${{ posts: '#/yazilar', podcasts: '#/podcast', remixes: '#/remixler' }[type]}" target="_blank">Görüntüle ↗</a>
           <button class="btn btn-acid" data-save>Kaydet</button>
         </div></div>
       <form class="form-grid" id="frm" novalidate>
