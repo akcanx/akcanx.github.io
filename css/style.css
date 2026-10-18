@@ -180,6 +180,10 @@ button { font: inherit; }
 .erow:hover .ethumb img { opacity: 1; transform: scale(1.04); }
 .ethumb.empty { background: radial-gradient(80% 80% at 35% 25%, color-mix(in srgb, var(--acid) 12%, transparent), transparent 60%), #15150f; }
 .fbadge { position: absolute; left: 8px; bottom: 8px; z-index: 2; font-family: var(--mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 3px 7px; border-radius: 3px; line-height: 1; background: rgba(12, 12, 10, .78); color: var(--fg-2); backdrop-filter: blur(4px); }
+/* YouTube videosu: küçük resmin ortasında beyaz oynat işareti (video sayfasındaki oynatıcıyla aynı; ses içerikleri yeşil) */
+.vplay { position: absolute; left: 50%; top: 50%; z-index: 2; width: 38px; height: 38px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(255, 255, 255, .86); color: #111; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0, 0, 0, .4); pointer-events: none; transition: transform .25s var(--ease), background .2s var(--ease); }
+.vplay svg { width: 16px; height: 16px; fill: currentColor; margin-left: 2px; }
+.erow:hover .vplay { background: #fff; transform: translate(-50%, -50%) scale(1.08); }
 .fbadge.is-video::before { content: ""; display: inline-block; width: 0; height: 0; border-left: 5px solid var(--acid); border-top: 3px solid transparent; border-bottom: 3px solid transparent; margin-right: 5px; vertical-align: middle; }
 .erow .einfo { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
 .erow .t { font-weight: 500; font-size: clamp(20px, 2.1vw, 28px); line-height: 1.14; color: var(--fg); font-variation-settings: "opsz" 72; transition: color .2s var(--ease); }
@@ -210,6 +214,8 @@ button { font: inherit; }
   .erow .tags span { font-size: 10px; margin-right: 10px; }
   .frow-pod .fplay { width: 36px; height: 36px; }
   .frow-pod .fplay svg { width: 15px; height: 15px; }
+  .vplay { width: 32px; height: 32px; }
+  .vplay svg { width: 14px; height: 14px; }
 
   /* Filtre çipleri: mobilde tek satır, yatay kaydırılabilir */
   .ix .head { padding-top: 22px; }

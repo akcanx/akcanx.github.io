@@ -219,7 +219,9 @@
         return `<div class="erow frow-pod reveal" data-type="${it.type}">${lead}<a class="einfo" href="${it.href}"><span class="t">${esc(it.title)}</span>${tagsHTML(it.tags)}</a>${date}</div>`;
       }
       const img = it.thumb ? `<img src="${esc(it.thumb)}" alt="" loading="lazy">` : '';
-      return `<a class="erow reveal" data-type="${it.type}" href="${it.href}"><span class="ethumb ${it.thumb ? '' : 'empty'}">${img}${plain ? '' : `<span class="fbadge ${it.video ? 'is-video' : ''}">${it.label}</span>`}</span><span class="einfo"><span class="t">${esc(it.title)}</span>${tagsHTML(it.tags)}</span>${date}</a>`;
+      // YouTube videosunun küçük resminde oynat işareti: yazıdan bir bakışta ayrılsın (satırın tamamı video sayfasına gider)
+      const vplay = it.video ? `<span class="vplay" aria-hidden="true">${ICON.play}</span>` : '';
+      return `<a class="erow reveal" data-type="${it.type}" href="${it.href}"><span class="ethumb ${it.thumb ? '' : 'empty'}">${img}${vplay}${plain ? '' : `<span class="fbadge ${it.video ? 'is-video' : ''}">${it.label}</span>`}</span><span class="einfo"><span class="t">${esc(it.title)}</span>${tagsHTML(it.tags)}</span>${date}</a>`;
     }
 
     // Büyük görsel: video → YouTube karesi, blog yazısı → kapak görseli
