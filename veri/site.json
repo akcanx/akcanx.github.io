@@ -128,30 +128,7 @@
    "newTab": false
   }
  ],
- "posts": [
-  {
-   "published": true,
-   "date": "2026-10-18",
-   "tags": [],
-   "kind": "yazi",
-   "title": "Test",
-   "video": "",
-   "cover": "veri/gorsel/a10a2d90e03cef54.webp",
-   "coverAlt": "",
-   "excerpt": "",
-   "content": "",
-   "sources": "",
-   "credits": "",
-   "featured": false,
-   "slug": "test",
-   "tint": "",
-   "seoTitle": "",
-   "seoDesc": "",
-   "ogImage": "",
-   "updated": "2026-10-18",
-   "id": "mvef28uocasu7"
-  }
- ],
+ "posts": [],
  "podcasts": [],
  "remixes": [],
  "pages": []
