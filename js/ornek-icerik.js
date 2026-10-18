@@ -343,14 +343,88 @@
   ];
 
   /* ======================================================================
-     REMİXLER
+     REMİXLER — Podcast bölümleriyle aynı düzen
+     Her remixin kendi sayfası: kapak, italik özet, ses çubuğu ve remixin hikâyesi
      ====================================================================== */
   const remixes = [
-    { id: 'remix-1', title: 'Gece Treni (Akcan Remix)', original: 'Orijinal Sanatçı – Gece Treni', genre: 'Deep House', bpm: 122, date: daysAgo(4), cover: PIC('remix-1', 800, 800), audio: MP3(7), embed: '', description: `<p>Melankolik bir şarkıyı gece yarısı dans pistine taşıdım. Orijinaldeki piyano döngüsünü korudum, altına sıcak bir bas ve kırık bir davul ekledim.</p>`, tags: ['House'], published: true },
-    { id: 'remix-2', title: 'Mavi (Akcan Edit)', original: 'Orijinal Sanatçı – Mavi', genre: 'Melodic Techno', bpm: 124, date: daysAgo(18), cover: PIC('remix-2', 800, 800), audio: MP3(8), embed: '', description: `<p>Uzun bir intro, derin bir bas ve bol atmosfer. Kulüp setlerinde açılış parçası olarak çalmak için hazırladım.</p>`, tags: ['Techno'], published: true },
-    { id: 'remix-3', title: 'Yaz Sonu (Akcan Bootleg)', original: 'Orijinal Sanatçı – Yaz Sonu', genre: 'Afro House', bpm: 118, date: daysAgo(30), cover: PIC('remix-3', 800, 800), audio: MP3(9), embed: '', description: `<p>Perküsyon ağırlıklı, sıcak bir yorum. Vokali yarı hızda kullanıp bir koro gibi katmanladım.</p>`, tags: ['Afro'], published: true },
-    { id: 'remix-4', title: 'Pazar Sabahı (Akcan Rework)', original: 'Orijinal Sanatçı – Pazar Sabahı', genre: 'Lo-fi House', bpm: 112, date: daysAgo(46), cover: PIC('remix-4', 800, 800), audio: MP3(10), embed: '', description: `<p>Tozlu bir plak sesi, yavaş bir groove ve bolca boşluk. Bir pazar sabahı kahvenin yanına.</p>`, tags: ['Lo-fi'], published: true },
-    { id: 'remix-5', title: 'Liman (Akcan Remix)', original: 'Orijinal Sanatçı – Liman', genre: 'Organic House', bpm: 120, date: daysAgo(60), cover: PIC('remix-5', 800, 800), audio: MP3(11), embed: '', description: `<p>Akustik gitar, el perküsyonu ve dalgalı bir synth. Gün batımı setleri için.</p>`, tags: ['Organic'], published: true }
+    {
+      id: 'rmx-1', title: 'Kıyı Işıkları (Akcan Remix)', slug: 'kiyi-isiklari-akcan-remix', original: 'Örnek Sanatçı – Kıyı Işıkları',
+      genre: 'Melodic House', bpm: 122, duration: '6:48', date: daysAgo(3),
+      cover: PIC('rmx-1', 800, 800), coverAlt: 'Kıyı Işıkları remixinin kapak görseli', coverCredit: ORNEK, tint: '',
+      audio: MP3(7), embed: '', tags: ['House', 'Prodüksiyon', 'Gece'], published: true, featured: false,
+      excerpt: `Akustik bir balad, gece yarısı bir sahil yolunda. Orijinaldeki piyano döngüsünü korudum; altına nefes alan bir bas ve yavaş yavaş açılan bir synth yerleştirdim.`,
+      description: `<p>Bu şarkıyı ilk duyduğumda bir sahil yolunda, camdan akan sokak ışıklarını izliyordum. Orijinali sakin, neredeyse fısıltı gibi bir balad; ama piyanosunun içinde saklı bir ritim vardı.</p>`
+        + `<h2>Fikir</h2><p>Remixin tamamı tek bir soruya dayanıyor: Bu piyano döngüsü 122 BPM’de nasıl nefes alır? Akorlara dokunmadım. Yalnızca aralarına boşluk bıraktım ve her dört ölçüde bir kapanıp açılan bir filtre ekledim.</p>`
+        + fig('rmx1-studyo', 'Piyano kaydı stem’lere ayrıldıktan sonra her kanal ayrı ayrı işlendi.', ORNEK, 'flo flo-right', 900, 1100)
+        + `<h2>Prodüksiyon notları</h2><ul><li>Vokal yarım ton aşağı alındı; böylece bas hattıyla çakışmıyor.</li><li>Bas, davul vuruşlarıyla birlikte hafifçe “nefes alıyor” (sidechain sıkıştırma).</li><li>Son iki dakika DJ setlerinde rahat geçiş için yalnızca ritim ve atmosfer.</li></ul>`
+        + quote('Bir remix şarkıyı yeniden yazmak değildir; ona başka bir odada çalma şansı vermektir.', 'Stüdyo defterimden')
+        + `<p>Bu sürümü ilk kez bir gün batımı setinde çaldım. Pistin aynı anda hem sessizleşip hem dalgalandığı o anı hâlâ hatırlıyorum.</p>`,
+      sources: `Remix — Vikipedi | https://en.wikipedia.org/wiki/Remix\nDinamik aralık sıkıştırma | https://en.wikipedia.org/wiki/Dynamic_range_compression`
+    },
+    {
+      id: 'rmx-2', title: 'Beton Çiçekler (Akcan Edit)', slug: 'beton-cicekler-akcan-edit', original: 'Örnek Sanatçı – Beton Çiçekler',
+      genre: 'Melodic Techno', bpm: 124, duration: '7:12', date: daysAgo(11),
+      cover: PIC('rmx-2', 800, 800), coverAlt: 'Beton Çiçekler editinin kapak görseli', coverCredit: ORNEK, tint: '#2E3E52',
+      audio: MP3(8), embed: '', tags: ['Techno', 'Kulüp', 'Prodüksiyon'], published: true, featured: false,
+      excerpt: `Dört dakikalık bir radyo şarkısını yedi dakikalık bir kulüp parçasına dönüştüren uzun bir edit: uzayan bir intro, karanlık bir ara bölüm ve tek bir vokal satırının etrafında dönen bir doruk.`,
+      description: `<p>Edit, remixin daha sade kardeşi. Yeni bir şey eklemekten çok var olanı yeniden sıralamak demek: şarkının en güçlü anlarını bulup onlara daha fazla yer açmak.</p>`
+        + `<h2>Edit ile remix arasındaki fark</h2><p>Remixte şarkının parçalarını alıp yeni bir yapı kurarsınız. Editte ise orijinal kayda sadık kalır, onu yalnızca kesip uzatır ve yeniden dizersiniz. Bu parçada eklediğim tek yeni ses, ara bölümdeki alçak bir drone.</p>`
+        + fig('rmx2-kulup', 'Uzun intro, DJ’in önceki parçadan rahatça geçebilmesi için.', ORNEK, 'wide', 1800, 800)
+        + `<h2>Yapı</h2><ol><li><strong>0:00 – 1:30</strong> Yalnızca davul ve bas: geçiş için temiz bir zemin.</li><li><strong>1:30 – 3:45</strong> Orijinalin nakaratı, iki kat uzatılmış hâliyle.</li><li><strong>3:45 – 5:00</strong> Karanlık ara bölüm: vokal susuyor, drone yükseliyor.</li><li><strong>5:00 – 7:12</strong> Doruk ve tek vokal satırıyla çıkış.</li></ol>`
+        + `<p>Bu editi en çok gecenin ortasında, enerji yükselmeden hemen önce çalıyorum.</p>`,
+      sources: `Techno — Vikipedi | https://en.wikipedia.org/wiki/Techno`
+    },
+    {
+      id: 'rmx-3', title: 'Eski Radyo (Akcan Rework)', slug: 'eski-radyo-akcan-rework', original: 'Örnek Sanatçı – Eski Radyo',
+      genre: 'Lo-fi House', bpm: 112, duration: '5:36', date: daysAgo(20),
+      cover: PIC('rmx-3', 800, 800), coverAlt: 'Eski Radyo reworkünün kapak görseli', coverCredit: ORNEK, tint: '#7A4E1E',
+      audio: MP3(9), embed: '', tags: ['Lo-fi', 'Örnekleme', 'Plak'], published: true, featured: false,
+      excerpt: `Tozlu bir plak sesi, yavaşlatılmış bir groove ve bolca boşluk. Eski bir radyo kaydını bir pazar sabahına taşıyan sıcak bir rework.`,
+      description: `<p>Bu parça bir bit pazarında bulduğum kayıtla başladı. Kaydın kendisi kötü durumdaydı; ama o cızırtının içinde bir sıcaklık vardı ve onu temizlemek yerine parçanın merkezine koymaya karar verdim.</p>`
+        + fig('rmx3-plak', 'Cızırtı bir kusur değil, parçanın dokusu.', ORNEK, 'flo flo-left', 900, 900)
+        + `<h2>Kusuru korumak</h2><p>Lo-fi’ın sırrı, hataları bilerek bırakmak: hafifçe kayan bir tempo, biraz bant doygunluğu, tam oturmayan bir davul. Her şey kusursuz olduğunda müzik soğuyor.</p>`
+        + quote('Bazen bir parçayı güzelleştiren şey, onda düzeltmediğiniz yerdir.', 'Stüdyo defterimden')
+        + `<h2>Örneklemeden önce</h2><p>Başkasına ait bir kaydı yayınlanacak bir parçada kullanmadan önce izin almak gerekir. Bu rework şimdilik yalnızca setlerimde çalıyor.</p>`,
+      sources: `Lo-fi müzik | https://en.wikipedia.org/wiki/Lo-fi_music\nÖrnekleme (müzik) | https://en.wikipedia.org/wiki/Sampling_(music)`
+    },
+    {
+      id: 'rmx-4', title: 'Çöl Rüzgârı (Akcan Remix)', slug: 'col-ruzgari-akcan-remix', original: 'Örnek Sanatçı – Çöl Rüzgârı',
+      genre: 'Afro House', bpm: 118, duration: '6:20', date: daysAgo(32),
+      cover: PIC('rmx-4', 800, 800), coverAlt: 'Çöl Rüzgârı remixinin kapak görseli', coverCredit: ORNEK, tint: '',
+      audio: MP3(10), embed: '', tags: ['Afro', 'Perküsyon', 'House'], published: true, featured: false,
+      excerpt: `Perküsyon ağırlıklı, sıcak bir yorum. Vokali yarı hızda kullanıp bir koro gibi katmanladım; altında üç farklı ritmin aynı anda konuştuğu bir zemin var.`,
+      description: `<p>Orijinal şarkı tek bir gitar ve bir sesten ibaret. Ben ise ona bir kalabalık eklemek istedim: el davulları, shaker’lar ve uzaktan gelen bir koro.</p>`
+        + `<h2>Üç ritim, tek groove</h2><p>Davullar dörtlük bir zemin çalarken konga üçlük, shaker ise altılık bir figür çalıyor. Poliritim denen bu yapı, parçaya hiç durmayan bir hareket hissi veriyor.</p>`
+        + fig('rmx4-perkusyon', 'Perküsyonların çoğu tek tek elle kaydedildi.', ORNEK)
+        + `<p>Koro aslında tek bir vokal: yarı hızda, dört farklı perdede ve hafif gecikmelerle üst üste bindirildi.</p>`
+        + quote('Ritim, bedenin müziği anladığı dildir.', 'Bir set sonrası notlarımdan'),
+      sources: `Poliritim | https://en.wikipedia.org/wiki/Polyrhythm\nHouse müzik | https://en.wikipedia.org/wiki/House_music`
+    },
+    {
+      id: 'rmx-5', title: 'Son Vapur (Akcan Bootleg)', slug: 'son-vapur-akcan-bootleg', original: 'Örnek Sanatçı – Son Vapur',
+      genre: 'Organic House', bpm: 120, duration: '6:05', date: daysAgo(45),
+      cover: PIC('rmx-5', 800, 800), coverAlt: 'Son Vapur bootleginin kapak görseli', coverCredit: ORNEK, tint: '#1E4A5A',
+      audio: MP3(11), embed: '', tags: ['Organic', 'Bootleg', 'Şehir'], published: true, featured: false,
+      excerpt: `Akustik gitar, el perküsyonu ve bir vapur düdüğü. Resmî olarak yayınlanmayan, yalnızca setlerde çaldığım bir bootleg.`,
+      description: `<p>Bir akşam son vapurda kayda aldığım düdük sesi bu parçanın ilk notası oldu. Onu orijinal şarkının gitarıyla buluşturunca ortaya şehrin kendisi gibi bir parça çıktı: hem dingin hem telaşlı.</p>`
+        + `<h2>Bootleg nedir?</h2><p>Bootleg, hak sahiplerinden izin alınmadan yapılan gayriresmî bir remix. Bu yüzden müzik platformlarında yayınlanamıyor; DJ’ler onu yalnızca setlerinde çalıyor.</p>`
+        + fig('rmx5-vapur', 'Parçanın ilk notası: son vapurun düdüğü.', ORNEK, 'flo flo-right', 900, 1100)
+        + `<p>Bir gün izin alabilirsem resmî bir remix olarak yayınlamayı çok isterim. O zamana kadar bu sayfada ve setlerde yaşamaya devam edecek.</p>`,
+      sources: `Mashup (müzik) | https://en.wikipedia.org/wiki/Mashup_(music)\nAlan kaydı | https://en.wikipedia.org/wiki/Field_recording`
+    },
+    {
+      id: 'rmx-6', title: 'Neon Yağmur (Akcan Remix)', slug: 'neon-yagmur-akcan-remix', original: 'Örnek Sanatçı – Neon Yağmur',
+      genre: 'Progressive House', bpm: 126, duration: '7:40', date: daysAgo(58),
+      cover: PIC('rmx-6', 800, 800), coverAlt: 'Neon Yağmur remixinin kapak görseli', coverCredit: ORNEK, tint: '',
+      audio: MP3(12), embed: '', tags: ['Progressive', 'Synth', 'Kulüp'], published: true, featured: false,
+      excerpt: `Yavaş yavaş açılan arpejler, uzun bir yükseliş ve yağmur sesine karışan bir synth. Gece yarısından sonra çalınmak için.`,
+      description: `<p>Progressive house sabır ister: parça her on altı ölçüde yalnızca küçük bir şey değiştirir ve sizi fark ettirmeden bambaşka bir yere götürür.</p>`
+        + `<h2>Arpejin yolculuğu</h2><p>Bütün parça tek bir arpejin etrafında dönüyor. Başta yalnızca üç notası duyuluyor; filtre açıldıkça notalar çoğalıyor ve yedinci dakikada bütün akor ortaya çıkıyor.</p>`
+        + fig('rmx6-synth', 'Arpej, tek bir synth kanalından geliyor.', ORNEK, 'wide', 1800, 800)
+        + `<p>Arka plandaki yağmur sesi gerçek bir kayıt: stüdyonun penceresinden, bir kasım gecesi.</p>`
+        + quote('En iyi yükseliş, ne zaman başladığını fark etmediğiniz yükseliştir.', 'Stüdyo defterimden'),
+      sources: `Progressive house | https://en.wikipedia.org/wiki/Progressive_house\nArpej | https://en.wikipedia.org/wiki/Arpeggio`
+    }
   ];
 
   /* ======================================================================

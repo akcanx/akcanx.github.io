@@ -75,18 +75,13 @@
   }
 
   /* ---------- Yayına gidecek veri ---------- */
-  // js/ornek-icerik.js'teki örnekler yayına girmez
-  function sampleIds() {
-    const O = global.AKCAN_ORNEK || {};
-    return new Set(['posts', 'podcasts', 'remixes', 'pages'].flatMap((c) => (O[c] || []).map((x) => x.id)));
-  }
+  // Örnek içerikler (js/ornek-icerik.js ve sitenin ilk sürümündekiler) yayına girmez
   function publicData(D) {
     const d = JSON.parse(JSON.stringify(D));
-    const samples = sampleIds();
     delete d.settings.adminHash;
     delete d.videos;
     ['posts', 'podcasts', 'remixes', 'pages'].forEach((c) => {
-      d[c] = (d[c] || []).filter((x) => x.published !== false && !samples.has(x.id));
+      d[c] = (d[c] || []).filter((x) => x.published !== false && !S.isSample(x));
     });
     return d;
   }
@@ -219,5 +214,5 @@
   // Gönderim bitmeden panel kapatılırsa uyar
   global.addEventListener('beforeunload', (e) => { if (busy()) { e.preventDefault(); e.returnValue = ''; } });
 
-  global.Yayin = { BRANCH, config, setConfig, ready, pagesUrl, test, sampleIds, publicData, schedule, run, busy, status, onChange };
+  global.Yayin = { BRANCH, config, setConfig, ready, pagesUrl, test, publicData, schedule, run, busy, status, onChange };
 })(window);

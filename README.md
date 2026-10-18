@@ -40,8 +40,10 @@
 - **Bölüm sayfası:** çerçeveli kapak ve kaynağı, büyük başlık, italik özet. Ses çubuğu sayfa kaydırılınca menünün altına yapışır. Bölüm metni görseller ve alıntılarla zenginleştirilebilir.
 - Sitenin altında sabit ses oynatıcı: 10 sn geri/ileri, hız (`1x`–`2x`), ses seviyesi, sürüklenebilir zaman çubuğu, klavye kısayolları (Boşluk, ← →).
 
-### Remixler
-- Kare kapaklı ızgara, BPM ve tür etiketleri, kapak üzerinde oynat düğmesi; SoundCloud, Mixcloud, Spotify ve YouTube gömülü oynatıcı desteği.
+### Remixler (Podcast sekmesinin ikizi)
+- Podcast sayfasıyla aynı düzen: kare sayfa kapağı, üst etiket, ad, açıklama, SoundCloud / Mixcloud / Spotify / YouTube bağlantıları ve "Son Remixi Dinle".
+- Remix listesi: yuvarlak oynat düğmesi, remix adı, tür · BPM · tarih.
+- **Remix sayfası:** bölüm sayfasıyla aynı: tonlu üst bölüm, çerçeveli kapak ve kaynağı, italik özet, orijinal parça · tarih · süre · BPM satırı, kaydırınca menünün altına yapışan ses çubuğu, gömülü oynatıcı, görsellerle ve alıntılarla zenginleştirilebilen remix hikâyesi, notlar ve kaynaklar, ilgili içerik, önceki / sonraki.
 
 ### Hakkında
 - barisozcan.com/hakkinda düzeni: tam ekran fotoğraf, üzerinde iki yana ayrılmış büyük italik yazı, altında vurgu renginde ortalanmış başlık ve ara başlıklı biyografi.
@@ -63,7 +65,8 @@
   - **⚙ Sayfa Ayarları:** Yazılar sayfasının başlığı, açıklaması ve ışık rengi.
 - **Zengin metin editörü:** başlıklar, kalın/italik, listeler, bağlantılar, **▣ Görsel** (yerleşim seçmeli pencere; eklenen görsele tıklayınca düzenlenir), **❝ Kaynaklı** alıntı, YouTube gömme ve HTML kaynak düzenleme.
 - **Podcast:** bölümler (özet, MP3, gömülü oynatıcı, bölüm metni, kaynaklar, kapak kaynağı) ve **⚙ Program Ayarları** (kapak, ad, açıklama, platform bağlantıları).
-- **Remixler, Özel Sayfalar, Menü Yönetimi** (sürükle-bırak sıralama), **Öne Çıkan (Hero)** (manuel / otomatik / özel manşet, canlı önizleme, üst gradyan ayarı), **Hakkında** (fotoğraf üstü yazılar, vurgulu başlık, kısa tanım, vurgu rengi), **Ayarlar & Tema** (site kimliği, renk, sosyal bağlantılar, şifre).
+- **Remixler:** remixler (orijinal parça, özet, MP3, gömülü oynatıcı, remixin hikâyesi, notlar ve kaynaklar, süre, tür, BPM, kapak kaynağı, sayfa tonu) ve **⚙ Sayfa Ayarları** (kapak, ad, üst etiket, açıklama, SoundCloud / Mixcloud / Spotify / YouTube bağlantıları, ışık rengi).
+- **Özel Sayfalar, Menü Yönetimi** (sürükle-bırak sıralama), **Öne Çıkan (Hero)** (manuel / otomatik / özel manşet, canlı önizleme, üst gradyan ayarı), **Hakkında** (fotoğraf üstü yazılar, vurgulu başlık, kısa tanım, vurgu rengi), **Ayarlar & Tema** (site kimliği, renk, sosyal bağlantılar, şifre).
 - **Yayın & SEO:** GitHub bağlantısı, her kaydetmede otomatik yayın, yayın durumu, site adresi, varsayılan paylaşım görseli, Google / Bing doğrulama kodları, yapay zekâ eğitimi izni, yayın öncesi kontrol listesi ve site dışında yapılacaklar.
 - Her yazı, video, bölüm, remix ve sayfada **Arama & paylaşım** kartı (SEO başlığı, SEO açıklaması, paylaşım görseli) ve kapak görseli için **alt metin** alanı. Podcast bölümleri ve remixler de okunur adresle açılır (`/podcast/bolum-adi/`).
 - **Yedekleme:** `.json` olarak dışa/içe aktarma, **Örnek İçerikleri Ekle**, fabrika ayarlarına dönüş.
@@ -75,9 +78,9 @@
 
 Site ilk açıldığında kullanımı öğrenmek için örnek içeriklerle gelir:
 
-- 12 YouTube videosu, 5 blog yazısı, 6 podcast bölümü, 5 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+- 12 YouTube videosu, 5 blog yazısı, 6 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
 - **"Bu Site Nasıl Kullanılır?"** rehber yazısı, her özelliğin panelde nasıl yapıldığını anlatırken o özelliği kendi üzerinde gösterir.
-- **Örnek içerikler hiçbir zaman yayına gönderilmez**; yalnızca panelde ve bilgisayarınızdaki önizlemede görünür.
+- **Örnek içerikler hiçbir zaman yayına gönderilmez**; yalnızca panelde (başlığın yanında **Örnek** etiketiyle) ve bilgisayarınızdaki önizlemede görünür. Sitenin ilk sürümünden kalan örnekler de başlıklarından tanınır ve yayına gönderilmez.
 - Örnekler panelden tek tek ya da **Yayın & SEO → Örnek içerikleri sil** ile hepsi birden silinebilir; **Yedekleme → Örnek İçerikleri Ekle** ile geri getirilebilir. Kendi içerikleriniz bu işlemlerden etkilenmez.
 - Örnekler `js/ornek-icerik.js` dosyasındadır. Bu dosya kaldırılırsa site boş başlar.
 - Örnek videolar başka YouTube kanallarına, görseller picsum.photos'a, ses dosyaları SoundHelix'e aittir; yayına almadan önce kendi içeriğinizle değiştirin.

@@ -65,8 +65,8 @@ const hasData = fs.existsSync(dataFile);
 if (!hasData) console.warn(`! ${dataFile} bulunamadı: site boş içerikle derleniyor (panelden ilk yayını yapın).`);
 const D = S.normalize(hasData ? JSON.parse(read(dataFile)) : {});
 delete D.settings.adminHash;
-// Taslaklar hiçbir koşulda yayına girmez
-['posts', 'podcasts', 'remixes', 'pages'].forEach((c) => { D[c] = (D[c] || []).filter((x) => x.published !== false); });
+// Taslaklar ve örnek içerikler hiçbir koşulda yayına girmez (panel zaten göndermez; eski kayıtlara karşı)
+['posts', 'podcasts', 'remixes', 'pages'].forEach((c) => { D[c] = (D[c] || []).filter((x) => x.published !== false && !S.isSample(x)); });
 if (/"data:image\//.test(JSON.stringify(D))) console.warn('! Veride dosyaya çıkarılmamış görsel var; sayfalar gereğinden ağır olabilir.');
 
 const st = D.settings;

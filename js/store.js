@@ -15,7 +15,22 @@
   /* ---------- Varsayılan içerik ---------- */
   const O = global.AKCAN_ORNEK || {};
   // Örnek içerik sürümü: yükseltildiğinde, kayıtlı verisi olan tarayıcılara da yeni örnekler bir kez eklenir
-  const SAMPLE_VERSION = 2;
+  const SAMPLE_VERSION = 3;
+
+  /* ---------- Örnek içeriği tanıma ---------- */
+  const SAMPLE_IDS = new Set(['posts', 'podcasts', 'remixes', 'pages'].flatMap((c) => (O[c] || []).map((x) => x.id)));
+  // Sitenin ilk sürümündeki örnekler her açılışta rastgele kimlik alıyordu: başlıklarından tanınır
+  const LEGACY_SAMPLES = {
+    posts: ['Bir Remix Nasıl Doğar?', 'Kulaklıkla Dinlemek Neden Farklı Hissettirir?', 'Gece Yarısı Stüdyo Notları', 'Stüdyo Turu: Ekipmanlarım ve Çalışma Düzenim', 'Canlı Set: Pazar Akşamı Seansı', 'Sıfırdan Remix Yapımı'],
+    podcasts: ['Sesin Hafızası', 'Ritim ve Kalp Atışı', 'Merhaba Dünya: İlk Bölüm'],
+    remixes: ['Gece Treni (Akcan Remix)', 'Mavi (Akcan Edit)', 'Yaz Sonu (Akcan Bootleg)'],
+    pages: ['Stüdyo & Ekipmanlar']
+  };
+  // Örnek sürümü 2'nin remixleri (3'te yenileriyle değişti)
+  const OLD_SAMPLE_REMIXES = { 'remix-1': 'Gece Treni (Akcan Remix)', 'remix-2': 'Mavi (Akcan Edit)', 'remix-3': 'Yaz Sonu (Akcan Bootleg)', 'remix-4': 'Pazar Sabahı (Akcan Rework)', 'remix-5': 'Liman (Akcan Remix)' };
+  /** Örnek içerik mi? Örnekler panelde ve önizlemede görünür, yayına hiç gönderilmez. */
+  const isSample = (x) => !!x && (x.sample === true || SAMPLE_IDS.has(x.id));
+
   const DEFAULTS = {
     version: 1,
     sampleVersion: SAMPLE_VERSION,
@@ -53,6 +68,20 @@
         youtube: '',
         readText: 'Oku + Dinle',
         tint: '#1F5A50'
+      },
+      // Remixler sayfasının üst bölümü (Podcast programının ikizi)
+      remixPage: {
+        name: 'Remixler',
+        eyebrow: 'Remix · Edit · Bootleg',
+        description: 'Sevdiğim şarkıları söküp yeniden kuruyorum: gece yarısı remixleri, kulüp için uzatılmış editler ve bir kez çalınıp unutulmaması gereken bootlegler. Her parçanın yanında nasıl yapıldığını anlatan kısa bir not var.',
+        note: 'Remixleri dinleme platformlarından takip edebilir ya da her parçanın hikâyesini okuyup dinlemek için buradan devam edebilirsiniz:',
+        cover: PIC('remix-show', 900, 900),
+        soundcloud: 'https://soundcloud.com/',
+        mixcloud: 'https://www.mixcloud.com/',
+        spotify: '',
+        youtube: '',
+        readText: 'Son Remixi Dinle',
+        tint: '#5A2E4E'
       },
       featured: {
         mode: 'manual',
@@ -155,19 +184,33 @@
         changed = true;
       });
     });
-    // Yeni örnek içerikleri, daha önce kaydedilmiş veriye de bir kez ekle (kendi içerikleri silinmez)
-    if (raw && !(raw.sampleVersion >= SAMPLE_VERSION)) {
-      addSamples(data);
-      data.sampleVersion = SAMPLE_VERSION;
-      changed = true;
+    // İlk sürümün örnekleri yayına gitmesin: başlığı tutan ve içinde panelden yüklenmiş görsel olmayanlar örnek sayılır
+    Object.keys(LEGACY_SAMPLES).forEach((c) => {
+      (data[c] || []).forEach((x) => {
+        if (isSample(x) || !LEGACY_SAMPLES[c].includes(x.title) || JSON.stringify(x).includes('data:')) return;
+        x.sample = true;
+        changed = true;
+      });
+    });
+    // Yeni örnek içerikleri, daha önce kaydedilmiş veriye de bir kez ekle (kendi içerikleri silinmez).
+    // Yalnızca tarayıcıdaki kayıtta çalışır; yayın dosyasına ve yedeklere örnek eklenmez.
+    const sv = raw ? raw.sampleVersion || 0 : SAMPLE_VERSION;
+    if (sv < 2) addSamples(data);
+    // 3: örnek remixler yenilendi. Adı değiştirilmemiş eski örnekler yenileriyle değişir;
+    // örnekleri daha önce silmiş olana yeniden eklenmez
+    if (sv < 3) {
+      const before = (data.remixes || []).length;
+      data.remixes = (data.remixes || []).filter((x) => OLD_SAMPLE_REMIXES[x.id] !== x.title);
+      if (data.remixes.length < before) addSamples(data, ['remixes']);
     }
+    if (sv < SAMPLE_VERSION) { data.sampleVersion = SAMPLE_VERSION; changed = true; }
     return changed;
   }
 
   /** Örnek içeriklerden eksik olanları ekler (kimliği ya da bağlantısı zaten varsa atlar). Eklenen sayısını döner. */
-  function addSamples(data) {
+  function addSamples(data, cols = ['posts', 'podcasts', 'remixes', 'pages']) {
     let n = 0;
-    ['posts', 'podcasts', 'remixes', 'pages'].forEach((c) => {
+    cols.forEach((c) => {
       data[c] = data[c] || [];
       (DEFAULTS[c] || []).forEach((x) => {
         if (data[c].some((y) => y.id === x.id || (x.slug && y.slug === x.slug))) return;
@@ -345,6 +388,6 @@
   global.Store = {
     KEY, DEFAULTS, uid, get, save, onSave, reset, exportJSON, importJSON, normalize,
     slugify, esc, strip, fmtDate, fmtDateShort, fmtNum, isProfile, ytId, ytThumb, embed, wordCount, readingTime, hash, MONTHS,
-    postKind, addSamples
+    postKind, addSamples, isSample
   };
 })(typeof window !== 'undefined' ? window : globalThis);

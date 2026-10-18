@@ -203,25 +203,30 @@
     },
     remixes: {
       title: 'Remixler', one: 'Remix', icon: '♫',
-      desc: 'Remixlerinizi MP3 bağlantısı veya SoundCloud / Mixcloud / YouTube bağlantısıyla paylaşın.',
+      desc: 'Remixler sekmesi Podcast sekmesiyle aynı düzendedir: üstte sayfa kapağı ve tanıtımı, altında remix listesi. Her remixin kendi sayfasında kaydırınca menünün altına yapışan ses çubuğu ve hikâyesini anlatan metin bulunur.',
       view: (x) => '#/remixler/' + x.slug,
       thumb: (x) => x.cover, sq: true,
       sub: (x) => [x.original, x.genre, x.bpm ? x.bpm + ' BPM' : '', x.featured ? '★ Öne çıkan' : ''].filter(Boolean).join(' · '),
       fields: [
         { k: 'title', t: 'title', l: 'Remix adı', req: true },
-        { k: 'original', t: 'text', l: 'Orijinal parça / sanatçı', ph: 'Sanatçı – Şarkı adı' },
-        { k: 'audio', t: 'url', l: 'Ses dosyası bağlantısı (MP3)', ph: 'https://.../remix.mp3', help: 'Sitedeki oynatıcıda çalınır.' },
-        { k: 'embed', t: 'url', l: 'Gömülü oynatıcı (isteğe bağlı)', ph: 'SoundCloud, Mixcloud, Spotify veya YouTube bağlantısı' },
-        { k: 'description', t: 'richtext', l: 'Açıklama' },
+        { k: 'original', t: 'text', l: 'Orijinal parça / sanatçı', ph: 'Sanatçı – Şarkı adı', help: 'Özet yoksa başlığın altında italik olarak, varsa bilgi satırında görünür.' },
+        { k: 'excerpt', t: 'textarea', l: 'Özet', rows: 3, help: 'Remix sayfasında başlığın altında italik olarak görünür. Arama sonucunda da açıklama olarak kullanılır.' },
+        { k: 'audio', t: 'url', l: 'Ses dosyası bağlantısı (MP3)', ph: 'https://.../remix.mp3', help: 'Remix sayfasındaki ses çubuğunda ve listedeki oynat düğmesinde çalınır.' },
+        { k: 'embed', t: 'url', l: 'Gömülü oynatıcı (isteğe bağlı)', ph: 'SoundCloud, Mixcloud, Spotify veya YouTube bağlantısı', help: 'Remix sayfasında gömülü oynatıcı olarak gösterilir.' },
+        { k: 'description', t: 'richtext', l: 'Remixin hikâyesi', help: 'Fikir, kullandığınız sesler, prodüksiyon notları… Görseller ve alıntılarla zenginleştirebilirsiniz. Arama motorları ve yapay zekâ sesi dinleyemez, bu metni okur.' },
+        { k: 'sources', t: 'textarea', l: 'Notlar ve kaynaklar', rows: 4, ph: 'Başlık | https://adres', help: 'Her satıra bir kaynak: <code>Başlık | Bağlantı</code>.' },
         { k: 'published', t: 'switch', l: 'Yayında', side: 'Yayın' },
         { k: 'featured', t: 'switch', l: 'Öne çıkar', help: 'Ana sayfa manşetinde gösterilir.', side: 'Yayın' },
         { k: 'date', t: 'date', l: 'Tarih', side: 'Yayın' },
+        { k: 'duration', t: 'text', l: 'Süre', ph: '6:48', side: 'Yayın' },
         { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: 'Remixin adresi: /remixler/<b>baglanti</b>/. Boş bırakılırsa başlıktan oluşturulur.' },
         { k: 'genre', t: 'text', l: 'Tür', ph: 'Deep House', side: 'Detaylar' },
         { k: 'bpm', t: 'number', l: 'BPM', ph: '122', side: 'Detaylar' },
         { k: 'cover', t: 'image', l: 'Kapak (kare)', sq: true, side: 'Kapak' },
         { k: 'coverAlt', t: 'text', l: 'Kapak açıklaması (alt metin)', ph: 'Görselde ne var?', side: 'Kapak', help: ALT_HELP },
-        { k: 'tags', t: 'tags', l: 'Etiketler', side: 'Etiketler' },
+        { k: 'coverCredit', t: 'text', l: 'Kapak görseli kaynağı', ph: 'Fotoğraf: …, lisans', side: 'Kapak' },
+        { k: 'tint', t: 'color', l: 'Sayfa tonu', side: 'Görünüm', help: 'Boş bırakılırsa kapaktan otomatik seçilir.' },
+        { k: 'tags', t: 'tags', l: 'Etiketler', side: 'Etiketler', help: 'İlk üçü sayfanın üstündeki konum satırında, hepsi sayfanın sonunda görünür.' },
         ...SEO_FIELDS
       ]
     },
@@ -246,7 +251,7 @@
     }
   };
 
-  /* Liste sayfalarının üst bölüm ayarları (sitedeki "Yazılar" ve "Podcast" sayfalarının başı) */
+  /* Liste sayfalarının üst bölüm ayarları (sitedeki "Yazılar", "Podcast" ve "Remixler" sayfalarının başı) */
   const SECTIONS = {
     posts: {
       key: 'postsPage', title: 'Yazılar Sayfası', btn: 'Sayfa Ayarları',
@@ -269,6 +274,23 @@
         { k: 'cover', t: 'image', l: 'Program kapağı (kare)', sq: true, side: 'Kapak' },
         { k: 'spotify', t: 'url', l: 'Spotify', ph: 'https://open.spotify.com/show/...', side: 'Dinleme platformları' },
         { k: 'apple', t: 'url', l: 'Apple Podcasts', ph: 'https://podcasts.apple.com/...', side: 'Dinleme platformları' },
+        { k: 'youtube', t: 'url', l: 'YouTube', ph: 'https://www.youtube.com/...', side: 'Dinleme platformları' },
+        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm' }
+      ]
+    },
+    remixes: {
+      key: 'remixPage', title: 'Remixler Sayfası', btn: 'Sayfa Ayarları',
+      desc: 'Remixler sayfasının üstünde görünen kapak, ad, açıklama ve dinleme platformları (Podcast programıyla aynı düzen).',
+      fields: [
+        { k: 'name', t: 'title', l: 'Sayfa adı' },
+        { k: 'eyebrow', t: 'text', l: 'Üst etiket', ph: 'Remix · Edit · Bootleg', help: 'Adın üstünde küçük büyük harflerle görünür.' },
+        { k: 'description', t: 'textarea', l: 'Açıklama', rows: 4 },
+        { k: 'note', t: 'textarea', l: 'Alt not', rows: 2, help: 'Açıklamanın altında küçük yazıyla görünür.' },
+        { k: 'readText', t: 'text', l: 'Buton metni', ph: 'Son Remixi Dinle', help: 'En son remixe götürür.' },
+        { k: 'cover', t: 'image', l: 'Sayfa kapağı (kare)', sq: true, side: 'Kapak' },
+        { k: 'soundcloud', t: 'url', l: 'SoundCloud', ph: 'https://soundcloud.com/...', side: 'Dinleme platformları' },
+        { k: 'mixcloud', t: 'url', l: 'Mixcloud', ph: 'https://www.mixcloud.com/...', side: 'Dinleme platformları' },
+        { k: 'spotify', t: 'url', l: 'Spotify', ph: 'https://open.spotify.com/artist/...', side: 'Dinleme platformları' },
         { k: 'youtube', t: 'url', l: 'YouTube', ph: 'https://www.youtube.com/...', side: 'Dinleme platformları' },
         { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm' }
       ]
@@ -756,7 +778,7 @@
     const colls = [
       { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => '#/yazilar/' + x.slug, thumb: (x) => (S.postKind(x) === 'video' ? S.ytThumb(x.video, 'maxresdefault') : x.cover), excerpt: (x) => x.excerpt },
       { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => '#/podcast/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => (x.description || '').replace(/<[^>]+>/g, '') },
-      { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => '#/remixler/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.original || (x.description || '').replace(/<[^>]+>/g, '') },
+      { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => '#/remixler/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt || x.original || (x.description || '').replace(/<[^>]+>/g, '') },
       { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => '#/sayfa/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt }
     ];
 
@@ -930,7 +952,7 @@
         <tbody>${arr.map((x) => {
           const th = T.thumb(x);
           return `<tr data-id="${x.id}" data-s="${esc((x.title + ' ' + (T.sub(x) || '')).toLocaleLowerCase('tr'))}" data-p="${x.published === false ? 0 : 1}" data-kind="${kindOf(x)}">
-            <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}</div><div class="ts">${esc(T.sub(x) || '')}</div></div></div></td>
+            <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}</div><div class="ts">${esc(T.sub(x) || '')}</div></div></div></td>
             <td class="dt">${S.fmtDate(x.date)}</td>
             <td><button class="pill ${x.published === false ? '' : 'on'}" data-toggle title="Durumu değiştir">${x.published === false ? 'Taslak' : 'Yayında'}</button></td>
             <td><div class="acts">
@@ -1905,12 +1927,11 @@
 
   /** Yayın öncesi kontrol listesi: [durum ok|warn|info, başlık, açıklama, bağlantı] */
   function publishChecks() {
-    const samples = Yayin.sampleIds();
     const st = D.settings, seo = st.seo || {}, a = D.about || {}, so = st.social || {};
     const O = window.AKCAN_ORNEK || {};
-    const live = (c) => (D[c] || []).filter((x) => x.published !== false && !samples.has(x.id));
+    const live = (c) => (D[c] || []).filter((x) => x.published !== false && !S.isSample(x));
     const own = ['posts', 'podcasts', 'remixes', 'pages'].reduce((n, c) => n + live(c).length, 0);
-    const nSamples = ['posts', 'podcasts', 'remixes', 'pages'].reduce((n, c) => n + (D[c] || []).filter((x) => samples.has(x.id)).length, 0);
+    const nSamples = ['posts', 'podcasts', 'remixes', 'pages'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
     const noDesc = ['posts', 'podcasts', 'remixes'].flatMap(live).filter((x) => !(x.seoDesc || x.excerpt));
     const noAlt = [...live('posts').filter((p) => S.postKind(p) === 'yazi'), ...live('podcasts'), ...live('remixes'), ...live('pages')].filter((x) => x.cover && !x.coverAlt);
     const badSocial = SOCIALS.filter(([k]) => k !== 'email' && so[k] && !S.isProfile(so[k])).map(([, l]) => l);
@@ -2028,10 +2049,12 @@
     const del = $('#delSamples');
     if (del) del.addEventListener('click', () => {
       if (!confirm('Panel’deki bütün örnek içerikler (videolar, yazılar, bölümler, remixler, sayfalar) silinsin mi? Kendi içerikleriniz değişmez.')) return;
-      const ids = Yayin.sampleIds();
+      const ids = new Set(['posts', 'podcasts', 'remixes', 'pages'].flatMap((k) => (D[k] || []).filter(S.isSample).map((x) => x.id)));
       const slugs = new Set((D.pages || []).filter((p) => ids.has(p.id)).map((p) => p.slug));
       ['posts', 'podcasts', 'remixes', 'pages'].forEach((k) => { D[k] = (D[k] || []).filter((x) => !ids.has(x.id)); });
-      D.menu = (D.menu || []).filter((m) => !(m.type === 'page' && slugs.has(m.target)));
+      // Silinen örnek sayfalara giden menü öğeleri de kalkar (aynı adreste kendi sayfanız varsa kalır)
+      const left = new Set((D.pages || []).map((p) => p.slug));
+      D.menu = (D.menu || []).filter((m) => !(m.type === 'page' && slugs.has(m.target) && !left.has(m.target)));
       if (D.settings.featured && ids.has(D.settings.featured.id)) D.settings.featured.id = '';
       if (persist('Örnek içerikler silindi')) publishView();
     });

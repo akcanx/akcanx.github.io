@@ -132,7 +132,7 @@
       }));
       pub(D.remixes).forEach((r) => out.push({
         type: 'remix', fk: 'remix', label: 'Remix', id: r.id, title: r.title, date: r.date, href: href('remixler/' + r.slug),
-        thumb: asset(r.cover), audio: r.audio, raw: r, text: (r.original || '') + ' ' + S.strip(r.description),
+        thumb: asset(r.cover), audio: r.audio, raw: r, text: [r.original, r.excerpt, S.strip(r.description)].filter(Boolean).join(' '),
         tags: ['Remix', r.genre, r.bpm ? r.bpm + ' BPM' : '', ...(r.tags || [])].filter(Boolean),
         sub: r.original || 'Remix'
       }));
@@ -271,7 +271,7 @@
           const colls = [
             { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => href('yazilar/' + x.slug), thumb: postThumb, excerpt: (x) => x.excerpt },
             { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => href('podcast/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => S.strip(x.description) },
-            { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => href('remixler/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.original || S.strip(x.description) },
+            { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => href('remixler/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt || x.original || S.strip(x.description) },
             { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => href('sayfa/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt }
           ];
 
@@ -411,21 +411,6 @@
         <button class="feedmorebtn" id="feedmore"${feed.more ? '' : ' hidden'}>Daha fazla göster</button>
       </div></section>`
       };
-    }
-
-    function phead(kicker, title, desc) {
-      return `<header class="phead"><div class="glow"></div><div class="wrap">
-      <div class="kicker rise d1">${esc(kicker)}</div>
-      <h1 class="rise d2">${esc(title)}</h1>
-      ${desc ? `<p class="rise d3">${esc(desc)}</p>` : ''}
-    </div></header>`;
-    }
-
-    function tagFilterBar(list, getTags) {
-      const set = new Map();
-      list.forEach((x) => (getTags(x) || []).forEach((t) => set.set(t, (set.get(t) || 0) + 1)));
-      if (!set.size) return '';
-      return `<div class="feedfilter" data-tagfilter><button data-tag="" class="on">Hepsi<span class="pc">${list.length}</span></button>${[...set.entries()].sort((a, b) => b[1] - a[1]).map(([t, n]) => `<button data-tag="${esc(t)}">${esc(t)}<span class="pc">${n}</span></button>`).join('')}</div>`;
     }
 
     /* ---------- Detay sayfası parçaları ---------- */
@@ -569,15 +554,59 @@
       };
     }
 
-    /* ---------- Podcast ---------- */
-    function epRow(p) {
-      const key = 'podcast:' + p.id;
-      const h = href('podcast/' + p.slug);
-      const play = p.audio
+    /* ---------- Podcast ve Remixler: aynı düzende iki sekme ---------- */
+    /** Liste satırı: yuvarlak oynat düğmesi, başlık ve sağda kısa bilgi */
+    function audioRow(key, h, audio, title, num, meta) {
+      const play = audio
         ? `<button class="epplay" data-play="${key}" aria-label="Dinle">${ICON.play}</button>`
         : `<a class="epplay" href="${h}" aria-label="Aç">${ICON.play}</a>`;
-      return `<div class="ep reveal">${play}<a class="ept" href="${h}">${p.number ? `<span class="epn">${esc(p.number)}</span>` : ''}${esc(p.title)}</a><span class="epmeta">${[S.fmtDateShort(p.date), p.duration].filter(Boolean).map(esc).join(' · ')}</span></div>`;
+      return `<div class="ep reveal">${play}<a class="ept" href="${h}">${num ? `<span class="epn">${esc(num)}</span>` : ''}${esc(title)}</a><span class="epmeta">${meta.filter(Boolean).map(esc).join(' · ')}</span></div>`;
     }
+
+    /** Liste sayfasının üstü: kare kapak, üst etiket, ad, açıklama, dinleme platformları ve en son içeriğe bağlantı */
+    function showHero(c, name, eyebrow, links, latest, readText) {
+      links = links.filter((l) => l[1]);
+      return `<div class="page-wash" style="--wash:${esc(c.tint || '#1F5A50')}"></div>
+      <section class="pcast"><div class="wrap"><div class="pcast-hero">
+        <div class="cover rise d1">${c.cover ? `<img src="${esc(asset(c.cover))}" alt="${esc(name)}" fetchpriority="high">` : ''}</div>
+        <div class="pcast-txt">
+          <div class="pcast-eyebrow rise d1">${ICON.wave}${esc(c.eyebrow || eyebrow)}</div>
+          <h1 class="rise d2">${esc(name)}</h1>
+          ${c.description ? `<p class="desc rise d3">${esc(c.description)}</p>` : ''}
+          ${links.length ? `<p class="pnote rise d3">Dinle: ${links.map(([l, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${l}</a>`).join(' · ')}</p>` : ''}
+          ${c.note ? `<p class="pnote rise d3">${esc(c.note)}</p>` : ''}
+          ${latest ? `<a class="readlink rise d4" href="${latest}"><span class="arr">→</span> ${esc(c.readText || readText)}</a>` : ''}
+        </div>
+      </div></div></section>`;
+    }
+
+    /** Detay sayfasının üstü (bulanık kapak zemini, çerçeveli kapak, başlık) ve kaydırınca yapışan ses çubuğu */
+    function audioHero(o) {
+      return `<section class="ephero2">
+        ${o.cover ? `<img class="ephero-bg" src="${esc(o.cover)}" alt="">` : ''}
+        <div class="ephero-wash"></div><div class="ephero-fade"></div>
+        <div class="wrap ephero-grid2">
+          <div class="ephero-artwrap rise d1">
+            <div class="ephero-art2">${o.cover ? `<img src="${esc(o.cover)}" alt="${esc(o.alt)}" fetchpriority="high">` : ''}</div>
+            ${o.credit ? `<p class="ephero-cr">${esc(o.credit)}</p>` : ''}
+          </div>
+          <div class="ephero-txt">
+            <div class="ephero-eyebrow rise d1">${o.eyebrow}</div>
+            <h1 class="rise d2">${esc(o.title)}</h1>
+            ${o.lede ? `<p class="lede rise d3">${esc(o.lede)}</p>` : ''}
+            <div class="ephero-meta rise d3">${o.meta.filter(Boolean).map(esc).join('<span class="sep">·</span>')}</div>
+          </div>
+        </div>
+      </section>
+      ${o.audio ? `<div class="wrap"><div class="ap-slot"><div class="audioplayer" data-ap="${o.key}"><div class="ap-in">
+        <button class="ap-play" data-play="${o.key}" aria-label="Dinle">${ICON.play}</button>
+        <div class="ap-bar" role="slider" aria-label="İlerleme"><div class="ap-prog"></div></div>
+        <span class="ap-time">0:00</span>
+      </div></div></div></div>` : ''}`;
+    }
+
+    /* ---------- Podcast ---------- */
+    const epRow = (p) => audioRow('podcast:' + p.id, href('podcast/' + p.slug), p.audio, p.title, p.number, [S.fmtDateShort(p.date), p.duration]);
 
     const showName = () => (st.podcast || {}).name || 'Podcast';
     function seriesNode() {
@@ -593,23 +622,12 @@
       const pc = st.podcast || {};
       const list = pub(D.podcasts);
       const name = showName();
-      const links = [['Spotify', pc.spotify], ['Apple Podcasts', pc.apple], ['YouTube', pc.youtube]].filter((l) => l[1]);
+      const links = [['Spotify', pc.spotify], ['Apple Podcasts', pc.apple], ['YouTube', pc.youtube]];
       return {
         title: name + ' — ' + st.siteName, name, desc: pc.description, image: asset(pc.cover), imageAlt: name, ogType: 'website',
         modified: list[0] && list[0].date, noindex: !list.length, crumbs: crumbs([[name, 'podcast']]),
         schema: [listNode('CollectionPage', 'podcast', name, pc.description, items().filter((i) => i.type === 'podcast')), seriesNode()],
-        html: `<div class="page-wash" style="--wash:${esc(pc.tint || '#1F5A50')}"></div>
-      <section class="pcast"><div class="wrap"><div class="pcast-hero">
-        <div class="cover rise d1">${pc.cover ? `<img src="${esc(asset(pc.cover))}" alt="${esc(name)}" fetchpriority="high">` : ''}</div>
-        <div class="pcast-txt">
-          <div class="pcast-eyebrow rise d1">${ICON.wave}${esc(pc.eyebrow || 'Podcast')}</div>
-          <h1 class="rise d2">${esc(name)}</h1>
-          ${pc.description ? `<p class="desc rise d3">${esc(pc.description)}</p>` : ''}
-          ${links.length ? `<p class="pnote rise d3">Dinle: ${links.map(([l, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${l}</a>`).join(' · ')}</p>` : ''}
-          ${pc.note ? `<p class="pnote rise d3">${esc(pc.note)}</p>` : ''}
-          ${list[0] ? `<a class="readlink rise d4" href="${href('podcast/' + list[0].slug)}"><span class="arr">→</span> ${esc(pc.readText || 'Oku + Dinle')}</a>` : ''}
-        </div>
-      </div></div></section>
+        html: `${showHero(pc, name, 'Podcast', links, list[0] && href('podcast/' + list[0].slug), 'Oku + Dinle')}
       <section class="ix" id="bolumler"><div class="wrap">
         <div class="head"><span class="lbl">Bölümler</span><span class="cnt">${list.length} bölüm · en yeniden eskiye</span></div>
         <div class="eplist">${list.length ? list.map(epRow).join('') : '<div class="empty-note">Henüz bölüm yok.</div>'}</div>
@@ -625,9 +643,7 @@
       const pc = st.podcast || {};
       const name = showName();
       const route = 'podcast/' + x.slug;
-      const key = 'podcast:' + x.id;
       const words = S.wordCount(x.description);
-      const meta = [S.fmtDate(x.date), x.duration, words > 40 ? S.fmtNum(words) + ' kelime' : ''].filter(Boolean).map(esc).join('<span class="sep">·</span>');
       const emb = S.embed(x.embed);
       const prev = list[idx + 1], next = list[idx - 1];
       const cover = asset(x.cover);
@@ -652,27 +668,11 @@
           partOfSeries: { '@id': pageUrl('podcast') + '#program' }, author: { '@id': personId() }, citation: citations(x.sources)
         }, seriesNode()],
         html: `<article class="epage tinted" style="--tint:${esc(x.tint || '#3E5640')}">
-      <section class="ephero2">
-        ${cover ? `<img class="ephero-bg" src="${esc(cover)}" alt="">` : ''}
-        <div class="ephero-wash"></div><div class="ephero-fade"></div>
-        <div class="wrap ephero-grid2">
-          <div class="ephero-artwrap rise d1">
-            <div class="ephero-art2">${cover ? `<img src="${esc(cover)}" alt="${esc(alt)}" fetchpriority="high">` : ''}</div>
-            ${x.coverCredit ? `<p class="ephero-cr">${esc(x.coverCredit)}</p>` : ''}
-          </div>
-          <div class="ephero-txt">
-            <div class="ephero-eyebrow rise d1"><a href="${href('podcast')}">${esc(name)}</a>${x.number ? `<span class="sep">·</span>Bölüm ${esc(x.number)}` : ''}</div>
-            <h1 class="rise d2">${esc(x.title)}</h1>
-            ${x.excerpt ? `<p class="lede rise d3">${esc(x.excerpt)}</p>` : ''}
-            <div class="ephero-meta rise d3">${meta}</div>
-          </div>
-        </div>
-      </section>
-      ${x.audio ? `<div class="wrap"><div class="ap-slot"><div class="audioplayer" data-ap="${key}"><div class="ap-in">
-        <button class="ap-play" data-play="${key}" aria-label="Dinle">${ICON.play}</button>
-        <div class="ap-bar" role="slider" aria-label="İlerleme"><div class="ap-prog"></div></div>
-        <span class="ap-time">0:00</span>
-      </div></div></div></div>` : ''}
+      ${audioHero({
+        cover, alt, credit: x.coverCredit, title: x.title, lede: x.excerpt, key: 'podcast:' + x.id, audio: x.audio,
+        eyebrow: `<a href="${href('podcast')}">${esc(name)}</a>${x.number ? `<span class="sep">·</span>Bölüm ${esc(x.number)}` : ''}`,
+        meta: [S.fmtDate(x.date), x.duration, words > 40 ? S.fmtNum(words) + ' kelime' : '']
+      })}
       <div class="wrap">
         ${emb ? `<div class="embedbox ${emb.kind}">${emb.html}</div>` : ''}
         ${x.description ? `<div class="prose dropcap">${fixHtml(x.description)}</div>` : ''}
@@ -683,26 +683,25 @@
       };
     }
 
-    /* ---------- Remixler ---------- */
+    /* ---------- Remixler (Podcast sekmesinin ikizi) ---------- */
     const REMIX_DESC = 'Yeniden yorumladığım parçalar, editler ve bootlegler.';
+    const rmRow = (r) => audioRow('remix:' + r.id, href('remixler/' + r.slug), r.audio, r.title, '', [r.genre, r.bpm ? r.bpm + ' BPM' : '', S.fmtDateShort(r.date)]);
+    const remixName = () => (st.remixPage || {}).name || 'Remixler';
+
     function listRemixes() {
-      const list = items().filter((i) => i.type === 'remix');
+      const rc = st.remixPage || {};
+      const list = pub(D.remixes);
+      const name = remixName();
+      const desc = rc.description || REMIX_DESC;
+      const links = [['SoundCloud', rc.soundcloud], ['Mixcloud', rc.mixcloud], ['Spotify', rc.spotify], ['YouTube', rc.youtube]];
       return {
-        title: 'Remixler — ' + st.siteName, name: 'Remixler', desc: REMIX_DESC, ogType: 'website', modified: list[0] && list[0].date, noindex: !list.length,
-        crumbs: crumbs([['Remixler', 'remixler']]),
-        schema: [listNode('CollectionPage', 'remixler', 'Remixler', REMIX_DESC, list)],
-        html: `${phead('Müzik', 'Remixler', REMIX_DESC)}
-      <section class="ix"><div class="wrap">
-        <div class="head"><div class="hl">${tagFilterBar(list.map((i) => i.raw), (x) => [x.genre].filter(Boolean))}</div><span class="cnt">${list.length} remix</span></div>
-        ${list.length ? `<div class="rgrid" data-filterable>${list.map((it) => {
-          const r = it.raw;
-          return `<div class="rcard reveal" data-tags="${esc(r.genre || '')}">
-            <div class="cv"><a href="${it.href}">${r.cover ? `<img src="${esc(asset(r.cover))}" alt="${esc(r.coverAlt || r.title)}" loading="lazy">` : ''}</a>${r.bpm ? `<span class="bpm">${esc(r.bpm)} BPM</span>` : ''}${playBtn(it)}</div>
-            <h3><a href="${it.href}">${esc(r.title)}</a></h3>
-            ${r.original ? `<div class="orig">${esc(r.original)}</div>` : ''}
-            <div class="meta">${[r.genre, S.fmtDate(r.date)].filter(Boolean).map(esc).join(' · ')}</div>
-          </div>`;
-        }).join('')}</div>` : '<div class="empty-note">Henüz remix yok.</div>'}
+        title: name + ' — ' + st.siteName, name, desc, image: asset(rc.cover), imageAlt: name, ogType: 'website',
+        modified: list[0] && list[0].date, noindex: !list.length, crumbs: crumbs([[name, 'remixler']]),
+        schema: [listNode('CollectionPage', 'remixler', name, desc, items().filter((i) => i.type === 'remix'))],
+        html: `${showHero({ ...rc, tint: rc.tint || '#5A2E4E' }, name, 'Remix', links, list[0] && href('remixler/' + list[0].slug), 'Son Remixi Dinle')}
+      <section class="ix" id="parcalar"><div class="wrap">
+        <div class="head"><span class="lbl">Parçalar</span><span class="cnt">${list.length} remix · en yeniden eskiye</span></div>
+        <div class="eplist">${list.length ? list.map(rmRow).join('') : '<div class="empty-note">Henüz remix yok.</div>'}</div>
       </div></section>`
       };
     }
@@ -712,44 +711,48 @@
       const idx = list.findIndex((x) => x.slug === slug);
       const x = list[idx];
       if (!x) return notFound();
+      const rc = st.remixPage || {};
+      const name = remixName();
       const route = 'remixler/' + x.slug;
       const emb = S.embed(x.embed);
-      const kicker = `<a href="${href('remixler')}">Remix</a>${x.genre ? `<span class="sep">·</span>${esc(x.genre)}` : ''}`;
-      const meta = [S.fmtDate(x.date), x.duration, x.bpm ? x.bpm + ' BPM' : ''].filter(Boolean).map(esc).join('<span class="sep">·</span>');
+      const prev = list[idx + 1], next = list[idx - 1];
       const cover = asset(x.cover);
       const alt = x.coverAlt || x.title;
+      const rail = [...new Set([x.genre, ...(x.tags || [])].filter(Boolean))].slice(0, 3);
+      const ctx = {
+        crail: [{ label: name, href: href('remixler') }, ...rail.map((t) => ({ label: t }))],
+        prev: prev && { href: href('remixler/' + prev.slug), title: prev.title },
+        next: next && { href: href('remixler/' + next.slug), title: next.title },
+        tint: x.tint, tintSrc: cover, readbar: true
+      };
       const url = pageUrl(route);
-      const desc = x.seoDesc || [x.original, S.strip(x.description)].filter(Boolean).join(' — ');
-      const image = asset(x.ogImage) || cover;
+      const desc = x.seoDesc || x.excerpt || [x.original, S.strip(x.description)].filter(Boolean).join(' — ');
+      const image = asset(x.ogImage) || cover || asset(rc.cover);
+      // Özet yoksa orijinal parça başlığın altında italik görünür; varsa bilgi satırına geçer
+      const lede = x.excerpt || x.original;
       return {
         title: x.seoTitle || `${x.title} — ${st.siteName}`, name: x.title, desc, image, imageAlt: alt, ogType: 'music.song',
-        published: x.date, modified: x.updated || x.date, tags: x.tags,
-        crumbs: crumbs([['Remixler', 'remixler'], [x.title, route]]),
+        published: x.date, modified: x.updated || x.date, tags: x.tags, ctx,
+        crumbs: crumbs([[name, 'remixler'], [x.title, route]]),
         schema: [{
           '@type': 'MusicRecording', '@id': url + '#remix', url, name: x.title, description: clip(desc, 300), datePublished: isoDate(x.date),
           byArtist: { '@id': personId() }, genre: x.genre, image: abs(image), duration: isoDuration(x.duration), inLanguage: 'tr-TR',
           recordingOf: x.original ? { '@type': 'MusicComposition', name: x.original } : undefined,
-          audio: x.audio ? { '@type': 'AudioObject', contentUrl: x.audio } : undefined
+          audio: x.audio ? { '@type': 'AudioObject', contentUrl: x.audio } : undefined, citation: citations(x.sources)
         }],
-        html: `<section class="ephero">
-        ${cover ? `<img class="ephero-bg" src="${esc(cover)}" alt="">` : ''}
-        <div class="wrap"><div class="ephero-grid">
-          <div class="ephero-art rise d1">${cover ? `<img src="${esc(cover)}" alt="${esc(alt)}" fetchpriority="high">` : ''}</div>
-          <div>
-            <div class="eyebrow rise d1" style="font-size:16px;margin-bottom:16px">${kicker}</div>
-            <h1 class="rise d2">${esc(x.title)}</h1>
-            ${x.original ? `<p class="lede rise d3">${esc(x.original)}</p>` : ''}
-            <div class="ephero-meta rise d3">${meta}</div>
-            ${x.audio ? `<button class="bigplay rise d4" data-play="remix:${x.id}"><span class="ic">${ICON.play}</span><span class="lb">Dinle</span></button>` : ''}
-          </div>
-        </div></div>
-      </section>
-      <section class="article" style="padding-top:0"><div class="wrap">
+        html: `<article class="epage tinted" style="--tint:${esc(x.tint || '#5A2E4E')}">
+      ${audioHero({
+        cover, alt, credit: x.coverCredit, title: x.title, lede, key: 'remix:' + x.id, audio: x.audio,
+        eyebrow: `<a href="${href('remixler')}">${esc(name)}</a>${x.genre ? `<span class="sep">·</span>${esc(x.genre)}` : ''}`,
+        meta: [x.excerpt && x.original ? 'Orijinal: ' + x.original : '', S.fmtDate(x.date), x.duration, x.bpm ? x.bpm + ' BPM' : '']
+      })}
+      <div class="wrap">
         ${emb ? `<div class="embedbox ${emb.kind}">${emb.html}</div>` : ''}
-        ${x.description ? `<div class="prose">${fixHtml(x.description)}</div>` : ''}
-        ${(x.tags || []).length ? `<div class="tagrow">${x.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
-        ${prevNext(list, idx, (y) => href('remixler/' + y.slug))}
-      </div></section>`
+        ${x.description ? `<div class="prose dropcap">${fixHtml(x.description)}</div>` : ''}
+        <div class="afoot">${chipsBlock(x.tags, '')}${sourcesBlock(x.sources, 'Notlar ve kaynaklar')}${relatedBlock('remix', x)}</div>
+        ${prevNext(list, idx, (y) => href('remixler/' + y.slug), (y) => y.genre || S.fmtDate(y.date))}
+      </div>
+    </article>`
       };
     }
 

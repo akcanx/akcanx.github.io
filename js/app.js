@@ -502,17 +502,6 @@
     }
     if (e.target.closest('#feedmore')) { feedState.limit += window.Render.PAGE_SIZE; renderFeed(); return; }
 
-    const tf = e.target.closest('[data-tagfilter] button');
-    if (tf) {
-      const bar = tf.closest('[data-tagfilter]');
-      $$('button', bar).forEach((b) => b.classList.toggle('on', b === tf));
-      const tag = tf.dataset.tag;
-      $$('[data-filterable] > [data-tags]').forEach((el) => {
-        el.style.display = !tag || el.dataset.tags.split('|').includes(tag) ? '' : 'none';
-      });
-      return;
-    }
-
     // Etiket / konum kutusu: site içi aramayı o kelimeyle aç
     const qb = e.target.closest('[data-q]');
     if (qb) { openSearch(qb.dataset.q); return; }
