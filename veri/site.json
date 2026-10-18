@@ -1,0 +1,350 @@
+{
+ "version": 1,
+ "sampleVersion": 2,
+ "settings": {
+  "siteName": "Akcan Akdağ",
+  "tagline": "Müzik, hikâyeler ve sesler",
+  "description": "Blog yazıları, YouTube videoları, podcast bölümleri ve remixlerimi paylaştığım kişisel alan.",
+  "accent": "#F0C93A",
+  "heroImage": "https://picsum.photos/seed/akcan-hero/1920/1080",
+  "showStats": false,
+  "footerText": "© {yil} Akcan. Tüm hakları saklıdır.",
+  "social": {
+   "youtube": "https://www.youtube.com/",
+   "instagram": "https://www.instagram.com/",
+   "x": "",
+   "spotify": "",
+   "soundcloud": "https://soundcloud.com/",
+   "email": "merhaba@ornek.com"
+  },
+  "postsPage": {
+   "title": "Yazılar",
+   "intro": "Düşüncelerimi, stüdyo notlarımı ve hikâyelerimi burada yazıyorum. Bazı yazıların videoya dönüşmüş hallerini de yazının içinde bulacaksınız.",
+   "tint": "#7A4E1E"
+  },
+  "podcast": {
+   "name": "Frekans",
+   "eyebrow": "Podcast · Her Pazartesi",
+   "description": "Bazı hikâyeler ancak dinlenerek anlaşılır. Her bölümde müziğin, sesin ve hafızanın izini sürüyorum; görüntüden arınmış, sadece sesin gücüne yaslanan bir yolculuk.",
+   "note": "Bölümleri dinleme platformlarından takip edebilir ya da görsellerle zenginleştirilmiş halini okuyup dinlemek için buradan devam edebilirsiniz:",
+   "cover": "https://picsum.photos/seed/pod-show/900/900",
+   "spotify": "https://open.spotify.com/",
+   "apple": "https://podcasts.apple.com/",
+   "youtube": "",
+   "readText": "Oku + Dinle",
+   "tint": "#1F5A50"
+  },
+  "featured": {
+   "mode": "manual",
+   "type": "posts",
+   "id": "vid-remix-ableton",
+   "badge": "",
+   "customTitle": "",
+   "customExcerpt": "",
+   "customImage": "",
+   "customLink": "",
+   "customButtonText": "",
+   "topGradient": true,
+   "topGradientOpacity": 75
+  },
+  "seo": {
+   "siteUrl": "",
+   "ogImage": "",
+   "googleVerify": "",
+   "bingVerify": "",
+   "aiTraining": true
+  }
+ },
+ "about": {
+  "name": "Akcan Akdağ",
+  "role": "DJ · Prodüktör · Anlatıcı",
+  "photo": "https://picsum.photos/seed/akcan-portre/900/1100",
+  "heroLeft": "sesle\nbaşlar,",
+  "heroRight": "ritimle\nbiter.",
+  "lead": "Sesleri, hikâyeleri ve ritimleri bir araya getiriyorum.",
+  "accent": "#3A9FF0",
+  "bio": "<p>Merhaba! Ben Akcan. Bu sitede blog yazılarımı, YouTube videolarımı, podcast bölümlerimi ve ürettiğim remixleri paylaşıyorum.</p><p>Bu metni <strong>Kontrol Paneli → Hakkında</strong> bölümünden dilediğin gibi düzenleyebilirsin.</p><blockquote><p>Müzik, kelimelerin bittiği yerde başlar.</p></blockquote>"
+ },
+ "menu": [
+  {
+   "id": "mv8mzh9poo8s6",
+   "label": "Yazılar",
+   "type": "blog",
+   "target": "",
+   "visible": true,
+   "newTab": false
+  },
+  {
+   "id": "mv8mzh9ptgns0",
+   "label": "Podcast",
+   "type": "podcast",
+   "target": "",
+   "visible": true,
+   "newTab": false
+  },
+  {
+   "id": "mv8mzh9p7k2aa",
+   "label": "Remixler",
+   "type": "remixes",
+   "target": "",
+   "visible": true,
+   "newTab": false
+  },
+  {
+   "id": "mv8mzh9pjfy3u",
+   "label": "Ekipmanlar",
+   "type": "page",
+   "target": "ekipmanlar",
+   "visible": false,
+   "newTab": false
+  },
+  {
+   "id": "mv8mzh9pzofhu",
+   "label": "Hakkında",
+   "type": "about",
+   "target": "",
+   "visible": true,
+   "newTab": false
+  },
+  {
+   "id": "m7",
+   "label": "İletişim",
+   "type": "page",
+   "target": "iletisim",
+   "visible": true,
+   "newTab": false
+  }
+ ],
+ "posts": [
+  {
+   "id": "mv8mzh9puh3iw",
+   "title": "Bir Remix Nasıl Doğar?",
+   "slug": "bir-remix-nasil-dogar",
+   "date": "2026-10-12",
+   "cover": "https://picsum.photos/seed/remix-dogar/1600/900",
+   "featured": false,
+   "published": true,
+   "tags": [
+    "Müzik",
+    "Prodüksiyon"
+   ],
+   "excerpt": "Bir şarkıyı yeniden yorumlamak, onu söküp yeniden inşa etmek demek. İlk dinleyişten son mastera kadar bir remixin hikâyesi.",
+   "content": "<p>Her remix bir soruyla başlar: <em>Bu şarkı başka nasıl anlatılabilirdi?</em></p><h2>Önce dinlemek</h2><p>Orijinal parçayı onlarca kez dinlerim. Vokalin nefes aldığı yerleri, bas hattının saklandığı köşeleri ararım.</p><blockquote><p>İyi bir remix, orijinale saygı duyar ama ondan korkmaz.</p></blockquote><h2>Sonra sökmek</h2><p>Stem’leri ayırır, tempoyu belirler ve yeni bir iskelet kurarım. Gerisi deneme, yanılma ve sabır.</p>",
+   "kind": "yazi"
+  },
+  {
+   "id": "mv8mzh9pwp0a0",
+   "title": "Kulaklıkla Dinlemek Neden Farklı Hissettirir?",
+   "slug": "kulaklikla-dinlemek",
+   "date": "2026-10-05",
+   "cover": "https://picsum.photos/seed/kulaklik/1600/900",
+   "featured": false,
+   "published": true,
+   "tags": [
+    "Ses",
+    "Psikoloji"
+   ],
+   "excerpt": "Kulaklık takınca dünya küçülür, müzik büyür. Bunun arkasında beynimizin sesi nasıl konumlandırdığı yatıyor.",
+   "content": "<p>Kulaklık, sesi kafamızın tam ortasına yerleştirir. Bu, hoparlörle asla yaşayamayacağımız bir deneyimdir.</p><h2>Stereo görüntü</h2><p>Sol ve sağ kanal arasındaki küçük farklar, beynimizde bir sahne kurar.</p>",
+   "kind": "yazi"
+  },
+  {
+   "id": "mv8mzh9peqvko",
+   "title": "Gece Yarısı Stüdyo Notları",
+   "slug": "gece-yarisi-studyo-notlari",
+   "date": "2026-09-24",
+   "cover": "https://picsum.photos/seed/studyo-gece/1600/900",
+   "featured": false,
+   "published": true,
+   "tags": [
+    "Günlük"
+   ],
+   "excerpt": "En iyi fikirler neden hep gece yarısından sonra gelir? Stüdyodan kısa notlar.",
+   "content": "<p>Saat 02:14. Ekranda yarım kalmış bir proje, kulağımda tekrar eden bir döngü...</p>",
+   "kind": "yazi"
+  },
+  {
+   "id": "mv8mzh9p9ros7",
+   "legacyVideoId": "mv8mzh9p9ros7",
+   "title": "Stüdyo Turu: Ekipmanlarım ve Çalışma Düzenim",
+   "slug": "studyo-turu-ekipmanlarim-ve-calisma-duzenim",
+   "date": "2026-10-14",
+   "cover": "",
+   "video": "https://youtu.be/rs2K2WRAtHs",
+   "tint": "",
+   "featured": false,
+   "published": true,
+   "tags": [
+    "Stüdyo"
+   ],
+   "excerpt": "Ev stüdyomu, kullandığım ekipmanları ve iş akışımı anlatıyorum.",
+   "content": "",
+   "sources": "",
+   "credits": "",
+   "kind": "video"
+  },
+  {
+   "id": "mv8mzh9pfpi9q",
+   "legacyVideoId": "mv8mzh9pfpi9q",
+   "title": "Canlı Set: Pazar Akşamı Seansı",
+   "slug": "canli-set-pazar-aksami-seansi",
+   "date": "2026-10-02",
+   "cover": "",
+   "video": "https://www.youtube.com/watch?v=4xDzrJKXOOY",
+   "tint": "",
+   "featured": false,
+   "published": true,
+   "tags": [
+    "Canlı",
+    "DJ Set"
+   ],
+   "excerpt": "Bir saatlik canlı DJ seti.",
+   "content": "",
+   "sources": "",
+   "credits": "",
+   "kind": "video"
+  },
+  {
+   "id": "mv8mzh9pmrf8c",
+   "legacyVideoId": "mv8mzh9pmrf8c",
+   "title": "Sıfırdan Remix Yapımı",
+   "slug": "sifirdan-remix-yapimi",
+   "date": "2026-09-19",
+   "cover": "",
+   "video": "https://www.youtube.com/watch?v=rUxyKA_-grg",
+   "tint": "",
+   "featured": false,
+   "published": true,
+   "tags": [
+    "Prodüksiyon"
+   ],
+   "excerpt": "Bir remixi baştan sona birlikte yapıyoruz.",
+   "content": "",
+   "sources": "",
+   "credits": "",
+   "kind": "video"
+  }
+ ],
+ "podcasts": [
+  {
+   "id": "mv8mzh9pnomzy",
+   "title": "Sesin Hafızası",
+   "number": 3,
+   "date": "2026-10-13",
+   "duration": "32 dk",
+   "cover": "https://picsum.photos/seed/pod-3/800/800",
+   "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+   "embed": "",
+   "description": "<p>Bir şarkı bizi neden yıllar öncesine götürür? Bu bölümde müzik ve hafıza ilişkisini konuşuyoruz.</p>",
+   "tags": [
+    "Müzik",
+    "Hafıza"
+   ],
+   "published": true,
+   "featured": false,
+   "slug": "sesin-hafizasi"
+  },
+  {
+   "id": "mv8mzh9pbblpp",
+   "title": "Ritim ve Kalp Atışı",
+   "number": 2,
+   "date": "2026-10-06",
+   "duration": "28 dk",
+   "cover": "https://picsum.photos/seed/pod-2/800/800",
+   "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+   "embed": "",
+   "description": "<p>Tempo, kalp atışı ve dans etme isteği arasındaki gizemli bağ.</p>",
+   "tags": [
+    "Bilim"
+   ],
+   "published": true,
+   "featured": false,
+   "slug": "ritim-ve-kalp-atisi"
+  },
+  {
+   "id": "mv8mzh9pxweuo",
+   "title": "Merhaba Dünya: İlk Bölüm",
+   "number": 1,
+   "date": "2026-09-29",
+   "duration": "24 dk",
+   "cover": "https://picsum.photos/seed/pod-1/800/800",
+   "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+   "embed": "",
+   "description": "<p>Podcastin neden var olduğunu ve neler konuşacağımızı anlattığım tanışma bölümü.</p>",
+   "tags": [
+    "Tanışma"
+   ],
+   "published": true,
+   "featured": false,
+   "slug": "merhaba-dunya-ilk-bolum"
+  }
+ ],
+ "remixes": [
+  {
+   "id": "mv8mzh9p6cgfi",
+   "title": "Gece Treni (Akcan Remix)",
+   "original": "Orijinal Sanatçı – Gece Treni",
+   "genre": "Deep House",
+   "bpm": 122,
+   "date": "2026-10-11",
+   "cover": "https://picsum.photos/seed/remix-1/800/800",
+   "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+   "embed": "",
+   "description": "<p>Melankolik bir şarkıyı gece yarısı dans pistine taşıdım.</p>",
+   "tags": [
+    "House"
+   ],
+   "published": true,
+   "featured": false,
+   "slug": "gece-treni-akcan-remix"
+  },
+  {
+   "id": "mv8mzh9pxe8j8",
+   "title": "Mavi (Akcan Edit)",
+   "original": "Orijinal Sanatçı – Mavi",
+   "genre": "Melodic Techno",
+   "bpm": 124,
+   "date": "2026-09-26",
+   "cover": "https://picsum.photos/seed/remix-2/800/800",
+   "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+   "embed": "",
+   "description": "<p>Uzun bir intro, derin bir bas ve bol atmosfer.</p>",
+   "tags": [
+    "Techno"
+   ],
+   "published": true,
+   "featured": false,
+   "slug": "mavi-akcan-edit"
+  },
+  {
+   "id": "mv8mzh9pnlbh2",
+   "title": "Yaz Sonu (Akcan Bootleg)",
+   "original": "Orijinal Sanatçı – Yaz Sonu",
+   "genre": "Afro House",
+   "bpm": 118,
+   "date": "2026-09-14",
+   "cover": "https://picsum.photos/seed/remix-3/800/800",
+   "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+   "embed": "",
+   "description": "<p>Perküsyon ağırlıklı, sıcak bir yorum.</p>",
+   "tags": [
+    "Afro"
+   ],
+   "published": true,
+   "featured": false,
+   "slug": "yaz-sonu-akcan-bootleg"
+  }
+ ],
+ "pages": [
+  {
+   "id": "mv8mzh9pbsyox",
+   "title": "Stüdyo & Ekipmanlar",
+   "slug": "ekipmanlar",
+   "excerpt": "Müzik üretirken ve podcast kaydederken kullandığım ses kartları, mikrofonlar, kulaklıklar ve yazılımlar.",
+   "content": "<p>Sıkça sorulan stüdyo ekipmanlarımın ve müzik prodüksiyonunda kullandığım araçların güncel listesi:</p><h2>Donanım</h2><ul><li><strong>Kulaklık:</strong> Beyerdynamic DT 990 Pro (250 Ohm) & Audio-Technica ATH-M50x</li><li><strong>Ses Kartı:</strong> Universal Audio Apollo Twin X Duo</li><li><strong>Mikrofon:</strong> Shure SM7B + Cloudlifter CL-1 Mikrofon Ön Güçlendirici</li><li><strong>MIDI Klavye:</strong> Arturia KeyLab Essential 49</li><li><strong>Stüdyo Monitörleri:</strong> Yamaha HS7 Çift + IsoAcoustics İzolasyon Ayakları</li></ul><h2>Yazılım & DAW</h2><ul><li><strong>Ana DAW:</strong> Ableton Live 12 Suite & Logic Pro</li><li><strong>Sentezleyiciler:</strong> Xfer Serum, u-he Diva, Arturia V Collection</li><li><strong>Miksing & Mastering:</strong> FabFilter Total Bundle, Soundtoys 5, iZotope Ozone</li></ul><blockquote><p>Önemli olan hangi ekipmana sahip olduğunuz değil, onu nasıl kullandığınızdır.</p></blockquote>",
+   "cover": "https://picsum.photos/seed/studio-gear/1600/900",
+   "published": true,
+   "featured": false
+  }
+ ]
+}
