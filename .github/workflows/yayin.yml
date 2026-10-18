@@ -1,0 +1,62 @@
+# Siteyi derleyip GitHub Pages'te yayınlar.
+# - Kod değiştiğinde (main dalına gönderim) ve panelden içerik yayınlandığında (icerik-guncellendi) çalışır.
+# - İçerik "icerik" dalındadır (veri/site.json + veri/gorsel/); panel bu dala yazar, main dalına dokunmaz.
+# Kurulum: depoda Settings → Pages → Build and deployment → Source: GitHub Actions
+name: Siteyi yayınla
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [icerik-guncellendi]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Aynı anda tek yayın; arada biriken istekler en sonuncuyla birleşir
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  derle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: İçeriği al (icerik dalı)
+        uses: actions/checkout@v4
+        continue-on-error: true # ilk yayından önce dal henüz yoktur
+        with:
+          ref: icerik
+          path: _icerik
+
+      - name: Pages ayarları
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Siteyi derle
+        run: node build.js --veri _icerik/veri --cikti _site --site-url "${{ steps.pages.outputs.base_url }}/"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  yayinla:
+    needs: derle
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: GitHub Pages'e yayınla
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0C0C0A"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="none" stroke="#C9F03A" stroke-opacity="0.3" stroke-width="2"/>
+  <!-- Stylized Monogram / Soundwave -->
+  <path d="M32 12 L44 48 L36 48 L33.5 39 L26.5 39 L24 48 L16 48 Z M30 25 L27.5 33 L32.5 33 Z" fill="#C9F03A"/>
+  <circle cx="48" cy="20" r="3.5" fill="#C9F03A"/>
+</svg>

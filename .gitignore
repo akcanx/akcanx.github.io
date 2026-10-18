@@ -1,0 +1,8 @@
+# Derleme çıktısı (GitHub Actions üretir)
+_site/
+# Bilgisayarda deneme için kullanılan içerik klasörü (yayındaki içerik "icerik" dalındadır)
+_icerik/
+# Tarayıcı test araçlarının dosyaları
+.playwright-mcp/
+# Editör ayarları
+.vscode/

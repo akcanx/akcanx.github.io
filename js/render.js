@@ -1,0 +1,918 @@
+/* ==========================================================================
+   Akcan — Sayfa Şablonları
+   Sitenin bütün sayfalarını HTML metni olarak üretir. Tarayıcıdaki site (app.js)
+   ve yayın derleyicisi (build.js, Node) aynı şablonları kullanır: arama motorlarının
+   ve yapay zekâ tarayıcılarının okuduğu hazır sayfa, sitede görünenle birebir aynıdır.
+
+   İki adres biçimi:
+   - local: panelle aynı bilgisayardaki önizleme → #/yazilar/yazi-adi
+   - site:  yayınlanan site → /yazilar/yazi-adi/ (GitHub Pages'te /depo-adi/yazilar/yazi-adi/)
+   ========================================================================== */
+(function (global) {
+  'use strict';
+
+  const S = global.Store;
+  const esc = S.esc;
+
+  /* ---------- İkonlar ---------- */
+  const ICON = {
+    play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    wave: '<svg class="wave" viewBox="0 0 16 12" aria-hidden="true"><rect x="0" y="4" width="2" height="4"/><rect x="3.5" y="2" width="2" height="8"/><rect x="7" y="0" width="2" height="12"/><rect x="10.5" y="2" width="2" height="8"/><rect x="14" y="4" width="2" height="4"/></svg>'
+  };
+  const SOCIAL_LABEL = { youtube: 'YouTube', instagram: 'Instagram', x: 'X', spotify: 'Spotify', soundcloud: 'SoundCloud', email: 'E-posta' };
+  const PAGE_SIZE = 12;
+
+  /* ---------- Genel yardımcılar ---------- */
+  const byDate = (a, b) => (b.date || '').localeCompare(a.date || '');
+  const pub = (arr) => (arr || []).filter((x) => x.published !== false).slice().sort(byDate);
+  const norm = (s) => String(s || '').toLocaleLowerCase('tr');
+  const nl2br = (s) => esc(s || '').replace(/\n/g, '<br>');
+
+  /** Metni kelime ortasından bölmeden kısaltır (arama sonucu açıklaması: ~160 karakter) */
+  function clip(s, n = 160) {
+    s = String(s || '').replace(/\s+/g, ' ').trim();
+    if (s.length <= n) return s;
+    const cut = s.slice(0, n - 1);
+    return cut.slice(0, Math.max(cut.lastIndexOf(' '), Math.floor(n * 0.6))).replace(/[\s,.;:–-]+$/, '') + '…';
+  }
+
+  const isProfile = S.isProfile;
+
+  /** "32 dk", "1 sa 5 dk", "45:30" → ISO 8601 süre (PT32M) */
+  function isoDuration(s) {
+    s = String(s || '').trim();
+    if (!s) return undefined;
+    const c = s.match(/^(?:(\d+):)?(\d{1,2}):(\d{2})$/);
+    if (c) return 'PT' + (c[1] ? +c[1] + 'H' : '') + +c[2] + 'M' + +c[3] + 'S';
+    const h = s.match(/(\d+)\s*(?:sa|saat|h)\b/i), m = s.match(/(\d+)\s*(?:dk|dakika|min)\b/i), x = s.match(/(\d+)\s*(?:sn|saniye|sec)\b/i);
+    if (!h && !m && !x) return undefined;
+    return 'PT' + (h ? +h[1] + 'H' : '') + (m ? +m[1] + 'M' : '') + (x ? +x[1] + 'S' : '');
+  }
+
+  // Tarih → saat dilimli ISO (Türkiye, UTC+3)
+  const isoDate = (d) => (/^\d{4}-\d{2}-\d{2}$/.test(d || '') ? d + 'T09:00:00+03:00' : undefined);
+
+  /** Yapılandırılmış veriden boş alanları atar */
+  function clean(v) {
+    if (Array.isArray(v)) { const a = v.map(clean).filter((x) => x !== undefined); return a.length ? a : undefined; }
+    if (v && typeof v === 'object') {
+      const o = {};
+      Object.keys(v).forEach((k) => { const x = clean(v[k]); if (x !== undefined) o[k] = x; });
+      return Object.keys(o).length ? o : undefined;
+    }
+    return v === '' || v === null || v === undefined || (typeof v === 'number' && !isFinite(v)) ? undefined : v;
+  }
+
+  /**
+   * Site verisi için şablon seti oluşturur.
+   * opt.mode: 'local' (#/ adresler) | 'site' (gerçek adresler)
+   * opt.siteUrl: yayınlanan sitenin tam adresi (site modunda zorunlu), ör. https://kullanici.github.io/akcan/
+   */
+  function create(D, opt) {
+    opt = opt || {};
+    const site = opt.mode === 'site';
+    const st = D.settings || {};
+    const seo = st.seo || {};
+    const home = site ? new URL(String(opt.siteUrl).replace(/\/*$/, '/')).href : '';
+    const base = site ? new URL(home).pathname : '';
+
+    /* ---------- Adresler ---------- */
+    const href = (route) => (site ? base + (route ? route + '/' : '') : '#/' + (route || ''));
+    const abs = (u) => { if (!u || /^data:/.test(u)) return ''; try { return new URL(u, home || 'http://localhost/').href; } catch (e) { return ''; } };
+    // Yayında görseller veri/gorsel/... altında durur; adres, sitenin kök yoluna göre tamamlanır
+    const asset = (u) => (u && site && /^veri\//.test(u) ? base + u : u || '');
+
+    /** Eski ya da kısa biçimli site içi adresleri güncel biçime çevirir (#/yazi/x → yazilar/x) */
+    function normalize(route) {
+      const r = String(route || '').replace(/^\/+|\/+$/g, '');
+      const [seg, arg] = r.split('/');
+      switch (seg) {
+        case 'yazi': return arg ? 'yazilar/' + arg : 'yazilar';
+        case 'videolar': return 'yazilar';
+        case 'video': { const p = (D.posts || []).find((x) => x.legacyVideoId === arg || x.id === arg); return p ? 'yazilar/' + p.slug : 'yazilar'; }
+        case 'bolum': { const x = (D.podcasts || []).find((y) => y.id === arg || y.slug === arg); return x ? 'podcast/' + x.slug : 'podcast'; }
+        case 'remix': { const x = (D.remixes || []).find((y) => y.id === arg || y.slug === arg); return x ? 'remixler/' + x.slug : 'remixler'; }
+        default: return r;
+      }
+    }
+    // Panelde girilen site içi bağlantılar (#/yazilar, #/sayfa/iletisim) her iki biçimde de doğru açılsın
+    const link = (u) => (u && /^#\//.test(u) ? href(normalize(u.slice(2))) : u || '');
+
+    /** Zengin metin içeriği: site içi bağlantılar ve görsel yolları düzeltilir, görseller tembel yüklenir */
+    function fixHtml(html) {
+      if (!html) return '';
+      return String(html)
+        .replace(/(\shref=")(#\/[^"]*)"/g, (m, a, u) => a + link(u) + '"')
+        .replace(/(\s(?:src|href)=")(veri\/[^"]*)"/g, (m, a, u) => a + asset(u) + '"')
+        .replace(/<img(?![^>]*\sloading=)/g, '<img loading="lazy" decoding="async"');
+    }
+
+    /* ---------- İçerik listesi ---------- */
+    let cache = null;
+    function items() {
+      if (cache) return cache;
+      const out = [];
+      // Yazılar sekmesi: videolar ve blog yazıları birlikte (fk: akış filtresi anahtarı)
+      // Videonun küçük resmi YouTube'dan, blog yazısınınki kapak görselinden gelir
+      pub(D.posts).forEach((p) => {
+        const vid = S.postKind(p) === 'video';
+        out.push({
+          type: 'post', fk: vid ? 'video' : 'yazi', label: vid ? 'Video' : 'Yazı', id: p.id, title: p.title, date: p.date, href: href('yazilar/' + p.slug),
+          thumb: vid ? S.ytThumb(p.video, 'mqdefault') : asset(p.cover), video: vid,
+          tags: p.tags || [], text: S.strip((p.excerpt || '') + ' ' + (p.content || '')), raw: p
+        });
+      });
+      pub(D.podcasts).forEach((p) => out.push({
+        type: 'podcast', fk: 'podcast', label: 'Podcast', id: p.id, title: p.title, date: p.date, href: href('podcast/' + p.slug),
+        thumb: asset(p.cover), audio: p.audio, raw: p, text: S.strip(p.description),
+        tags: ['Podcast', p.number ? 'Bölüm ' + p.number : '', ...(p.tags || []), p.duration].filter(Boolean),
+        sub: (p.number ? 'Bölüm ' + p.number + ' · ' : '') + 'Podcast'
+      }));
+      pub(D.remixes).forEach((r) => out.push({
+        type: 'remix', fk: 'remix', label: 'Remix', id: r.id, title: r.title, date: r.date, href: href('remixler/' + r.slug),
+        thumb: asset(r.cover), audio: r.audio, raw: r, text: (r.original || '') + ' ' + S.strip(r.description),
+        tags: ['Remix', r.genre, r.bpm ? r.bpm + ' BPM' : '', ...(r.tags || [])].filter(Boolean),
+        sub: r.original || 'Remix'
+      }));
+      return (cache = out.sort(byDate));
+    }
+    const findItem = (type, id) => items().find((i) => i.type === type && i.id === id);
+
+    /** Site içi arama: içerikler + yayındaki özel sayfalar */
+    function searchIndex() {
+      const pages = pub(D.pages).map((p) => ({ type: 'page', label: 'Sayfa', title: p.title, href: href('sayfa/' + p.slug), text: S.strip(p.content), tags: [] }));
+      return [...items(), ...pages];
+    }
+
+    /* ---------- Menü & alt bilgi ---------- */
+    const ROUTE_OF = { home: '', blog: 'yazilar', podcast: 'podcast', remixes: 'remixler', about: 'hakkinda' };
+    function menuHref(m) {
+      switch (m.type) {
+        case 'home': return href('');
+        case 'blog': return href('yazilar');
+        case 'podcast': return href('podcast');
+        case 'remixes': return href('remixler');
+        case 'about': return href('hakkinda');
+        case 'page': return href('sayfa/' + (m.target || ''));
+        case 'url': return link(m.target) || '#';
+        default: return href('');
+      }
+    }
+    const menuRoute = (m) => (m.type === 'page' ? 'sayfa/' + m.target : (ROUTE_OF[m.type] ?? ''));
+    // Yayında olmayan sayfaların menü bağlantıları gösterilmez
+    function visibleMenu() {
+      const pages = new Set(pub(D.pages).map((p) => p.slug));
+      return (D.menu || []).filter((m) => m.visible !== false && (m.type !== 'page' || pages.has(m.target)));
+    }
+    /** Menü bağlantısı bu sayfada etkin mi? (yazilar/... altındaki her sayfada "Yazılar") */
+    const isActive = (r, route) => !!r && (route === r || String(route).startsWith(r + '/'));
+
+    function navLinks(route) {
+      return visibleMenu().map((m) => {
+        const r = menuRoute(m);
+        const attrs = m.type === 'url' && m.newTab ? ' target="_blank" rel="noopener"' : '';
+        const on = route !== undefined && isActive(r, route);
+        return `<a href="${esc(menuHref(m))}" data-route="${esc(r)}"${on ? ' class="active"' : ''}${attrs}>${esc(m.label)}</a>`;
+      }).join('');
+    }
+
+    function footerHTML() {
+      const menu = visibleMenu()
+        .map((m) => `<li><a href="${esc(menuHref(m))}"${m.type === 'url' && m.newTab ? ' target="_blank" rel="noopener"' : ''}>${esc(m.label)}</a></li>`).join('');
+      const so = st.social || {};
+      const soc = Object.keys(SOCIAL_LABEL).filter((k) => (k === 'email' ? /@/.test(so[k] || '') : isProfile(so[k])))
+        .map((k) => `<li><a href="${esc(k === 'email' ? 'mailto:' + so[k] : so[k])}"${k === 'email' ? '' : ' target="_blank" rel="noopener me"'}>${SOCIAL_LABEL[k]}</a></li>`).join('');
+      const ft = (st.footerText || '').replace('{yil}', new Date().getFullYear());
+      return `
+      <div class="glow"></div>
+      <div class="wrap">
+        <div class="foot-grid">
+          <div><a href="${href('')}" class="fbrand">${esc(st.siteName)}</a><p class="ftag">${esc(st.tagline)}</p></div>
+          <div><h4>Menü</h4><ul>${menu}</ul></div>
+          <div><h4>Takip Et</h4><ul>${soc || '<li style="color:var(--fg-3)">—</li>'}</ul></div>
+        </div>
+        <div class="foot-bottom"><span>${esc(ft)}</span></div>
+      </div>`;
+    }
+
+    /* ---------- Satır & kart şablonları ---------- */
+    function tagsHTML(tags) {
+      return `<span class="tags">${tags.map((t, i) => `<span${i === 0 && (t === 'Podcast' || t === 'Remix') ? ' class="k"' : ''}>${esc(t)}</span>`).join('')}</span>`;
+    }
+
+    function playBtn(it, cls = 'fplay') {
+      if (!it.audio) return `<a class="${cls}" href="${it.href}" aria-label="Aç">${ICON.play}</a>`;
+      return `<button class="${cls}" data-play="${it.type}:${it.id}" aria-label="Dinle">${ICON.play}</button>`;
+    }
+
+    // plain: Yazılar sekmesindeki gibi küçük resimde tür etiketi gösterme
+    function row(it, plain) {
+      const date = `<span class="date">${S.fmtDate(it.date)}</span>`;
+      if (it.type === 'podcast' || it.type === 'remix') {
+        // Yazı/video satırlarıyla aynı 16:9 küçük resim kutusu: bulanık zemin + ortada kare kapak + oynat
+        const art = it.thumb
+          ? `<img class="bl" src="${esc(it.thumb)}" alt="" loading="lazy"><span class="cv" style="background-image:url('${esc(it.thumb)}')"></span>`
+          : '';
+        const lead = `<span class="ethumb podthumb ${it.thumb ? '' : 'empty'}">${art}${playBtn(it)}</span>`;
+        return `<div class="erow frow-pod reveal" data-type="${it.type}">${lead}<a class="einfo" href="${it.href}"><span class="t">${esc(it.title)}</span>${tagsHTML(it.tags)}</a>${date}</div>`;
+      }
+      const img = it.thumb ? `<img src="${esc(it.thumb)}" alt="" loading="lazy">` : '';
+      return `<a class="erow reveal" data-type="${it.type}" href="${it.href}"><span class="ethumb ${it.thumb ? '' : 'empty'}">${img}${plain ? '' : `<span class="fbadge ${it.video ? 'is-video' : ''}">${it.label}</span>`}</span><span class="einfo"><span class="t">${esc(it.title)}</span>${tagsHTML(it.tags)}</span>${date}</a>`;
+    }
+
+    // Büyük görsel: video → YouTube karesi, blog yazısı → kapak görseli
+    const postThumb = (x) => (S.postKind(x) === 'video' ? S.ytThumb(x.video, 'maxresdefault') : asset(x.cover));
+
+    /* ---------- Yapılandırılmış veri (schema.org) düğümleri ---------- */
+    const homeUrl = () => abs(href(''));
+    const personId = () => homeUrl() + '#kisi';
+    const pageUrl = (route) => abs(href(route));
+    function personNode() {
+      const a = D.about || {};
+      const so = st.social || {};
+      return {
+        '@type': 'Person', '@id': personId(), name: a.name || st.siteName, url: pageUrl('hakkinda'),
+        image: abs(asset(a.photo)), jobTitle: a.role, description: clip(S.strip((a.lead || '') + ' ' + (a.bio || '')), 300),
+        sameAs: ['youtube', 'instagram', 'x', 'spotify', 'soundcloud'].map((k) => so[k]).filter(isProfile)
+      };
+    }
+    const crumbs = (list) => list.map(([name, route]) => ({ name, route }));
+    function listNode(type, route, name, desc, list) {
+      return {
+        '@type': type, '@id': pageUrl(route), url: pageUrl(route), name, description: desc, inLanguage: 'tr-TR',
+        isPartOf: { '@id': homeUrl() + '#site' },
+        mainEntity: list && list.length ? { '@type': 'ItemList', itemListElement: list.slice(0, 50).map((it, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(it.href), name: it.title })) } : undefined
+      };
+    }
+
+    /* ---------- Sayfalar ---------- */
+    function getFeaturedHero() {
+      const feat = st.featured || {};
+
+      // 1. Özel (Custom) Manşet Modu
+      if (feat.mode === 'custom' && (feat.customTitle || feat.customImage)) {
+        return {
+          title: feat.customTitle || st.siteName,
+          eyebrow: feat.badge || 'Öne Çıkan',
+          date: '',
+          excerpt: feat.customExcerpt || '',
+          cover: asset(feat.customImage) || asset(st.heroImage),
+          href: link(feat.customLink) || href(''),
+          btnText: feat.customButtonText || 'İncele'
+        };
+      }
+
+      // 2. Belirli bir içerik seçilmişse
+      if (feat.mode !== 'latest') {
+        const targetId = feat.id || (D.posts || []).find((p) => p.featured && p.published !== false)?.id;
+        if (targetId) {
+          const colls = [
+            { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => href('yazilar/' + x.slug), thumb: postThumb, excerpt: (x) => x.excerpt },
+            { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => href('podcast/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => S.strip(x.description) },
+            { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => href('remixler/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.original || S.strip(x.description) },
+            { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => href('sayfa/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt }
+          ];
+
+          for (const c of colls) {
+            const item = (D[c.type] || []).find((x) => x.id === targetId && x.published !== false);
+            if (item) {
+              const vid = c.type === 'posts' && S.postKind(item) === 'video';
+              return {
+                item,
+                type: c.type,
+                title: feat.customTitle || item.title,
+                eyebrow: feat.badge || `Öne çıkan ${vid ? 'video' : c.label.toLowerCase()}`,
+                date: item.date,
+                excerpt: feat.customExcerpt !== undefined && feat.customExcerpt !== '' ? feat.customExcerpt : (c.excerpt(item) || ''),
+                cover: asset(feat.customImage) || c.thumb(item) || asset(st.heroImage),
+                href: link(feat.customLink) || c.href(item),
+                btnText: feat.customButtonText || (vid ? 'İzle' : c.btn)
+              };
+            }
+          }
+        }
+      }
+
+      // 3. Otomatik mod veya içerik bulunamadıysa: En son yayınlanan yazı veya içerik
+      const latestPost = pub(D.posts)[0];
+      if (latestPost) {
+        const vid = S.postKind(latestPost) === 'video';
+        return {
+          item: latestPost,
+          type: 'posts',
+          title: feat.customTitle || latestPost.title,
+          eyebrow: feat.badge || (vid ? 'Son video' : 'Son yazı'),
+          date: latestPost.date,
+          excerpt: feat.customExcerpt !== undefined && feat.customExcerpt !== '' ? feat.customExcerpt : (latestPost.excerpt || ''),
+          cover: asset(feat.customImage) || postThumb(latestPost) || asset(st.heroImage),
+          href: link(feat.customLink) || href('yazilar/' + latestPost.slug),
+          btnText: feat.customButtonText || (vid ? 'İzle' : 'Oku')
+        };
+      }
+
+      const anyLatest = items()[0];
+      if (anyLatest) {
+        return {
+          item: anyLatest,
+          type: anyLatest.type,
+          title: feat.customTitle || anyLatest.title,
+          eyebrow: feat.badge || `Son ${anyLatest.label.toLowerCase()}`,
+          date: anyLatest.date,
+          excerpt: feat.customExcerpt !== undefined && feat.customExcerpt !== '' ? feat.customExcerpt : (anyLatest.text || ''),
+          cover: asset(feat.customImage) || anyLatest.thumb || asset(st.heroImage),
+          href: link(feat.customLink) || anyLatest.href,
+          btnText: feat.customButtonText || (anyLatest.type === 'podcast' || anyLatest.type === 'remix' ? 'Dinle' : anyLatest.video ? 'İzle' : 'Oku')
+        };
+      }
+
+      return null;
+    }
+
+    /** Ana sayfa akışı: filtre + sayfalama (ilk sayfa hazır HTML'de gelir, devamı tarayıcıda) */
+    function feedHTML(filter, limit) {
+      const list = items().filter((i) => filter === 'all' || i.fk === filter);
+      return {
+        html: list.length ? list.slice(0, limit).map((i) => row(i)).join('') : '<div class="empty-note">Henüz içerik yok.</div>',
+        more: list.length > limit
+      };
+    }
+
+    function homePage() {
+      const all = items();
+      const featHero = getFeaturedHero();
+      let hero;
+
+      if (featHero) {
+        const img = featHero.cover || asset(st.heroImage);
+        const dateText = featHero.date ? ` · ${S.fmtDate(featHero.date)}` : '';
+        const featConfig = st.featured || {};
+        const showTopGrad = featConfig.topGradient !== false;
+        const topGradOpacity = Math.max(0, Math.min(100, Number(featConfig.topGradientOpacity ?? 85))) / 100;
+        const topGradHTML = showTopGrad ? `<div class="top-grad" style="opacity:${topGradOpacity.toFixed(2)}"></div>` : '';
+        hero = `
+        <header class="fhero">
+          ${img ? `<img class="fbg" src="${esc(img)}" alt="" fetchpriority="high">` : ''}
+          ${topGradHTML}
+          <div class="grad"></div><div class="glow"></div>
+          <div class="wrap">
+            <div class="eyebrow rise d1">${esc(featHero.eyebrow)}${dateText}</div>
+            <h1 class="rise d2"><a href="${esc(featHero.href)}">${esc(featHero.title)}</a></h1>
+            ${featHero.excerpt ? `<p class="fsub rise d3">${esc(featHero.excerpt)}</p>` : ''}
+            <a class="readlink rise d4" href="${esc(featHero.href)}"><span class="arr">→</span> ${esc(featHero.btnText)}</a>
+          </div>
+        </header>`;
+      } else {
+        hero = `
+        <header class="hero">
+          <div class="glow"></div>
+          <div class="wrap">
+            <div class="eyebrow rise d1">${esc(st.siteName)}</div>
+            <h1 class="rise d2">${esc(st.tagline || 'Hoş geldiniz')}</h1>
+          </div>
+        </header>`;
+      }
+
+      const counts = { video: 0, yazi: 0, podcast: 0, remix: 0 };
+      all.forEach((i) => counts[i.fk]++);
+      const years = all.map((i) => (i.date || '').slice(0, 4)).filter(Boolean).sort();
+      const since = years[0] || new Date().getFullYear();
+      const parts = [];
+      if (counts.video) parts.push(`<a href="${href('yazilar')}"><b>${counts.video}</b></a> video`);
+      if (counts.yazi) parts.push(`<a href="${href('yazilar')}"><b>${counts.yazi}</b></a> yazı`);
+      if (counts.podcast) parts.push(`<a href="${href('podcast')}"><b>${counts.podcast}</b></a> podcast bölümü`);
+      if (counts.remix) parts.push(`<a href="${href('remixler')}"><b>${counts.remix}</b></a> remix`);
+      const joined = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' ve ' + parts[parts.length - 1] : parts[0];
+      const stat = st.showStats && parts.length ? `
+      <div class="seam"></div>
+      <section class="statband"><div class="wrap"><p class="sbtext">${since}'den beri ${joined} ile ürettiklerimi buradan paylaşıyorum.</p></div></section>` : '';
+
+      const F = [['all', 'Hepsi', all.length], ['video', 'Video', counts.video], ['yazi', 'Yazı', counts.yazi], ['podcast', 'Podcast', counts.podcast], ['remix', 'Remix', counts.remix]]
+        .filter((f) => f[0] === 'all' || f[2] > 0);
+      const feed = feedHTML('all', PAGE_SIZE);
+
+      const title = st.siteName + (st.tagline ? ' — ' + st.tagline : '');
+      return {
+        home: true, title, name: st.siteName, desc: st.description, ogType: 'website',
+        // Paylaşım görseli: YouTube'un en büyük karesi her videoda bulunmadığından her zaman var olan kare
+        image: (featHero ? featHero.cover : asset(st.heroImage)).replace(/\/maxresdefault\.jpg$/, '/hqdefault.jpg'), modified: all[0] && all[0].date,
+        schema: [{ '@type': 'WebPage', '@id': homeUrl(), url: homeUrl(), name: title, description: st.description, inLanguage: 'tr-TR', isPartOf: { '@id': homeUrl() + '#site' }, about: { '@id': personId() } }],
+        html: `${hero}${stat}
+      <div class="seam"></div>
+      <section class="ix" id="akis"><div class="wrap">
+        <div class="head">
+          <div class="hl"><span class="lbl">Akış</span>
+            <div class="feedfilter" id="feedfilter">${F.map((f) => `<button data-f="${f[0]}" class="${f[0] === 'all' ? 'on' : ''}">${f[1]}<span class="pc">${f[2]}</span></button>`).join('')}</div>
+          </div>
+          <span class="cnt">${since}'den beri</span>
+        </div>
+        <div class="feed" id="feed">${feed.html}</div>
+        <button class="feedmorebtn" id="feedmore"${feed.more ? '' : ' hidden'}>Daha fazla göster</button>
+      </div></section>`
+      };
+    }
+
+    function phead(kicker, title, desc) {
+      return `<header class="phead"><div class="glow"></div><div class="wrap">
+      <div class="kicker rise d1">${esc(kicker)}</div>
+      <h1 class="rise d2">${esc(title)}</h1>
+      ${desc ? `<p class="rise d3">${esc(desc)}</p>` : ''}
+    </div></header>`;
+    }
+
+    function tagFilterBar(list, getTags) {
+      const set = new Map();
+      list.forEach((x) => (getTags(x) || []).forEach((t) => set.set(t, (set.get(t) || 0) + 1)));
+      if (!set.size) return '';
+      return `<div class="feedfilter" data-tagfilter><button data-tag="" class="on">Hepsi<span class="pc">${list.length}</span></button>${[...set.entries()].sort((a, b) => b[1] - a[1]).map(([t, n]) => `<button data-tag="${esc(t)}">${esc(t)}<span class="pc">${n}</span></button>`).join('')}</div>`;
+    }
+
+    /* ---------- Detay sayfası parçaları ---------- */
+    /** "Başlık | https://adres | not" satırlarını kaynak listesine çevirir */
+    function parseLines(text) {
+      return String(text || '').split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+        const [title, url = '', meta = ''] = l.split('|').map((s) => s.trim());
+        let host = '';
+        if (/^https?:\/\//i.test(url)) { try { host = new URL(url).hostname.replace(/^www\./, ''); } catch (e) { /* geçersiz adres */ } }
+        return { title: title || url, url: host ? url : '', meta: meta || host };
+      });
+    }
+
+    function sourcesBlock(text, label, cls = '') {
+      const list = parseLines(text);
+      if (!list.length) return '';
+      const li = list.map((s) => `<li>${s.url
+        ? `<a href="${esc(s.url)}" target="_blank" rel="noopener"><span class="src-title">${esc(s.title)}</span>${s.meta ? `<span class="src-meta">${esc(s.meta)} ↗</span>` : ''}</a>`
+        : `<span class="src-title">${esc(s.title)}</span>${s.meta ? `<span class="src-meta">${esc(s.meta)}</span>` : ''}`}</li>`).join('');
+      return `<details class="sources ${cls}"><summary><span class="src-h">${label}</span><span class="src-count">${list.length}</span></summary><ol>${li}</ol></details>`;
+    }
+    // Kaynaklar yapılandırılmış veride "citation" olarak da verilir (yapay zekâ yanıtlarında güvenilirlik sinyali)
+    const citations = (text) => parseLines(text).filter((s) => s.url).map((s) => ({ '@type': 'CreativeWork', name: s.title, url: s.url }));
+
+    // Etiket kutuları: tıklanınca site içi aramayı o etiketle açar
+    function chipsBlock(tags, title) {
+      if (!(tags || []).length) return '';
+      return `<div class="blk">${title ? `<h4>${title}</h4>` : ''}<div class="chips">${tags.map((t) => `<button class="chip" data-q="${esc(t)}">${esc(t)}</button>`).join('')}</div></div>`;
+    }
+
+    // Ortak etiketi en çok olan içerikler önce, eşitlikte en yeni
+    function relatedBlock(type, item, n = 6) {
+      const own = new Set((item.tags || []).map(norm));
+      const list = items().filter((i) => !(i.type === type && i.id === item.id))
+        .map((i) => [(i.raw.tags || []).filter((t) => own.has(norm(t))).length, i])
+        .sort((a, b) => b[0] - a[0] || byDate(a[1], b[1])).slice(0, n).map((x) => x[1]);
+      if (!list.length) return '';
+      return `<div class="blk rel"><h4>İlgili içerik</h4>${list.map((i) => `<a href="${i.href}">${esc(i.title)}</a>`).join('')}</div>`;
+    }
+
+    function prevNext(list, idx, hrefOf, numOf) {
+      const prev = list[idx + 1], next = list[idx - 1];
+      if (!prev && !next) return '';
+      const num = (x) => (numOf ? `<span class="num">${esc(numOf(x))}</span>` : '');
+      return `<nav class="epnav">
+      ${prev ? `<a class="epnav-card prev" href="${hrefOf(prev)}"><span class="lbl">← Önceki</span>${num(prev)}<span class="t">${esc(prev.title)}</span></a>` : ''}
+      ${next ? `<a class="epnav-card next" href="${hrefOf(next)}"><span class="lbl">Sonraki →</span>${num(next)}<span class="t">${esc(next.title)}</span></a>` : ''}
+    </nav>`;
+    }
+
+    /* ---------- Yazılar (yazı + video tek sekmede) ---------- */
+    function listPosts() {
+      const pp = st.postsPage || {};
+      const name = pp.title || 'Yazılar';
+      const list = items().filter((i) => i.type === 'post');
+      return {
+        title: name + ' — ' + st.siteName, name, desc: pp.intro, ogType: 'website', modified: list[0] && list[0].date, noindex: !list.length,
+        crumbs: crumbs([[name, 'yazilar']]),
+        schema: [listNode('CollectionPage', 'yazilar', name, pp.intro, list)],
+        html: `<div class="page-wash" style="--wash:${esc(pp.tint || '#7A4E1E')}"></div>
+      <header class="phead phead-plain"><div class="wrap">
+        <h1 class="rise d1">${esc(name)}</h1>
+        ${pp.intro ? `<p class="pintro rise d2">${esc(pp.intro)}</p>` : ''}
+      </div></header>
+      <section class="ix ix-plain"><div class="wrap">
+        <div class="feed">${list.length ? list.map((i) => row(i, true)).join('') : '<div class="empty-note">Henüz video ya da yazı yok.</div>'}</div>
+      </div></section>`
+      };
+    }
+
+    function postPage(slug) {
+      const list = pub(D.posts);
+      const idx = list.findIndex((p) => p.slug === slug);
+      const p = list[idx];
+      if (!p) return notFound();
+      const postsTitle = (st.postsPage || {}).title || 'Yazılar';
+      const route = 'yazilar/' + p.slug;
+      // Video ise üstte oynatıcı, blog yazısıysa aynı yerde kapak görseli
+      const yt = S.postKind(p) === 'video' ? S.ytId(p.video) : '';
+      const words = S.wordCount((p.excerpt || '') + ' ' + (p.content || ''));
+      const prev = list[idx + 1], next = list[idx - 1];
+      const bg = yt ? S.ytThumb(p.video, 'hqdefault') : asset(p.cover);
+      const alt = p.coverAlt || p.title;
+      const ctx = {
+        crail: [{ label: postsTitle, href: href('yazilar') }, ...(p.tags || []).slice(0, 3).map((t) => ({ label: t }))],
+        prev: prev && { href: href('yazilar/' + prev.slug), title: prev.title },
+        next: next && { href: href('yazilar/' + next.slug), title: next.title },
+        tint: p.tint, tintSrc: bg, readbar: true
+      };
+      // Video varsa solda video (kaydırınca sabitlenir), yoksa kapak görseli
+      const media = yt
+        // Kapsayıcıda giriş animasyonu yok: transform/opacity animasyonu position:fixed'i ve z-index'i kapsayıcıya hapseder
+        ? `<div class="vid-slot"><div class="ytlite vidcut" data-yt="${esc(yt)}">
+          <img src="https://i.ytimg.com/vi/${esc(yt)}/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${esc(yt)}/hqdefault.jpg'" alt="${esc(p.title)}" fetchpriority="high">
+          <button class="play" aria-label="Videoyu oynat">${ICON.play}</button>
+          <button class="pip-close" aria-label="Videoyu eski yerine geri al">${ICON.close}</button>
+        </div></div>`
+        : p.cover ? `<figure class="phero-cover rise d1"><img src="${esc(asset(p.cover))}" alt="${esc(alt)}" fetchpriority="high"></figure>` : '';
+
+      const url = pageUrl(route);
+      const desc = p.seoDesc || p.excerpt || S.strip(p.content);
+      const image = asset(p.ogImage) || (yt ? S.ytThumb(p.video, 'hqdefault') : asset(p.cover));
+      const schema = [{
+        '@type': 'BlogPosting', '@id': url + '#yazi', mainEntityOfPage: url, url, headline: clip(p.title, 110), description: clip(desc, 300),
+        image: abs(image), datePublished: isoDate(p.date), dateModified: isoDate(p.updated || p.date), inLanguage: 'tr-TR',
+        author: { '@id': personId() }, publisher: { '@id': personId() }, keywords: (p.tags || []).join(', '), wordCount: words,
+        articleSection: yt ? 'Video' : 'Yazı', video: yt ? { '@id': url + '#video' } : undefined, citation: citations(p.sources)
+      }];
+      if (yt) {
+        schema.push({
+          '@type': 'VideoObject', '@id': url + '#video', name: p.title, description: clip(desc, 300) || p.title,
+          thumbnailUrl: [S.ytThumb(p.video, 'maxresdefault'), S.ytThumb(p.video, 'hqdefault')], uploadDate: isoDate(p.date),
+          embedUrl: 'https://www.youtube.com/embed/' + yt, url: 'https://www.youtube.com/watch?v=' + yt, inLanguage: 'tr-TR', author: { '@id': personId() }
+        });
+      }
+
+      return {
+        title: p.seoTitle || `${p.title} — ${st.siteName}`, name: p.title, desc, image, imageAlt: alt, ogType: 'article',
+        published: p.date, modified: p.updated || p.date, tags: p.tags, ctx, schema,
+        crumbs: crumbs([[postsTitle, 'yazilar'], [p.title, route]]),
+        html: `<article class="post tinted tinted-full" style="--tint:${esc(p.tint || '#2F4A66')}">
+      ${bg ? `<img class="ephero-bg" src="${esc(bg)}" alt="">` : ''}
+      <div class="ephero-wash"></div>
+      <section class="phero${media ? '' : ' no-media'}"><div class="wrap phero-grid">
+        ${media}
+        <div class="phero-txt">
+          <h1 class="rise d2">${esc(p.title)}</h1>
+          <div class="phero-meta rise d3"><span>${S.fmtDate(p.date)}</span><span class="sep">·</span><span>${S.fmtNum(words)} kelime</span><span class="sep">·</span><span>${S.readingTime((p.excerpt || '') + ' ' + (p.content || ''))} dk okuma</span>
+            ${yt ? `<a class="ytlink" href="https://www.youtube.com/watch?v=${esc(yt)}" target="_blank" rel="noopener">YouTube'da izle →</a>` : ''}</div>
+        </div>
+      </div></section>
+      <div class="wrap">
+        ${p.excerpt ? `<p class="vid-spot rise d3">${esc(p.excerpt)}</p>` : ''}
+        ${p.content ? `<div class="prose dropcap">${fixHtml(p.content)}</div>` : ''}
+        ${sourcesBlock(p.sources, 'Notlar ve kaynaklar')}
+        ${sourcesBlock(p.credits, 'Görsel kaynaklar ve lisanslar', 'credits')}
+        <div class="afoot">${chipsBlock(p.tags, 'Bu yazıdaki kavramlar')}${relatedBlock('post', p)}</div>
+        ${prevNext(list, idx, (x) => href('yazilar/' + x.slug), (x) => (S.postKind(x) === 'video' ? 'Video' : 'Yazı') + ' · ' + S.fmtDate(x.date))}
+      </div>
+    </article>`
+      };
+    }
+
+    /* ---------- Podcast ---------- */
+    function epRow(p) {
+      const key = 'podcast:' + p.id;
+      const h = href('podcast/' + p.slug);
+      const play = p.audio
+        ? `<button class="epplay" data-play="${key}" aria-label="Dinle">${ICON.play}</button>`
+        : `<a class="epplay" href="${h}" aria-label="Aç">${ICON.play}</a>`;
+      return `<div class="ep reveal">${play}<a class="ept" href="${h}">${p.number ? `<span class="epn">${esc(p.number)}</span>` : ''}${esc(p.title)}</a><span class="epmeta">${[S.fmtDateShort(p.date), p.duration].filter(Boolean).map(esc).join(' · ')}</span></div>`;
+    }
+
+    const showName = () => (st.podcast || {}).name || 'Podcast';
+    function seriesNode() {
+      const pc = st.podcast || {};
+      return {
+        '@type': 'PodcastSeries', '@id': pageUrl('podcast') + '#program', name: showName(), url: pageUrl('podcast'),
+        description: pc.description, image: abs(asset(pc.cover)), inLanguage: 'tr-TR', author: { '@id': personId() },
+        sameAs: [pc.spotify, pc.apple, pc.youtube].filter(isProfile)
+      };
+    }
+
+    function listPodcasts() {
+      const pc = st.podcast || {};
+      const list = pub(D.podcasts);
+      const name = showName();
+      const links = [['Spotify', pc.spotify], ['Apple Podcasts', pc.apple], ['YouTube', pc.youtube]].filter((l) => l[1]);
+      return {
+        title: name + ' — ' + st.siteName, name, desc: pc.description, image: asset(pc.cover), imageAlt: name, ogType: 'website',
+        modified: list[0] && list[0].date, noindex: !list.length, crumbs: crumbs([[name, 'podcast']]),
+        schema: [listNode('CollectionPage', 'podcast', name, pc.description, items().filter((i) => i.type === 'podcast')), seriesNode()],
+        html: `<div class="page-wash" style="--wash:${esc(pc.tint || '#1F5A50')}"></div>
+      <section class="pcast"><div class="wrap"><div class="pcast-hero">
+        <div class="cover rise d1">${pc.cover ? `<img src="${esc(asset(pc.cover))}" alt="${esc(name)}" fetchpriority="high">` : ''}</div>
+        <div class="pcast-txt">
+          <div class="pcast-eyebrow rise d1">${ICON.wave}${esc(pc.eyebrow || 'Podcast')}</div>
+          <h1 class="rise d2">${esc(name)}</h1>
+          ${pc.description ? `<p class="desc rise d3">${esc(pc.description)}</p>` : ''}
+          ${links.length ? `<p class="pnote rise d3">Dinle: ${links.map(([l, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${l}</a>`).join(' · ')}</p>` : ''}
+          ${pc.note ? `<p class="pnote rise d3">${esc(pc.note)}</p>` : ''}
+          ${list[0] ? `<a class="readlink rise d4" href="${href('podcast/' + list[0].slug)}"><span class="arr">→</span> ${esc(pc.readText || 'Oku + Dinle')}</a>` : ''}
+        </div>
+      </div></div></section>
+      <section class="ix" id="bolumler"><div class="wrap">
+        <div class="head"><span class="lbl">Bölümler</span><span class="cnt">${list.length} bölüm · en yeniden eskiye</span></div>
+        <div class="eplist">${list.length ? list.map(epRow).join('') : '<div class="empty-note">Henüz bölüm yok.</div>'}</div>
+      </div></section>`
+      };
+    }
+
+    function episodePage(slug) {
+      const list = pub(D.podcasts);
+      const idx = list.findIndex((x) => x.slug === slug);
+      const x = list[idx];
+      if (!x) return notFound();
+      const pc = st.podcast || {};
+      const name = showName();
+      const route = 'podcast/' + x.slug;
+      const key = 'podcast:' + x.id;
+      const words = S.wordCount(x.description);
+      const meta = [S.fmtDate(x.date), x.duration, words > 40 ? S.fmtNum(words) + ' kelime' : ''].filter(Boolean).map(esc).join('<span class="sep">·</span>');
+      const emb = S.embed(x.embed);
+      const prev = list[idx + 1], next = list[idx - 1];
+      const cover = asset(x.cover);
+      const alt = x.coverAlt || x.title;
+      const ctx = {
+        crail: [{ label: name, href: href('podcast') }, ...(x.tags || []).slice(0, 3).map((t) => ({ label: t }))],
+        prev: prev && { href: href('podcast/' + prev.slug), title: prev.title },
+        next: next && { href: href('podcast/' + next.slug), title: next.title },
+        tint: x.tint, tintSrc: cover, readbar: true
+      };
+      const url = pageUrl(route);
+      const desc = x.seoDesc || x.excerpt || S.strip(x.description);
+      const image = asset(x.ogImage) || cover || asset(pc.cover);
+      return {
+        title: x.seoTitle || `${x.title} — ${name}`, name: x.title, desc, image, imageAlt: alt, ogType: 'article',
+        published: x.date, modified: x.updated || x.date, tags: x.tags, ctx,
+        crumbs: crumbs([[name, 'podcast'], [x.title, route]]),
+        schema: [{
+          '@type': 'PodcastEpisode', '@id': url + '#bolum', url, name: x.title, description: clip(desc, 300), datePublished: isoDate(x.date),
+          episodeNumber: x.number ? String(x.number) : undefined, image: abs(image), timeRequired: isoDuration(x.duration), inLanguage: 'tr-TR',
+          associatedMedia: x.audio ? { '@type': 'MediaObject', contentUrl: x.audio } : undefined,
+          partOfSeries: { '@id': pageUrl('podcast') + '#program' }, author: { '@id': personId() }, citation: citations(x.sources)
+        }, seriesNode()],
+        html: `<article class="epage tinted" style="--tint:${esc(x.tint || '#3E5640')}">
+      <section class="ephero2">
+        ${cover ? `<img class="ephero-bg" src="${esc(cover)}" alt="">` : ''}
+        <div class="ephero-wash"></div><div class="ephero-fade"></div>
+        <div class="wrap ephero-grid2">
+          <div class="ephero-artwrap rise d1">
+            <div class="ephero-art2">${cover ? `<img src="${esc(cover)}" alt="${esc(alt)}" fetchpriority="high">` : ''}</div>
+            ${x.coverCredit ? `<p class="ephero-cr">${esc(x.coverCredit)}</p>` : ''}
+          </div>
+          <div class="ephero-txt">
+            <div class="ephero-eyebrow rise d1"><a href="${href('podcast')}">${esc(name)}</a>${x.number ? `<span class="sep">·</span>Bölüm ${esc(x.number)}` : ''}</div>
+            <h1 class="rise d2">${esc(x.title)}</h1>
+            ${x.excerpt ? `<p class="lede rise d3">${esc(x.excerpt)}</p>` : ''}
+            <div class="ephero-meta rise d3">${meta}</div>
+          </div>
+        </div>
+      </section>
+      ${x.audio ? `<div class="wrap"><div class="ap-slot"><div class="audioplayer" data-ap="${key}"><div class="ap-in">
+        <button class="ap-play" data-play="${key}" aria-label="Dinle">${ICON.play}</button>
+        <div class="ap-bar" role="slider" aria-label="İlerleme"><div class="ap-prog"></div></div>
+        <span class="ap-time">0:00</span>
+      </div></div></div></div>` : ''}
+      <div class="wrap">
+        ${emb ? `<div class="embedbox ${emb.kind}">${emb.html}</div>` : ''}
+        ${x.description ? `<div class="prose dropcap">${fixHtml(x.description)}</div>` : ''}
+        <div class="afoot">${chipsBlock(x.tags, '')}${sourcesBlock(x.sources, 'Kaynaklar')}${relatedBlock('podcast', x)}</div>
+        ${prevNext(list, idx, (y) => href('podcast/' + y.slug), (y) => (y.number ? 'Bölüm ' + y.number : S.fmtDate(y.date)))}
+      </div>
+    </article>`
+      };
+    }
+
+    /* ---------- Remixler ---------- */
+    const REMIX_DESC = 'Yeniden yorumladığım parçalar, editler ve bootlegler.';
+    function listRemixes() {
+      const list = items().filter((i) => i.type === 'remix');
+      return {
+        title: 'Remixler — ' + st.siteName, name: 'Remixler', desc: REMIX_DESC, ogType: 'website', modified: list[0] && list[0].date, noindex: !list.length,
+        crumbs: crumbs([['Remixler', 'remixler']]),
+        schema: [listNode('CollectionPage', 'remixler', 'Remixler', REMIX_DESC, list)],
+        html: `${phead('Müzik', 'Remixler', REMIX_DESC)}
+      <section class="ix"><div class="wrap">
+        <div class="head"><div class="hl">${tagFilterBar(list.map((i) => i.raw), (x) => [x.genre].filter(Boolean))}</div><span class="cnt">${list.length} remix</span></div>
+        ${list.length ? `<div class="rgrid" data-filterable>${list.map((it) => {
+          const r = it.raw;
+          return `<div class="rcard reveal" data-tags="${esc(r.genre || '')}">
+            <div class="cv"><a href="${it.href}">${r.cover ? `<img src="${esc(asset(r.cover))}" alt="${esc(r.coverAlt || r.title)}" loading="lazy">` : ''}</a>${r.bpm ? `<span class="bpm">${esc(r.bpm)} BPM</span>` : ''}${playBtn(it)}</div>
+            <h3><a href="${it.href}">${esc(r.title)}</a></h3>
+            ${r.original ? `<div class="orig">${esc(r.original)}</div>` : ''}
+            <div class="meta">${[r.genre, S.fmtDate(r.date)].filter(Boolean).map(esc).join(' · ')}</div>
+          </div>`;
+        }).join('')}</div>` : '<div class="empty-note">Henüz remix yok.</div>'}
+      </div></section>`
+      };
+    }
+
+    function remixPage(slug) {
+      const list = pub(D.remixes);
+      const idx = list.findIndex((x) => x.slug === slug);
+      const x = list[idx];
+      if (!x) return notFound();
+      const route = 'remixler/' + x.slug;
+      const emb = S.embed(x.embed);
+      const kicker = `<a href="${href('remixler')}">Remix</a>${x.genre ? `<span class="sep">·</span>${esc(x.genre)}` : ''}`;
+      const meta = [S.fmtDate(x.date), x.duration, x.bpm ? x.bpm + ' BPM' : ''].filter(Boolean).map(esc).join('<span class="sep">·</span>');
+      const cover = asset(x.cover);
+      const alt = x.coverAlt || x.title;
+      const url = pageUrl(route);
+      const desc = x.seoDesc || [x.original, S.strip(x.description)].filter(Boolean).join(' — ');
+      const image = asset(x.ogImage) || cover;
+      return {
+        title: x.seoTitle || `${x.title} — ${st.siteName}`, name: x.title, desc, image, imageAlt: alt, ogType: 'music.song',
+        published: x.date, modified: x.updated || x.date, tags: x.tags,
+        crumbs: crumbs([['Remixler', 'remixler'], [x.title, route]]),
+        schema: [{
+          '@type': 'MusicRecording', '@id': url + '#remix', url, name: x.title, description: clip(desc, 300), datePublished: isoDate(x.date),
+          byArtist: { '@id': personId() }, genre: x.genre, image: abs(image), duration: isoDuration(x.duration), inLanguage: 'tr-TR',
+          recordingOf: x.original ? { '@type': 'MusicComposition', name: x.original } : undefined,
+          audio: x.audio ? { '@type': 'AudioObject', contentUrl: x.audio } : undefined
+        }],
+        html: `<section class="ephero">
+        ${cover ? `<img class="ephero-bg" src="${esc(cover)}" alt="">` : ''}
+        <div class="wrap"><div class="ephero-grid">
+          <div class="ephero-art rise d1">${cover ? `<img src="${esc(cover)}" alt="${esc(alt)}" fetchpriority="high">` : ''}</div>
+          <div>
+            <div class="eyebrow rise d1" style="font-size:16px;margin-bottom:16px">${kicker}</div>
+            <h1 class="rise d2">${esc(x.title)}</h1>
+            ${x.original ? `<p class="lede rise d3">${esc(x.original)}</p>` : ''}
+            <div class="ephero-meta rise d3">${meta}</div>
+            ${x.audio ? `<button class="bigplay rise d4" data-play="remix:${x.id}"><span class="ic">${ICON.play}</span><span class="lb">Dinle</span></button>` : ''}
+          </div>
+        </div></div>
+      </section>
+      <section class="article" style="padding-top:0"><div class="wrap">
+        ${emb ? `<div class="embedbox ${emb.kind}">${emb.html}</div>` : ''}
+        ${x.description ? `<div class="prose">${fixHtml(x.description)}</div>` : ''}
+        ${(x.tags || []).length ? `<div class="tagrow">${x.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
+        ${prevNext(list, idx, (y) => href('remixler/' + y.slug))}
+      </div></section>`
+      };
+    }
+
+    /* ---------- Hakkında ---------- */
+    function aboutPage() {
+      const a = D.about || {};
+      const photo = asset(a.photo);
+      const split = a.heroLeft || a.heroRight
+        ? `<span class="as-left rise d2">${nl2br(a.heroLeft)}</span><span class="as-right rise d3">${nl2br(a.heroRight)}</span>`
+        : `<span class="as-left rise d2">${esc(a.name || st.siteName)}</span>`;
+      const title = 'Hakkında — ' + st.siteName;
+      return {
+        title, name: a.name || 'Hakkında', desc: [a.role, S.strip((a.lead || '') + ' ' + (a.bio || ''))].filter(Boolean).join('. '),
+        image: photo, imageAlt: a.name, ogType: 'profile', crumbs: crumbs([['Hakkında', 'hakkinda']]),
+        schema: [{ '@type': 'ProfilePage', '@id': pageUrl('hakkinda'), url: pageUrl('hakkinda'), name: title, inLanguage: 'tr-TR', mainEntity: { '@id': personId() }, isPartOf: { '@id': homeUrl() + '#site' } }],
+        html: `<section class="about2" style="--about:${esc(a.accent || '#3A9FF0')}">
+      <div class="about-hero">
+        ${photo ? `<img src="${esc(photo)}" alt="${esc(a.name || '')}" fetchpriority="high">` : ''}
+        <div class="about-hero-grad"></div>
+        <h1 class="about-split">${split}</h1>
+      </div>
+      <div class="wrap"><div class="prose about-prose">
+        ${a.lead ? `<h2 class="about-lead-h rise d3">${nl2br(a.lead)}</h2>` : ''}
+        ${fixHtml(a.bio)}
+      </div></div>
+    </section>`
+      };
+    }
+
+    function customPage(slug) {
+      const p = (D.pages || []).find((x) => x.slug === slug && x.published !== false);
+      if (!p) return notFound();
+      const route = 'sayfa/' + p.slug;
+      const cover = asset(p.cover);
+      return {
+        title: p.seoTitle || `${p.title} — ${st.siteName}`, name: p.title, desc: p.seoDesc || p.excerpt || S.strip(p.content),
+        image: asset(p.ogImage) || cover, imageAlt: p.coverAlt || p.title, ogType: 'website', modified: p.updated,
+        crumbs: crumbs([[p.title, route]]),
+        schema: [{ '@type': 'WebPage', '@id': pageUrl(route), url: pageUrl(route), name: p.title, description: clip(p.seoDesc || p.excerpt || S.strip(p.content), 300), inLanguage: 'tr-TR', isPartOf: { '@id': homeUrl() + '#site' } }],
+        html: `<article class="article"><div class="wrap">
+      <div class="kicker rise d1">${esc(st.siteName)}</div>
+      <h1 class="rise d2">${esc(p.title)}</h1>
+      ${p.excerpt ? `<p class="lede rise d3">${esc(p.excerpt)}</p>` : ''}
+      ${cover ? `<figure class="cover rise d4"><img src="${esc(cover)}" alt="${esc(p.coverAlt || p.title)}" fetchpriority="high"></figure>` : ''}
+      <div class="prose">${fixHtml(p.content)}</div>
+    </div></article>`
+      };
+    }
+
+    function notFound() {
+      return {
+        status: 404, title: 'Bulunamadı — ' + st.siteName, name: 'Sayfa bulunamadı', desc: 'Aradığınız sayfa burada değil.',
+        html: `<section class="nf"><div class="wrap"><h1>404</h1><p>Aradığınız sayfa burada değil.</p><a class="readlink" href="${href('')}"><span class="arr">←</span> Ana sayfaya dön</a></div></section>`
+      };
+    }
+
+    /**
+     * Bir adresin sayfası: { html, title, desc, image, ctx, schema, status, ... }
+     * Eski biçimli adreslerde { redirect: 'yeni/adres' } döner.
+     */
+    function page(route) {
+      route = String(route || '').replace(/^\/+|\/+$/g, '');
+      const n = normalize(route);
+      if (n !== route) return { redirect: n };
+      const parts = route.split('/');
+      const [seg, arg] = parts;
+      let pg;
+      if (parts.length > 2) pg = notFound();
+      else {
+        switch (seg || '') {
+          case '': pg = homePage(); break;
+          case 'yazilar': pg = arg ? postPage(arg) : listPosts(); break;
+          case 'podcast': pg = arg ? episodePage(arg) : listPodcasts(); break;
+          case 'remixler': pg = arg ? remixPage(arg) : listRemixes(); break;
+          case 'hakkinda': pg = aboutPage(); break;
+          case 'sayfa': pg = customPage(arg); break;
+          default: pg = notFound();
+        }
+      }
+      pg.route = route;
+      pg.desc = clip(S.strip(pg.desc) || st.description || '');
+      return pg;
+    }
+
+    /** Yayınlanacak bütün adresler (site haritası ve hazır sayfalar) */
+    function routes() {
+      const menuHas = (t) => visibleMenu().some((m) => m.type === t);
+      const r = [''];
+      if (pub(D.posts).length || menuHas('blog')) r.push('yazilar');
+      pub(D.posts).forEach((p) => r.push('yazilar/' + p.slug));
+      if (pub(D.podcasts).length || menuHas('podcast')) r.push('podcast');
+      pub(D.podcasts).forEach((p) => r.push('podcast/' + p.slug));
+      if (pub(D.remixes).length || menuHas('remixes')) r.push('remixler');
+      pub(D.remixes).forEach((p) => r.push('remixler/' + p.slug));
+      const a = D.about || {};
+      if (menuHas('about') || a.bio || a.lead) r.push('hakkinda');
+      pub(D.pages).forEach((p) => r.push('sayfa/' + p.slug));
+      return r;
+    }
+
+    /** Konum satırı (Yazılar › Etiket) ve önceki/sonraki bağlantıları */
+    function crail(c) {
+      if (!c || !c.crail) return null;
+      const crumb = c.crail.map((x, i) => {
+        const sep = i === 0 ? '' : i === 1 ? '<span class="sep" aria-hidden="true">›</span>' : '<span class="dot" aria-hidden="true">·</span>';
+        return sep + (x.href ? `<a href="${x.href}">${esc(x.label)}</a>` : `<button data-q="${esc(x.label)}">${esc(x.label)}</button>`);
+      }).join('');
+      const nb =
+        (c.prev ? `<a class="cpn" href="${c.prev.href}" title="Önceki: ${esc(c.prev.title)}"><span class="ar">‹</span><span class="t">${esc(c.prev.title)}</span></a>` : '') +
+        (c.next ? `<a class="cpn" href="${c.next.href}" title="Sonraki: ${esc(c.next.title)}"><span class="t">${esc(c.next.title)}</span><span class="ar">›</span></a>` : '');
+      return { crumb, nb };
+    }
+
+    /* ---------- <head>: başlık, açıklama, paylaşım kartları, yapılandırılmış veri ---------- */
+    function head(pg) {
+      const url = pageUrl(pg.route || '');
+      const image = abs(pg.image) || abs(asset(seo.ogImage)) || abs(asset(st.heroImage));
+      const imageAlt = pg.image ? (pg.imageAlt || pg.name || '') : st.siteName;
+      const name = pg.name || pg.title;
+      const so = st.social || {};
+      const xHandle = isProfile(so.x) ? '@' + new URL(so.x).pathname.split('/').filter(Boolean)[0] : '';
+      const m = (k, v, attr = 'property') => (v ? `<meta ${attr}="${k}" content="${esc(v)}">` : '');
+      const t = [
+        `<title>${esc(pg.title)}</title>`,
+        m('description', pg.desc, 'name')
+      ];
+      // Bulunamayan ve henüz boş olan liste sayfaları arama sonuçlarına girmez
+      if (pg.status === 404 || pg.noindex) t.push('<meta name="robots" content="noindex">');
+      else {
+        t.push(`<link rel="canonical" href="${esc(url)}">`);
+        t.push('<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">');
+      }
+      t.push(
+        m('og:locale', 'tr_TR'), m('og:site_name', st.siteName), m('og:type', pg.ogType || 'website'),
+        m('og:title', name), m('og:description', pg.desc), pg.status === 404 ? '' : m('og:url', url),
+        m('og:image', image), image ? m('og:image:alt', imageAlt) : ''
+      );
+      if (pg.ogType === 'article') {
+        t.push(m('article:published_time', isoDate(pg.published)), m('article:modified_time', isoDate(pg.modified)));
+        (pg.tags || []).slice(0, 6).forEach((tag) => t.push(m('article:tag', tag)));
+      }
+      t.push(
+        m('twitter:card', image ? 'summary_large_image' : 'summary', 'name'), m('twitter:site', xHandle, 'name'),
+        m('twitter:title', name, 'name'), m('twitter:description', pg.desc, 'name'), m('twitter:image', image, 'name'),
+        m('google-site-verification', seo.googleVerify, 'name'), m('msvalidate.01', seo.bingVerify, 'name'),
+        `<link rel="alternate" type="application/rss+xml" title="${esc(st.siteName)}" href="${esc(base)}feed.xml">`
+      );
+      if (pg.status !== 404) {
+        const graph = [
+          { '@type': 'WebSite', '@id': homeUrl() + '#site', url: homeUrl(), name: st.siteName, description: st.description, inLanguage: 'tr-TR', publisher: { '@id': personId() } },
+          personNode()
+        ];
+        if (pg.crumbs && pg.crumbs.length) {
+          graph.push({ '@type': 'BreadcrumbList', itemListElement: [{ name: 'Ana sayfa', route: '' }, ...pg.crumbs].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: pageUrl(c.route) })) });
+        }
+        (pg.schema || []).forEach((n) => graph.push(n));
+        t.push(`<script type="application/ld+json">${JSON.stringify(clean({ '@context': 'https://schema.org', '@graph': graph })).replace(/</g, '\\u003c')}</script>`);
+      }
+      return t.filter(Boolean).join('\n  ');
+    }
+
+    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, footerHTML, crail, feedHTML, routes, isActive, pub };
+  }
+
+  global.Render = { create, ICON, PAGE_SIZE, clip };
+})(typeof window !== 'undefined' ? window : globalThis);
