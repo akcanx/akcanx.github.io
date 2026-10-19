@@ -10,8 +10,8 @@
   "showStats": false,
   "footerText": "© {yil} Akcan. Tüm hakları saklıdır.",
   "social": {
-   "youtube": "https://www.youtube.com/",
-   "instagram": "https://www.instagram.com/",
+   "youtube": "https://www.youtube.com/akcanakdag",
+   "instagram": "https://www.instagram.com/akcanakdag",
    "tiktok": "",
    "x": "",
    "linkedin": "",
@@ -19,7 +19,14 @@
    "soundcloud": "https://soundcloud.com/",
    "email": "merhaba@ornek.com"
   },
-  "socialOff": [],
+  "socialOff": [
+   "tiktok",
+   "x",
+   "linkedin",
+   "spotify",
+   "soundcloud",
+   "email"
+  ],
   "navSocial": true,
   "videosPage": {
    "title": "Videolar",
