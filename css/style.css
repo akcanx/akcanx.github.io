@@ -75,6 +75,9 @@ button { font: inherit; }
 /* Sosyal medya simgeleri: menünün sağında, telefonda çekmecenin altında */
 .menu-social { display: flex; align-items: center; gap: 2px; margin-left: 26px; padding-left: 16px; border-left: 1px solid var(--rule); }
 .menu-social:empty, .nav-drawer-social:empty, .nav-tight .menu-social { display: none; }
+/* Menü sığmıyorsa (çok öğe, dar ekran) bağlantılar çekmeceye geçer */
+.nav-collapse .menu-links { display: none; }
+.nav-collapse .menu-btn { display: inline-flex; }
 .menu-social a, .nav-drawer-social a { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; color: var(--fg-2); transition: color .2s var(--ease), border-color .2s var(--ease); }
 .menu-social a:hover, .nav-drawer-social a:hover { color: var(--acid); }
 .menu-social svg { width: 16px; height: 16px; }

@@ -2240,6 +2240,9 @@
     const noAlt = [...live('posts').filter((p) => S.postKind(p) === 'yazi'), ...live('podcasts'), ...live('remixes'), ...live('pages')].filter((x) => x.cover && !x.coverAlt);
     const badSocial = SOCIALS.filter(([k]) => k !== 'email' && so[k] && !S.isProfile(so[k]) && !(st.socialOff || []).includes(k)).map(([, l]) => l);
     const sampleMail = /ornek\.com$/i.test(so.email || '') && !(st.socialOff || []).includes('email');
+    const pc = st.podcast || {}, rc = st.remixPage || {};
+    const badPlatforms = [['Podcast → Spotify', pc.spotify], ['Podcast → Apple Podcasts', pc.apple], ['Podcast → YouTube', pc.youtube], ['Remixler → SoundCloud', rc.soundcloud], ['Remixler → Mixcloud', rc.mixcloud], ['Remixler → Spotify', rc.spotify], ['Remixler → YouTube', rc.youtube]]
+      .filter(([, u]) => u && !S.isProfile(u)).map(([l]) => l);
     const sampleAbout = !!(O.about && a.bio && a.bio === O.about.bio);
     const ownRole = a.role && !(O.about && a.role === O.about.role);
     const picsum = /picsum\.photos/.test(JSON.stringify(Yayin.publicData(D)));
@@ -2252,6 +2255,7 @@
       [sampleAbout || !a.bio ? 'warn' : 'ok', 'Hakkında sayfası', sampleAbout ? 'Hakkında sayfasında örnek metin duruyor. Kendi biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.' : a.bio ? 'Biyografiniz yazılmış.' : 'Biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.', '#about'],
       [ownRole ? 'ok' : 'warn', 'Kısa tanım', ownRole ? `“${esc(a.role)}”` : 'Hakkında’ya kim olduğunuzu anlatan tek cümlelik kendi tanımınızı yazın (ör. “Müzik prodüktörü ve DJ”).', '#about'],
       [badSocial.length ? 'warn' : 'ok', 'Sosyal medya profilleri', badSocial.length ? `${badSocial.join(', ')} bağlantısı bir profil adresi değil (ör. https://www.youtube.com/@kanaliniz); sitede gösterilmez.` : 'Profil bağlantılarınız arama motorlarına “aynı kişi” olarak bildirilir.', '#sosyal'],
+      [badPlatforms.length ? 'warn' : 'ok', 'Podcast ve remix platformları', badPlatforms.length ? `${badPlatforms.join(', ')}: profil adresi değil, sitede gösterilmez. ⚙ Program / Sayfa Ayarları’na programınızın ya da profilinizin tam adresini yazın.` : 'Platform bağlantıları profil adresi.', badPlatforms.some((l) => l.startsWith('Podcast')) ? '#podcasts/settings' : '#remixes/settings'],
       [sampleMail ? 'warn' : 'ok', 'E-posta adresi', sampleMail ? `“${esc(so.email)}” örnek bir adres; kendi adresinizi yazın, silin ya da pasif yapın.` : 'Örnek adres kullanılmıyor.', '#sosyal'],
       [picsum ? 'warn' : 'ok', 'Örnek görseller', picsum ? 'Yayına giden ayarlarda ya da içeriklerde örnek görsel (picsum.photos) var: manşet görseli, podcast kapağı, Hakkında fotoğrafı… Kendi görsellerinizi yükleyin.' : 'Örnek görsel kullanılmıyor.', '#settings'],
       [noDesc.length ? 'warn' : 'ok', 'Özetler', noDesc.length ? `${noDesc.length} içeriğin özeti yok; arama sonucunda metnin başı gösterilir.` : 'Tüm içeriklerin özeti var.', ''],

@@ -19,7 +19,7 @@
 ## ✨ Sitedeki Sayfalar
 
 ### Üst Menü
-- Menü bağlantıları, arama ve **sosyal medya simgeleri** (YouTube, Instagram, TikTok, X, LinkedIn, Spotify, SoundCloud, e-posta). Simgeler menüye sığmadığında üst bantta gizlenir; telefonda menü çekmecesinin altında durur. Hangi hesabın görüneceği panelden seçilir.
+- Menü bağlantıları, arama ve **sosyal medya simgeleri** (YouTube, Instagram, TikTok, X, LinkedIn, Spotify, SoundCloud, e-posta). Menü tek satıra sığmazsa önce simgeler üst bantta gizlenir, yine sığmazsa bağlantılar ☰ çekmeceye geçer (menü hiçbir genişlikte taşmaz); telefonda simgeler menü çekmecesinin altında durur. Hangi hesabın görüneceği panelden seçilir.
 
 ### Ana Sayfa
 - Öne çıkan içerik büyük manşet olarak gösterilir (video ise "İzle", yazı ise "Oku" düğmesiyle).

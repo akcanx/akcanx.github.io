@@ -683,7 +683,8 @@
 
     /** Liste sayfasının üstü: kare kapak, üst etiket, ad, açıklama, dinleme platformları ve en son içeriğe bağlantı */
     function showHero(c, name, eyebrow, links, latest, readText) {
-      links = links.filter((l) => l[1]);
+      // Yalnızca gerçek program/profil adresleri (https://open.spotify.com/ gibi ana sayfalar gösterilmez)
+      links = links.filter((l) => isProfile(l[1]));
       return `<div class="page-wash" style="--wash:${esc(c.tint || '#1F5A50')}"></div>
       <section class="pcast"><div class="wrap"><div class="pcast-hero">
         <div class="cover rise d1">${c.cover ? `<img src="${esc(asset(c.cover))}" alt="${esc(name)}" fetchpriority="high">` : ''}</div>

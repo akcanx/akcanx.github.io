@@ -367,6 +367,8 @@ Her iki bölümün kendi ayarı vardır:
 
 Program adı, üst etiket (ör. "Podcast · Her Pazartesi"), açıklama, alt not, buton metni (varsayılan "Oku + Dinle"; en son bölüme götürür), kare program kapağı, **Spotify / Apple Podcasts / YouTube** bağlantıları ve ışık rengi.
 
+> Platform alanlarına programınızın tam adresini yazın (ör. `https://open.spotify.com/show/…`). Boş bıraktığınız ya da yalnızca platformun ana adresini (`https://open.spotify.com/`) yazdığınız platform sitede görünmez.
+
 ### Sitede
 
 - **Podcast sayfası**: kare kapak, üst etiket, program adı, açıklama, "Dinle: Spotify · Apple Podcasts · YouTube", alt not, "→ Oku + Dinle". Altında **Bölümler** listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, alt kategori, tarih ve süre. Oynat düğmesi bölümü sayfadan ayrılmadan çalar. "Bölümler" yazısının yanında alt kategori düğmeleri (**Hepsi · Müzik · …**) durur; bkz. [Alt kategoriler](#10-alt-kategoriler).
@@ -443,7 +445,7 @@ Remixler sekmesi Podcast sekmesinin ikizidir: aynı düzen, aynı oynatıcı.
 
 Sayfa adı, üst etiket (ör. "Remix · Edit · Bootleg"), açıklama, alt not, buton metni (varsayılan "Son Remixi Dinle"), kare sayfa kapağı, **SoundCloud / Mixcloud / Spotify / YouTube** bağlantıları ve ışık rengi.
 
-> Platform alanlarına profilinizin tam adresini yazın (ör. `https://soundcloud.com/kullaniciadiniz`). Boş bıraktığınız platform sitede görünmez.
+> Platform alanlarına profilinizin tam adresini yazın (ör. `https://soundcloud.com/kullaniciadiniz`). Boş bıraktığınız ya da yalnızca platformun ana adresini (`https://soundcloud.com/`) yazdığınız platform sitede görünmez.
 
 ### Sitede
 
@@ -679,8 +681,9 @@ Panel sitenizi tarar ve her maddeyi ✓ (tamam), ! (uyarı) ya da i (bilgi) olar
 - **Örnek içerikler**: kaç tanesinin panelde durduğu. **Örnek içerikleri sil** düğmesi hepsini tek seferde siler; kendi içerikleriniz değişmez.
 - Hakkında sayfası: örnek metin duruyor mu?
 - Kısa tanım.
-- Sosyal medya profilleri: profil olmayan adresler var mı?
-- E-posta adresi: örnek adres (`@ornek.com`) duruyor mu?
+- Sosyal medya profilleri: aktif hesaplarda profil olmayan adresler var mı?
+- Podcast ve remix platformları: Program / Sayfa Ayarları'nda yalnızca platformun ana adresi (ör. `https://open.spotify.com/`) yazılı mı? Bunlar sitede gösterilmez.
+- E-posta adresi: örnek adres (`@ornek.com`) aktif mi?
 - Örnek görseller: yayına giden ayarlarda ya da içeriklerde picsum.photos görseli var mı (manşet görseli, podcast/remix kapağı, Hakkında fotoğrafı…)?
 - Özetler: özeti olmayan içerik sayısı.
 - Kapak açıklamaları: alt metni olmayan kapak sayısı.
@@ -814,6 +817,7 @@ Bir bölüm ya da remix çalınca sayfanın altında sabit oynatıcı açılır.
 Bütün sayfalar 360 piksel genişliğindeki telefonlardan geniş ekranlara kadar taşmadan çalışır.
 
 - Menü, sağ üstteki **☰** ile açılan çekmecededir; sosyal medya simgeleri çekmecenin altındadır.
+- Daha geniş ekranlarda da menü tek satıra sığmazsa (menüde çok bağlantı varsa) önce sosyal simgeler üst menüden gizlenir, yine sığmazsa bağlantılar **☰** çekmeceye geçer. Menü hiçbir genişlikte taşmaz.
 - Liste satırlarında tarih ve bazı bilgiler gizlenir.
 - Video, kaydırınca menünün hemen altında tam genişlikte sabit kalır.
 

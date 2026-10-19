@@ -41,11 +41,14 @@
     fitNav();
   }
 
-  // Sosyal simgeler menüye sığmıyorsa üst bantta gizlenir (alt bilgide ve telefonda çekmecede durur)
+  // Menü tek satıra sığmazsa önce sosyal simgeler üst bantta gizlenir (alt bilgide ve çekmecede durur),
+  // yine sığmazsa bağlantılar ☰ çekmeceye geçer: menüye ne kadar öğe eklenirse eklensin taşmaz
   function fitNav() {
-    const wrap = $('#nav > .wrap');
-    document.body.classList.remove('nav-tight');
-    if (wrap.scrollWidth > wrap.clientWidth) document.body.classList.add('nav-tight');
+    const wrap = $('#nav > .wrap'), cl = document.body.classList;
+    const over = () => wrap.scrollWidth > wrap.clientWidth;
+    cl.remove('nav-tight', 'nav-collapse');
+    if (over()) cl.add('nav-tight');
+    if (over()) cl.add('nav-collapse');
   }
 
   function setActive(route) {
