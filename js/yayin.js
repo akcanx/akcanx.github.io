@@ -75,16 +75,8 @@
   }
 
   /* ---------- Yayına gidecek veri ---------- */
-  // Örnek içerikler (js/ornek-icerik.js ve sitenin ilk sürümündekiler) yayına girmez
-  function publicData(D) {
-    const d = JSON.parse(JSON.stringify(D));
-    delete d.settings.adminHash;
-    delete d.videos;
-    ['posts', 'podcasts', 'remixes', 'pages'].forEach((c) => {
-      d[c] = (d[c] || []).filter((x) => x.published !== false && !S.isSample(x));
-    });
-    return d;
-  }
+  // Taslaklar, örnek içerikler (seriler dahil) ve yayında olmayan serilerin bölümleri yayına girmez
+  const publicData = (D) => S.forPublish(D);
 
   /* ---------- Görseller: data: adresleri ayrı dosyalara ---------- */
   const EXT = { jpeg: 'jpg', jpg: 'jpg', png: 'png', webp: 'webp', gif: 'gif', 'svg+xml': 'svg', avif: 'avif' };

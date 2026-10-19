@@ -15,12 +15,14 @@
   /* ---------- Varsayılan içerik ---------- */
   const O = global.AKCAN_ORNEK || {};
   // Örnek içerik sürümü: yükseltildiğinde, kayıtlı verisi olan tarayıcılara da yeni örnekler bir kez eklenir
-  const SAMPLE_VERSION = 4;
+  const SAMPLE_VERSION = 5;
   // Sürüm 4'te eklenen örnekler (Gıda ve Gündem alt kategorilerinin yazıları)
   const NEW_SAMPLES_4 = new Set(['yazi-gida', 'yazi-gundem']);
+  // Sürüm 5'te eklenen örnekler (Sofra ve Satır Arası podcast serileri, Sofra bölümleri)
+  const NEW_SAMPLES_5 = new Set(['seri-sofra', 'seri-satir-arasi', 'pod-sofra-1', 'pod-sofra-2', 'pod-sofra-3']);
 
   /* ---------- Örnek içeriği tanıma ---------- */
-  const SAMPLE_IDS = new Set(['posts', 'podcasts', 'remixes', 'pages'].flatMap((c) => (O[c] || []).map((x) => x.id)));
+  const SAMPLE_IDS = new Set(['posts', 'podcasts', 'remixes', 'pages', 'series'].flatMap((c) => (O[c] || []).map((x) => x.id)));
   // Sitenin ilk sürümündeki örnekler her açılışta rastgele kimlik alıyordu: başlıklarından tanınır
   const LEGACY_SAMPLES = {
     posts: ['Bir Remix Nasıl Doğar?', 'Kulaklıkla Dinlemek Neden Farklı Hissettirir?', 'Gece Yarısı Stüdyo Notları', 'Stüdyo Turu: Ekipmanlarım ve Çalışma Düzenim', 'Canlı Set: Pazar Akşamı Seansı', 'Sıfırdan Remix Yapımı'],
@@ -30,12 +32,21 @@
   };
   // Örnek sürümü 2'nin remixleri (3'te yenileriyle değişti)
   const OLD_SAMPLE_REMIXES = { 'remix-1': 'Gece Treni (Akcan Remix)', 'remix-2': 'Mavi (Akcan Edit)', 'remix-3': 'Yaz Sonu (Akcan Bootleg)', 'remix-4': 'Pazar Sabahı (Akcan Rework)', 'remix-5': 'Liman (Akcan Remix)' };
+  // Sitenin önceki sürümündeki örnek podcast programı: geçişte hiç değiştirilmemişse örnek seri olur
+  // (yayın derleyicisi örnek içerik dosyasını yüklemediği için metin burada da durur)
+  const OLD_SHOW = { name: 'Frekans', description: 'Bazı hikâyeler ancak dinlenerek anlaşılır. Her bölümde müziğin, sesin ve hafızanın izini sürüyorum; görüntüden arınmış, sadece sesin gücüne yaslanan bir yolculuk.' };
   /** Örnek içerik mi? Örnekler panelde ve önizlemede görünür, yayına hiç gönderilmez. */
   const isSample = (x) => !!x && (x.sample === true || SAMPLE_IDS.has(x.id));
 
   /* ---------- Alt kategoriler ---------- */
-  // Videolar, Yazılar ve Podcast sekmelerinin her birinin kendi listesi; ilgili sayfa ayarında (cats) durur
-  const CAT_KEYS = { video: 'videosPage', yazi: 'postsPage', podcast: 'podcast' };
+  // Videolar ve Yazılar sekmelerinin her birinin kendi listesi; ilgili sayfa ayarında (cats) durur.
+  // Podcast'te alt kategori yok: bölümler serilere bağlıdır (D.series)
+  const CAT_KEYS = { video: 'videosPage', yazi: 'postsPage' };
+
+  /* ---------- Podcast serileri ---------- */
+  const SERIES_STATUS = { devam: 'Devam ediyor', tamam: 'Tamamlandı', yakinda: 'Yakında' };
+  /** Bölümün bağlı olduğu seri */
+  const seriesOf = (data, ep) => (ep && ep.series ? ((data && data.series) || []).find((s) => s.id === ep.series) : undefined);
   const cat = (id, name, desc) => ({ id, name, slug: id, desc, link: '' });
   const startCats = (what) => [
     cat('muzik', 'Müzik', `Prodüksiyon, remix, canlı performans ve sesin hikâyeleri üzerine ${what}.`),
@@ -45,9 +56,9 @@
   /** Bir sekmenin alt kategorileri (tab: 'video' | 'yazi' | 'podcast'); adı ya da bağlantısı olmayanlar sayılmaz */
   const cats = (data, tab) => ((((data && data.settings) || {})[CAT_KEYS[tab]] || {}).cats || []).filter((c) => c && c.id && c.name && c.slug);
 
-  // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler, 3 → alt kategoriler (bkz. migrate)
+  // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler, 3 → alt kategoriler, 4 → podcast serileri (bkz. migrate)
   const DEFAULTS = {
-    version: 3,
+    version: 4,
     sampleVersion: SAMPLE_VERSION,
     settings: {
       siteName: 'Akcan',
@@ -83,19 +94,12 @@
         tint: '#7A4E1E',
         cats: startCats('yazılar')
       },
-      // Podcast programı (liste sayfasının üst bölümü)
+      // Podcast sekmesi: seri vitrininin üst bölümü (serilerin kendisi D.series'te)
       podcast: {
-        name: 'Frekans',
-        eyebrow: 'Podcast · Her Pazartesi',
-        description: 'Bazı hikâyeler ancak dinlenerek anlaşılır. Her bölümde müziğin, sesin ve hafızanın izini sürüyorum; görüntüden arınmış, sadece sesin gücüne yaslanan bir yolculuk.',
-        note: 'Bölümleri dinleme platformlarından takip edebilir ya da görsellerle zenginleştirilmiş halini okuyup dinlemek için buradan devam edebilirsiniz:',
-        cover: PIC('pod-show', 900, 900),
-        spotify: 'https://open.spotify.com/',
-        apple: 'https://podcasts.apple.com/',
-        youtube: '',
-        readText: 'Oku + Dinle',
-        tint: '#1F5A50',
-        cats: startCats('bölümler')
+        name: 'Podcast',
+        eyebrow: 'Podcast · Sesin hikâyeleri',
+        description: 'Her seri ayrı bir merak: müzik, sofralar ve gündem. Bir seri seçin; ister baştan dinleyin, ister en yeni bölümden başlayın.',
+        tint: '#1F5A50'
       },
       // Remixler sayfasının üst bölümü (Podcast programının ikizi)
       remixPage: {
@@ -146,6 +150,8 @@
     // Videolar ve Yazılar sekmeleri tek koleksiyonda: kind 'video' (YouTube videosu) ya da 'yazi' (kapak görselli blog yazısı)
     posts: O.posts || [],
     videos: [],
+    // Podcast serileri (dizideki sıra = vitrindeki sıra) ve her biri bir seriye bağlı bölümler
+    series: O.series || [],
     podcasts: O.podcasts || [],
     remixes: O.remixes || [],
     pages: O.pages || []
@@ -225,6 +231,28 @@
       data.version = 3;
       changed = true;
     }
+    // 4: podcast serileri. Tek program (settings.podcast) ilk seri olur, bütün bölümler ona bağlanır,
+    // podcast alt kategorileri kalkar; settings.podcast yalnızca vitrin sayfasının başını tutar.
+    // Program hiç değiştirilmemişse (ad ve açıklama örnekle aynı) örnek seri sayılır, yayına gitmez
+    if (!(data.version >= 4)) {
+      const pc = (data.settings && data.settings.podcast) || {};
+      const fromShow = {
+        title: pc.name || 'Podcast', slug: slugify(pc.name) || 'podcast-serisi', tagline: '',
+        description: pc.description || '', cover: pc.cover || '', tint: pc.tint || '',
+        frequency: String(pc.eyebrow || '').replace(/^Podcast\s*·\s*/i, '').trim(), status: 'devam', trailer: '',
+        spotify: pc.spotify || '', apple: pc.apple || '', youtube: pc.youtube || '', published: true
+      };
+      const ornek = (O.series || []).find((x) => x.id === 'seri-frekans');
+      const s = pc.name === OLD_SHOW.name && pc.description === OLD_SHOW.description
+        ? { ...fromShow, ...(ornek ? clone(ornek) : {}), id: 'seri-frekans', sample: true }
+        : { ...fromShow, id: 'seri-' + uid() };
+      // Sürüm 3 kaydında seri yoktur: birleştirmede varsayılanlardan gelen örnek seriler atılır
+      data.series = [s];
+      (data.podcasts || []).forEach((x) => { x.series = s.id; delete x.cat; });
+      data.settings.podcast = { ...DEFAULTS.settings.podcast, tint: pc.tint || DEFAULTS.settings.podcast.tint };
+      data.version = 4;
+      changed = true;
+    }
     const f = data.settings && data.settings.featured;
     if (f && f.type === 'videos') { f.type = 'posts'; changed = true; }
     // Her yazıya tür: videosu olan "video", olmayan "yazi" (kapak görselli blog yazısı)
@@ -263,7 +291,16 @@
     }
     // 4: Gıda ve Gündem alt kategorilerine iki örnek yazı. Örnekleri silmiş olana eklenmez
     if (sv < 4 && (data.posts || []).some(isSample)) addSamples(data, ['posts'], NEW_SAMPLES_4);
+    // 5: iki örnek podcast serisi ve Sofra bölümleri. Örnekleri silmiş olana eklenmez
+    if (sv < 5 && ['posts', 'podcasts', 'remixes', 'pages', 'series'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['series', 'podcasts'], NEW_SAMPLES_5);
     if (sv < SAMPLE_VERSION) { data.sampleVersion = SAMPLE_VERSION; changed = true; }
+    // Bağı kopuk bölümler (serisi silinmiş, eski yedek…) ilk seriye bağlanır; hiç seri yoksa "Podcast" serisi açılır
+    data.series = data.series || [];
+    if ((data.podcasts || []).length) {
+      if (!data.series.length) { data.series.push({ id: 'seri-' + uid(), title: 'Podcast', slug: 'podcast-serisi', status: 'devam', published: true }); changed = true; }
+      const ids = new Set(data.series.map((s) => s.id));
+      data.podcasts.forEach((x) => { if (!ids.has(x.series)) { x.series = data.series[0].id; changed = true; } });
+    }
     return changed;
   }
 
@@ -271,7 +308,7 @@
    * Örnek içeriklerden eksik olanları ekler (kimliği ya da bağlantısı zaten varsa atlar). Eklenen sayısını döner.
    * only: yalnızca bu kimlikteki örnekler
    */
-  function addSamples(data, cols = ['posts', 'podcasts', 'remixes', 'pages'], only) {
+  function addSamples(data, cols = ['series', 'posts', 'podcasts', 'remixes', 'pages'], only) {
     let n = 0;
     cols.forEach((c) => {
       data[c] = data[c] || [];
@@ -298,6 +335,21 @@
     const data = merge(clone(DEFAULTS), parsed || {});
     migrate(data);
     return data;
+  }
+
+  /**
+   * Yayına giden veri (kopya): yayında ve örnek olmayan içerikler; bölümlerden yalnızca bu serilere bağlı olanlar.
+   * Panel şifresi ve eski "videos" listesi gönderilmez.
+   */
+  function forPublish(data) {
+    const d = clone(data);
+    delete d.settings.adminHash;
+    delete d.videos;
+    const live = (x) => x.published !== false && !isSample(x);
+    ['posts', 'podcasts', 'remixes', 'pages', 'series'].forEach((c) => { d[c] = (d[c] || []).filter(live); });
+    const ids = new Set(d.series.map((s) => s.id));
+    d.podcasts = d.podcasts.filter((x) => ids.has(x.series));
+    return d;
   }
 
   function get() {
@@ -450,7 +502,7 @@
   }
 
   global.Store = {
-    KEY, DEFAULTS, uid, get, save, onSave, reset, exportJSON, importJSON, normalize,
+    KEY, DEFAULTS, uid, get, save, onSave, reset, exportJSON, importJSON, normalize, forPublish, SERIES_STATUS, seriesOf,
     slugify, esc, strip, fmtDate, fmtDateShort, fmtNum, isProfile, ytId, ytThumb, embed, wordCount, readingTime, hash, MONTHS,
     postKind, addSamples, isSample, CAT_KEYS, cats
   };

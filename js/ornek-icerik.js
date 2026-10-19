@@ -317,11 +317,41 @@
   ];
 
   /* ======================================================================
-     PODCAST BÖLÜMLERİ
+     PODCAST SERİLERİ — Podcast sekmesindeki vitrin (dizideki sıra = vitrin sırası)
+     status: 'devam' (Devam ediyor), 'tamam' (Tamamlandı), 'yakinda' (Yakında)
+     trailer: fragman — ses dosyası ya da YouTube / Spotify / SoundCloud bağlantısı
+     ====================================================================== */
+  const series = [
+    {
+      id: 'seri-frekans', title: 'Frekans', slug: 'frekans', status: 'devam', frequency: 'Her Pazartesi', published: true,
+      tagline: 'Müziğin, sesin ve hafızanın izinde',
+      // Sitenin önceki sürümündeki program açıklamasıyla birebir aynı (geçişte örnek program böyle tanınır)
+      description: 'Bazı hikâyeler ancak dinlenerek anlaşılır. Her bölümde müziğin, sesin ve hafızanın izini sürüyorum; görüntüden arınmış, sadece sesin gücüne yaslanan bir yolculuk.',
+      cover: PIC('pod-show', 900, 900), coverAlt: 'Frekans podcastinin kapağı', tint: '#1F5A50', trailer: '',
+      spotify: 'https://open.spotify.com/', apple: 'https://podcasts.apple.com/', youtube: ''
+    },
+    {
+      id: 'seri-sofra', title: 'Sofra', slug: 'sofra', status: 'devam', frequency: 'İki haftada bir', published: true,
+      tagline: 'Tariflerin arkasındaki insanlar',
+      description: 'Bir yemeğin tarifi birkaç satırdır; hikâyesi ise bir ömür. Sofra’da annelerin defterlerinden, mahalle fırınlarından ve unutulmaya yüz tutmuş mutfaklardan sesler topluyorum.',
+      cover: PIC('seri-sofra', 900, 900), coverAlt: 'Sofra podcastinin kapağı', tint: '#6B3A1F', trailer: '',
+      spotify: '', apple: '', youtube: ''
+    },
+    {
+      id: 'seri-satir-arasi', title: 'Satır Arası', slug: 'satir-arasi', status: 'yakinda', frequency: 'Her Perşembe', published: true,
+      tagline: 'Gündemin gözden kaçan ayrıntıları',
+      description: 'Haftanın en çok konuşulan haberini alıp satır aralarına bakıyoruz: kim söyledi, ne zaman söyledi ve neyi söylemedi? Yakında başlıyor; fragmanı şimdiden dinleyebilirsiniz.',
+      cover: PIC('seri-satir', 900, 900), coverAlt: 'Satır Arası podcastinin kapağı', tint: '#2E3A5A', trailer: MP3(8),
+      spotify: '', apple: '', youtube: ''
+    }
+  ];
+
+  /* ======================================================================
+     PODCAST BÖLÜMLERİ — series: bağlı olduğu seri
      ====================================================================== */
   const podcasts = [
     {
-      id: 'pod-6', cat: 'muzik', title: 'Kulak Kurdu: Aklımızdan Çıkmayan Şarkılar', number: 6, date: daysAgo(3), duration: '34 dk',
+      id: 'pod-6', series: 'seri-frekans', title: 'Kulak Kurdu: Aklımızdan Çıkmayan Şarkılar', number: 6, date: daysAgo(3), duration: '34 dk',
       cover: PIC('pod-6', 800, 800), coverCredit: 'Kapak: picsum.photos (örnek görsel)', tint: '',
       audio: MP3(6), embed: '', tags: ['Müzik', 'Psikoloji', 'Hafıza'], published: true, featured: false,
       excerpt: `Sabah duyduğunuz bir reklam şarkısı neden akşama kadar kafanızda döner? Bu bölümde “kulak kurdu” denen o inatçı melodilerin peşine düşüyoruz: neden oluşuyorlar ve nasıl kurtuluruz?`,
@@ -336,7 +366,7 @@
       sources: `Earworm — Vikipedi | https://en.wikipedia.org/wiki/Earworm\nİstemsiz müzikal imgeleme | https://en.wikipedia.org/wiki/Involuntary_musical_imagery`
     },
     {
-      id: 'pod-5', cat: 'muzik', title: 'Bir Şarkı Nasıl Hit Olur?', number: 5, date: daysAgo(10), duration: '29 dk',
+      id: 'pod-5', series: 'seri-frekans', title: 'Bir Şarkı Nasıl Hit Olur?', number: 5, date: daysAgo(10), duration: '29 dk',
       cover: PIC('pod-5', 800, 800), coverCredit: '', tint: '', audio: MP3(5), embed: '', tags: ['Müzik Endüstrisi', 'Prodüksiyon'], published: true, featured: false,
       excerpt: `Formülü olan bir sanat mı, yoksa şans mı? Hit şarkıların ortak noktalarını ve bu noktaların neden tek başına yetmediğini konuşuyoruz.`,
       description: `<p>Hit şarkıların çoğu benzer tempolarda, benzer uzunluklarda ve benzer yapılarda. Ama aynı formülle yazılan binlerce şarkı hiç duyulmuyor.</p>`
@@ -345,7 +375,7 @@
       sources: ''
     },
     {
-      id: 'pod-4', cat: 'muzik', title: 'Sessizliğin Sesi', number: 4, date: daysAgo(17), duration: '26 dk',
+      id: 'pod-4', series: 'seri-frekans', title: 'Sessizliğin Sesi', number: 4, date: daysAgo(17), duration: '26 dk',
       cover: PIC('pod-4', 800, 800), coverCredit: '', tint: '#2E3E52', audio: MP3(4), embed: '', tags: ['Ses', 'Bilim'], published: true, featured: false,
       excerpt: `Dünyanın en sessiz odasında kimse 45 dakikadan fazla kalamıyor. Sessizlik neden bu kadar rahatsız edici, müzikte neden bu kadar güçlü?`,
       description: `<p>Yankısız odalarda kendi kalp atışınızı, hatta kanınızın akışını duyabilirsiniz. Mutlak sessizlik aslında hiç sessiz değil.</p>`
@@ -354,7 +384,7 @@
       sources: `Yankısız oda | https://en.wikipedia.org/wiki/Anechoic_chamber`
     },
     {
-      id: 'pod-3', cat: 'muzik', title: 'Sesin Hafızası', number: 3, date: daysAgo(24), duration: '32 dk',
+      id: 'pod-3', series: 'seri-frekans', title: 'Sesin Hafızası', number: 3, date: daysAgo(24), duration: '32 dk',
       cover: PIC('pod-3', 800, 800), coverCredit: 'Kapak: Akcan arşivi · picsum.photos', tint: '', audio: MP3(3), embed: '', tags: ['Müzik', 'Hafıza', 'Bilim'], published: true, featured: false,
       excerpt: `Bir şarkı bizi neden yıllar öncesine götürür? Tek bir melodi, unuttuğumuzu sandığımız bir yazı, bir odayı, bir kokuyu geri getirebilir. Bu bölümde müzik ile hafıza arasındaki o tuhaf bağın peşine düşüyoruz.`,
       description: `<p>Şşş. Kulaklığınızı takın. Bir şarkı çalmaya başlıyor ve bir anda on beş yıl öncesindesiniz.</p><p>Müzik, beynimizde duygularla ve anılarla aynı bölgelerde işleniyor. Bu yüzden bir şarkı bize sadece bir melodi değil, bir zaman dilimi de hatırlatıyor.</p>`
@@ -365,17 +395,39 @@
       sources: `Anı tümseği | https://en.wikipedia.org/wiki/Reminiscence_bump\nMüzik ve hafıza | https://en.wikipedia.org/wiki/Music-related_memory`
     },
     {
-      id: 'pod-2', cat: 'muzik', title: 'Ritim ve Kalp Atışı', number: 2, date: daysAgo(31), duration: '28 dk',
+      id: 'pod-2', series: 'seri-frekans', title: 'Ritim ve Kalp Atışı', number: 2, date: daysAgo(31), duration: '28 dk',
       cover: PIC('pod-2', 800, 800), coverCredit: '', tint: '', audio: MP3(2), embed: '', tags: ['Bilim', 'Ritim'], published: true, featured: false,
       excerpt: `Neden 120 BPM civarındaki şarkılar bizi dansa kaldırıyor? Tempo, kalp atışı ve dans etme isteği arasındaki gizemli bağ.`,
       description: `<p>Dans müziğinin büyük kısmı 115 ile 130 BPM arasında. Bu aralık, yürürken attığımız adımların ve hafif egzersiz sırasındaki kalp atışımızın hızına çok yakın.</p><p>Bu bölümde ritmin bedenimizi nasıl “yakaladığını” konuşuyoruz.</p>`,
       sources: ''
     },
     {
-      id: 'pod-1', cat: 'muzik', title: 'Merhaba Dünya: İlk Bölüm', number: 1, date: daysAgo(38), duration: '24 dk',
+      id: 'pod-1', series: 'seri-frekans', title: 'Merhaba Dünya: İlk Bölüm', number: 1, date: daysAgo(38), duration: '24 dk',
       cover: PIC('pod-1', 800, 800), coverCredit: '', tint: '', audio: MP3(1), embed: '', tags: ['Tanışma'], published: true, featured: false,
       excerpt: `Podcastin neden var olduğunu ve neler konuşacağımızı anlattığım tanışma bölümü.`,
       description: `<p>Merhaba! Bu ilk bölümde kendimi tanıtıyor, bu podcasti neden yapmak istediğimi ve önümüzdeki haftalarda hangi soruların peşine düşeceğimizi anlatıyorum.</p>`,
+      sources: ''
+    },
+    /* ---------- Sofra ---------- */
+    {
+      id: 'pod-sofra-3', series: 'seri-sofra', title: 'Mahallenin Son Taş Fırını', number: 3, date: daysAgo(6), duration: '27 dk',
+      cover: PIC('sofra-3', 800, 800), coverCredit: '', tint: '', audio: MP3(11), embed: '', tags: ['Ekmek', 'Mahalle'], published: true, featured: false,
+      excerpt: `Sabah dörtte yanan bir fırın, kırk yıllık bir maya ve kuyruğa giren bütün bir mahalle.`,
+      description: `<p>Fırıncı Hasan Usta’nın mayası kendisinden yaşlı. Bu bölümde taş fırının sabahını, ekmeğin kokusunu ve kapanan fırınlarla birlikte kaybettiklerimizi dinliyoruz.</p>`,
+      sources: ''
+    },
+    {
+      id: 'pod-sofra-2', series: 'seri-sofra', title: 'Bir Kavanoz Turşunun Sabrı', number: 2, date: daysAgo(20), duration: '22 dk',
+      cover: PIC('sofra-2', 800, 800), coverCredit: '', tint: '', audio: MP3(10), embed: '', tags: ['Turşu', 'Gelenek'], published: true, featured: false,
+      excerpt: `Turşu kurmak bir tarif değil, bir bekleme sanatı. Kışa hazırlığın unutulan ritüelleri.`,
+      description: `<p>Ekim gelince balkonlar kavanozlarla dolardı. Bu bölümde turşunun, salçanın ve kurutmanın arkasındaki sabrı konuşuyoruz.</p>`,
+      sources: ''
+    },
+    {
+      id: 'pod-sofra-1', series: 'seri-sofra', title: 'Annemin Defteri', number: 1, date: daysAgo(34), duration: '25 dk',
+      cover: PIC('sofra-1', 800, 800), coverCredit: '', tint: '', audio: MP3(9), embed: '', tags: ['Aile', 'Tarif'], published: true, featured: false,
+      excerpt: `Sararmış bir tarif defteri, kenarına düşülmüş notlar ve bir annenin mutfağı.`,
+      description: `<p>Sofra’nın ilk bölümünde annemin tarif defterini açıyorum: ölçüler “göz kararı”, notlar kurşun kalemle, her sayfada bir anı.</p>`,
       sources: ''
     }
   ];
@@ -518,5 +570,5 @@
       + `<p><em>Bu metin bir örnektir; Panel → Hakkında bölümünden düzenleyebilirsiniz.</em></p>`
   };
 
-  global.AKCAN_ORNEK = { posts, podcasts, remixes, pages, menu, about, featuredId: 'vid-bicep' };
+  global.AKCAN_ORNEK = { posts, series, podcasts, remixes, pages, menu, about, featuredId: 'vid-bicep' };
 })(window);
