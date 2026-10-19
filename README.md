@@ -121,7 +121,7 @@ Derleme aracı veya sunucu gerekmez; saf **HTML5, CSS3 ve JavaScript**.
 ## 📁 Dosya Yapısı
 
 ```
-Akcan Web Site/
+Akcan Webpage/
 ├── index.html            # Site (önizlemede doğrudan, yayında her sayfanın şablonu)
 ├── admin.html            # Kontrol paneli (yalnızca bilgisayarınızda; yayına girmez)
 ├── build.js              # Yayın derleyicisi: her sayfa için hazır HTML, sitemap, robots, RSS, llms.txt
