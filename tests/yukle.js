@@ -13,8 +13,9 @@ globalThis.localStorage = {
 require('../js/ornek-icerik.js');
 require('../js/store.js');
 require('../js/render.js');
+require('../js/seo.js');
 
-const S = globalThis.Store, Render = globalThis.Render, O = globalThis.AKCAN_ORNEK;
+const S = globalThis.Store, Render = globalThis.Render, O = globalThis.AKCAN_ORNEK, SEO = globalThis.SEO;
 
 // Sürüm 3 kaydı: tek program (settings.podcast), bölümlerde cat, series yok
 const v3 = (podcastOver = {}) => ({
@@ -31,4 +32,4 @@ const v3 = (podcastOver = {}) => ({
   podcasts: O.podcasts.filter((p) => p.series === 'seri-frekans').map((p) => { const x = { ...p, cat: 'muzik' }; delete x.series; return x; })
 });
 
-module.exports = { S, Render, O, mem, v3 };
+module.exports = { S, Render, O, SEO, mem, v3 };
