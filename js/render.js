@@ -102,13 +102,13 @@
     const postRoute = (p) => (S.postKind(p) === 'video' ? 'videolar/' : 'yazilar/') + p.slug;
 
     /* ---------- Alt kategoriler ---------- */
-    // Videolar, Yazılar ve Podcast sekmelerinin her biri kendi listesini taşır (panelde ▦ Alt Kategoriler).
-    // Alt kategori sayfası sekmenin altında: /yazilar/gida/, /videolar/gundem/, /podcast/muzik/
-    const TAB_ROUTE = { video: 'videolar', yazi: 'yazilar', podcast: 'podcast' };
+    // Videolar ve Yazılar sekmelerinin her biri kendi listesini taşır (panelde ▦ Alt Kategoriler).
+    // Alt kategori sayfası sekmenin altında: /yazilar/gida/, /videolar/gundem/
+    const TAB_ROUTE = { video: 'videolar', yazi: 'yazilar' };
     const catsOf = (tab) => S.cats(D, tab);
     const catRoute = (tab, c) => TAB_ROUTE[tab] + '/' + c.slug;
     // Sekmede yayında olan içerikler
-    const tabList = (tab) => (tab === 'podcast' ? pub(D.podcasts) : pub(D.posts).filter((p) => S.postKind(p) === tab));
+    const tabList = (tab) => pub(D.posts).filter((p) => S.postKind(p) === tab);
     const catOf = (tab, x) => (x && x.cat ? catsOf(tab).find((c) => c.id === x.cat) : undefined);
     /** İçeriği olan alt kategoriler: [alt kategori, içerik sayısı]. Boş olanlar sitede görünmez, sayfası da olmaz. */
     function liveCats(tab) {
@@ -118,6 +118,20 @@
     const liveCat = (tab, slug) => (liveCats(tab).find(([c]) => c.slug === slug) || [])[0];
     // Alt kategoriyle aynı adı taşıyan etiket iki kez görünmesin
     const withoutCat = (tags, c) => (tags || []).filter((t) => !c || norm(t) !== norm(c.name));
+
+    /* ---------- Podcast serileri ---------- */
+    // Vitrin /podcast/, seri /podcast/frekans/, bölüm /podcast/frekans/bolum-adi/
+    /** Yayındaki seriler, paneldeki sırayla (vitrin sırası) */
+    const seriesList = () => (D.series || []).filter((s) => s.published !== false);
+    const findSeries = (slug) => seriesList().find((s) => s.slug === slug);
+    const serOf = (x) => S.seriesOf(D, x);
+    const seriesRoute = (s) => 'podcast/' + s.slug;
+    const epRoute = (x) => { const s = serOf(x); return (s ? seriesRoute(s) : 'podcast') + '/' + x.slug; };
+    // Yayındaki bölümler: yalnızca yayındaki serilere bağlı olanlar (yeniden eskiye)
+    const liveEps = () => { const ids = new Set(seriesList().map((s) => s.id)); return pub(D.podcasts).filter((x) => ids.has(x.series)); };
+    const seriesEps = (s) => liveEps().filter((x) => x.series === s.id);
+    // Fragman ses dosyasıysa alttaki oynatıcıda çalar; YouTube / Spotify / SoundCloud bağlantısı gömülür
+    const trailerAudio = (s) => (s.trailer && !S.embed(s.trailer) && /^https?:\/\//i.test(s.trailer) ? s.trailer : '');
 
     /** Eski ya da kısa biçimli site içi adresleri güncel biçime çevirir (#/yazi/x → yazilar/x, yanlış sekmedeki video → videolar/x) */
     function normalize(route) {
@@ -136,7 +150,15 @@
           return p ? postRoute(p) : r;
         }
         case 'video': { const p = (D.posts || []).find((x) => x.legacyVideoId === arg || x.id === arg); return p ? postRoute(p) : 'videolar'; }
-        case 'bolum': { const x = (D.podcasts || []).find((y) => y.id === arg || y.slug === arg); return x ? 'podcast/' + x.slug : 'podcast'; }
+        case 'bolum': { const x = (D.podcasts || []).find((y) => y.id === arg || y.slug === arg); return x ? epRoute(x) : 'podcast'; }
+        case 'podcast': {
+          // Seri bağlantısı yerinde kalır; eski bölüm adresi (/podcast/bolum/) ve yanlış serideki bölüm doğru adrese,
+          // eski alt kategori ya da bilinmeyen adres vitrine yönlenir
+          const epAt = (slug) => (D.podcasts || []).find((y) => y.slug === slug);
+          if (parts.length === 2) { if (findSeries(arg)) return r; const x = epAt(arg); return x ? epRoute(x) : 'podcast'; }
+          if (parts.length === 3) { const x = epAt(parts[2]); return x ? epRoute(x) : r; }
+          return r;
+        }
         case 'remix': { const x = (D.remixes || []).find((y) => y.id === arg || y.slug === arg); return x ? 'remixler/' + x.slug : 'remixler'; }
         default: return r;
       }
@@ -170,13 +192,14 @@
           tags: withoutCat(p.tags, c), text: S.strip((p.excerpt || '') + ' ' + (p.content || '')), raw: p
         });
       });
-      pub(D.podcasts).forEach((p) => {
-        const c = catOf('podcast', p);
+      // Podcast bölümleri: cat yerinde serinin adı
+      liveEps().forEach((p) => {
+        const s = serOf(p);
         out.push({
-          type: 'podcast', fk: 'podcast', label: 'Podcast', id: p.id, title: p.title, date: p.date, href: href('podcast/' + p.slug),
-          thumb: asset(p.cover), audio: p.audio, raw: p, text: S.strip(p.description), cat: c && c.name,
-          tags: ['Podcast', p.number ? 'Bölüm ' + p.number : '', ...withoutCat(p.tags, c), p.duration].filter(Boolean),
-          sub: (p.number ? 'Bölüm ' + p.number + ' · ' : '') + 'Podcast'
+          type: 'podcast', fk: 'podcast', label: 'Podcast', id: p.id, title: p.title, date: p.date, href: href(epRoute(p)),
+          thumb: asset(p.cover), audio: p.audio, raw: p, text: S.strip(p.description), cat: s && s.title,
+          tags: ['Podcast', p.number ? 'Bölüm ' + p.number : '', ...(p.tags || []), p.duration].filter(Boolean),
+          sub: (p.number ? 'Bölüm ' + p.number + ' · ' : '') + (s ? s.title : 'Podcast')
         });
       });
       pub(D.remixes).forEach((r) => out.push({
@@ -187,13 +210,20 @@
       }));
       return (cache = out.sort(byDate));
     }
-    const findItem = (type, id) => items().find((i) => i.type === type && i.id === id);
+    // Oynatıcı anahtarı "tür:kimlik"; "seri:kimlik" serinin fragmanıdır
+    const findItem = (type, id) => (type === 'seri' ? trailerItem(id) : items().find((i) => i.type === type && i.id === id));
+    function trailerItem(id) {
+      const s = seriesList().find((x) => x.id === id);
+      if (!s) return undefined;
+      return { type: 'seri', id, title: s.title + ' · Fragman', href: href(seriesRoute(s)), thumb: asset(s.cover), audio: trailerAudio(s), sub: 'Fragman', label: 'Fragman' };
+    }
 
-    /** Site içi arama: içerikler + yayındaki özel sayfalar + alt kategori sayfaları */
+    /** Site içi arama: içerikler + podcast serileri + yayındaki özel sayfalar + alt kategori sayfaları */
     function searchIndex() {
       const pages = pub(D.pages).map((p) => ({ type: 'page', label: 'Sayfa', title: p.title, href: href('sayfa/' + p.slug), text: S.strip(p.content), tags: [] }));
       const subs = catPages().map((x) => ({ type: 'cat', label: 'Alt kategori', title: x.tabName + ' › ' + x.cat.name, href: href(x.route), text: x.cat.desc || '', tags: [] }));
-      return [...items(), ...subs, ...pages];
+      const sers = seriesList().map((s) => ({ type: 'series', label: 'Podcast serisi', title: s.title, href: href(seriesRoute(s)), text: [s.tagline, s.description].filter(Boolean).join(' '), tags: [] }));
+      return [...items(), ...sers, ...subs, ...pages];
     }
 
     /* ---------- Menü & alt bilgi ---------- */
@@ -338,7 +368,7 @@
         if (targetId) {
           const colls = [
             { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => href(postRoute(x)), thumb: postThumb, excerpt: (x) => x.excerpt },
-            { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => href('podcast/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => S.strip(x.description) },
+            { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => href(epRoute(x)), thumb: (x) => asset(x.cover), excerpt: (x) => S.strip(x.description) },
             { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => href('remixler/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt || x.original || S.strip(x.description) },
             { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => href('sayfa/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt }
           ];
@@ -682,7 +712,8 @@
     }
 
     /** Liste sayfasının üstü: kare kapak, üst etiket, ad, açıklama, dinleme platformları ve en son içeriğe bağlantı */
-    function showHero(c, name, eyebrow, links, latest, readText) {
+    // extra: platform satırından sonra (ör. seri fragmanı düğmesi)
+    function showHero(c, name, eyebrow, links, latest, readText, extra = '') {
       // Yalnızca gerçek program/profil adresleri (https://open.spotify.com/ gibi ana sayfalar gösterilmez)
       links = links.filter((l) => isProfile(l[1]));
       return `<div class="page-wash" style="--wash:${esc(c.tint || '#1F5A50')}"></div>
@@ -693,6 +724,7 @@
           <h1 class="rise d2">${esc(name)}</h1>
           ${c.description ? `<p class="desc rise d3">${esc(c.description)}</p>` : ''}
           ${links.length ? `<p class="pnote rise d3">Dinle: ${links.map(([l, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${l}</a>`).join(' · ')}</p>` : ''}
+          ${extra}
           ${c.note ? `<p class="pnote rise d3">${esc(c.note)}</p>` : ''}
           ${latest ? `<a class="readlink rise d4" href="${latest}"><span class="arr">→</span> ${esc(c.readText || readText)}</a>` : ''}
         </div>
@@ -724,87 +756,127 @@
       </div></div></div></div>` : ''}`;
     }
 
-    /* ---------- Podcast ---------- */
-    // noCat: alt kategori sayfasında adı tekrar yazılmaz
-    const epRow = (p, noCat) => audioRow('podcast:' + p.id, href('podcast/' + p.slug), p.audio, p.title, p.number, [noCat ? '' : (catOf('podcast', p) || {}).name, S.fmtDateShort(p.date), p.duration]);
+    /* ---------- Podcast: seri vitrini, seri ve bölüm sayfaları ---------- */
+    // noSeries: seri sayfasında serinin adı tekrar yazılmaz
+    const epRow = (p, noSeries) => audioRow('podcast:' + p.id, href(epRoute(p)), p.audio, p.title, p.number, [noSeries ? '' : (serOf(p) || {}).title, S.fmtDateShort(p.date), p.duration]);
 
-    const showName = () => (st.podcast || {}).name || 'Podcast';
-    function seriesNode() {
-      const pc = st.podcast || {};
+    const podName = () => (st.podcast || {}).name || 'Podcast';
+    function seriesNode(s) {
       return {
-        '@type': 'PodcastSeries', '@id': pageUrl('podcast') + '#program', name: showName(), url: pageUrl('podcast'),
-        description: pc.description, image: abs(asset(pc.cover)), inLanguage: 'tr-TR', author: { '@id': personId() },
-        sameAs: [pc.spotify, pc.apple, pc.youtube].filter(isProfile)
+        '@type': 'PodcastSeries', '@id': pageUrl(seriesRoute(s)) + '#seri', name: s.title, url: pageUrl(seriesRoute(s)),
+        description: s.tagline || s.description, image: abs(asset(s.cover)), inLanguage: 'tr-TR', author: { '@id': personId() },
+        sameAs: [s.spotify, s.apple, s.youtube].filter(isProfile)
       };
     }
 
-    // cat: alt kategori sayfası (program tanıtımı yerine alt kategorinin başı)
-    function listPodcasts(cat) {
+    /** Vitrin kartı: kare kapak (köşede Yakında / Tamamlandı), ad, kısa tanım, bölüm sayısı · yayın sıklığı */
+    function seriesCard(s) {
+      const n = seriesEps(s).length;
+      const badge = s.status === 'yakinda' || s.status === 'tamam' ? `<span class="sbadge">${S.SERIES_STATUS[s.status]}</span>` : '';
+      const meta = [n ? n + ' bölüm' : '', s.frequency].filter(Boolean).join(' · ');
+      return `<a class="scard reveal" href="${href(seriesRoute(s))}">
+        <span class="scover">${s.cover ? `<img src="${esc(asset(s.cover))}" alt="${esc(s.coverAlt || s.title)}" loading="lazy" decoding="async">` : ''}${badge}</span>
+        <span class="st">${esc(s.title)}</span>
+        ${s.tagline ? `<span class="sl">${esc(s.tagline)}</span>` : ''}
+        ${meta ? `<span class="sm">${esc(meta)}</span>` : ''}
+      </a>`;
+    }
+
+    /** /podcast/: tanıtım, seri kapakları ve bütün serilerden son bölümler */
+    function podcastIndex() {
       const pc = st.podcast || {};
-      const all = pub(D.podcasts);
-      const list = cat ? all.filter((x) => x.cat === cat.id) : all;
-      const name = showName();
-      const links = [['Spotify', pc.spotify], ['Apple Podcasts', pc.apple], ['YouTube', pc.youtube]];
-      const route = cat ? catRoute('podcast', cat) : 'podcast';
-      const desc = cat ? catDesc(name, cat, list) : pc.description;
+      const name = podName();
+      const sers = seriesList();
+      const eps = liveEps();
       return {
-        title: (cat ? cat.name + ' — ' : '') + name + ' — ' + st.siteName, name: cat ? cat.name : name, desc, image: asset(pc.cover), imageAlt: name, ogType: 'website',
-        modified: list[0] && list[0].date, noindex: !list.length, crumbs: crumbs(cat ? [[name, 'podcast'], [cat.name, route]] : [[name, 'podcast']]),
-        schema: [listNode('CollectionPage', route, cat ? cat.name : name, desc, items().filter((i) => i.type === 'podcast' && (!cat || i.raw.cat === cat.id)), catExtra(cat)), seriesNode()],
-        html: `${cat
-          ? `<div class="page-wash" style="--wash:${esc(pc.tint || '#1F5A50')}"></div>${catHead(name, href('podcast'), cat)}`
-          : showHero(pc, name, 'Podcast', links, list[0] && href('podcast/' + list[0].slug), 'Oku + Dinle')}
+        title: name + ' — ' + st.siteName, name, desc: pc.description, image: asset((sers[0] || {}).cover), imageAlt: name, ogType: 'website',
+        modified: eps[0] && eps[0].date, noindex: !sers.length, crumbs: crumbs([[name, 'podcast']]),
+        schema: [listNode('CollectionPage', 'podcast', name, pc.description, sers.map((s) => ({ href: href(seriesRoute(s)), title: s.title })))],
+        html: `<div class="page-wash" style="--wash:${esc(pc.tint || '#1F5A50')}"></div>
+      <header class="phead phead-plain phead-pod"><div class="wrap">
+        ${pc.eyebrow ? `<div class="pcast-eyebrow rise d1">${ICON.wave}${esc(pc.eyebrow)}</div>` : ''}
+        <h1 class="rise d1">${esc(name)}</h1>
+        ${pc.description ? `<p class="pintro rise d2">${esc(pc.description)}</p>` : ''}
+        ${sers.length ? `<p class="pmeta rise d2">${sers.length} seri · ${eps.length} bölüm</p>` : ''}
+      </div></header>
+      <section class="ix ix-plain" id="seriler"><div class="wrap">
+        ${sers.length ? `<div class="sgrid">${sers.map(seriesCard).join('')}</div>` : '<div class="empty-note">Henüz yayınlanmış seri yok.</div>'}
+      </div></section>
+      ${eps.length ? `<section class="ix" id="son-bolumler"><div class="wrap">
+        <div class="head"><span class="lbl">Son bölümler</span><span class="cnt">bütün serilerden · en yeniden eskiye</span></div>
+        <div class="eplist">${eps.slice(0, 6).map((p) => epRow(p)).join('')}</div>
+      </div></section>` : ''}`
+      };
+    }
+
+    /** /podcast/<seri>/: serinin kimliği (kapak, tanıtım, platformlar, fragman) ve bölümleri */
+    function seriesPage(s) {
+      const list = seriesEps(s);
+      const route = seriesRoute(s);
+      const name = podName();
+      const eyebrow = [name, s.frequency, S.SERIES_STATUS[s.status]].filter(Boolean).join(' · ');
+      const links = [['Spotify', s.spotify], ['Apple Podcasts', s.apple], ['YouTube', s.youtube]];
+      const emb = S.embed(s.trailer);
+      const trailerBtn = trailerAudio(s) ? `<button class="readlink trailer rise d3" data-play="seri:${esc(s.id)}"><span class="arr">▶</span> Fragmanı dinle</button>` : '';
+      return {
+        title: s.seoTitle || `${s.title} — ${name} — ${st.siteName}`, name: s.title, desc: s.seoDesc || s.tagline || s.description,
+        image: asset(s.ogImage) || asset(s.cover), imageAlt: s.coverAlt || s.title, ogType: 'website',
+        modified: list[0] && list[0].date, noindex: !list.length, crumbs: crumbs([[name, 'podcast'], [s.title, route]]),
+        ctx: { crail: [{ label: name, href: href('podcast') }, { label: s.title, href: href(route) }] },
+        schema: [seriesNode(s)],
+        html: `${showHero({ ...s, eyebrow }, s.title, name, links, list[0] && href(epRoute(list[0])), 'Son bölümü dinle', trailerBtn)}
+      ${emb ? `<div class="wrap"><div class="embedbox trailerbox ${emb.kind}">${emb.html}</div></div>` : ''}
       <section class="ix" id="bolumler"><div class="wrap">
-        <div class="head"><div class="hl"><span class="lbl">Bölümler</span>${catBar('podcast', cat)}</div><span class="cnt">${list.length} bölüm · en yeniden eskiye</span></div>
-        <div class="eplist">${list.length ? list.map((p) => epRow(p, !!cat)).join('') : '<div class="empty-note">Henüz bölüm yok.</div>'}</div>
+        <div class="head"><span class="lbl">Bölümler</span><span class="cnt">${list.length} bölüm · en yeniden eskiye</span></div>
+        <div class="eplist">${list.length ? list.map((p) => epRow(p, true)).join('') : `<div class="empty-note">${s.status === 'yakinda' ? 'Bu seri yakında başlıyor.' : 'Henüz bölüm yok.'}</div>`}</div>
       </div></section>`
       };
     }
 
-    function episodePage(slug) {
-      const list = pub(D.podcasts);
+    /** /podcast/<seri>/<bolum>/: önceki / sonraki aynı serinin içinde */
+    function episodePage(s, slug) {
+      const list = seriesEps(s);
       const idx = list.findIndex((x) => x.slug === slug);
       const x = list[idx];
       if (!x) return notFound();
-      const pc = st.podcast || {};
-      const name = showName();
-      const route = 'podcast/' + x.slug;
+      const name = podName();
+      const sRoute = seriesRoute(s);
+      const route = epRoute(x);
       const words = S.wordCount(x.description);
       const emb = S.embed(x.embed);
       const prev = list[idx + 1], next = list[idx - 1];
       const cover = asset(x.cover);
       const alt = x.coverAlt || x.title;
-      const c = catOf('podcast', x);
       const ctx = {
-        crail: [{ label: name, href: href('podcast') }, ...(c ? [{ label: c.name, href: href(catRoute('podcast', c)) }] : []), ...withoutCat(x.tags, c).slice(0, c ? 2 : 3).map((t) => ({ label: t }))],
-        prev: prev && { href: href('podcast/' + prev.slug), title: prev.title },
-        next: next && { href: href('podcast/' + next.slug), title: next.title },
+        crail: [{ label: name, href: href('podcast') }, { label: s.title, href: href(sRoute) }, ...(x.tags || []).slice(0, 2).map((t) => ({ label: t }))],
+        prev: prev && { href: href(epRoute(prev)), title: prev.title },
+        next: next && { href: href(epRoute(next)), title: next.title },
         tint: x.tint, tintSrc: cover, readbar: true
       };
       const url = pageUrl(route);
       const desc = x.seoDesc || x.excerpt || S.strip(x.description);
-      const image = asset(x.ogImage) || cover || asset(pc.cover);
+      const image = asset(x.ogImage) || cover || asset(s.cover);
       return {
-        title: x.seoTitle || `${x.title} — ${name}`, name: x.title, desc, image, imageAlt: alt, ogType: 'article',
+        title: x.seoTitle || `${x.title} — ${s.title}`, name: x.title, desc, image, imageAlt: alt, ogType: 'article',
         published: x.date, modified: x.updated || x.date, tags: x.tags, ctx,
-        crumbs: crumbs([[name, 'podcast'], ...(c ? [[c.name, catRoute('podcast', c)]] : []), [x.title, route]]),
+        crumbs: crumbs([[name, 'podcast'], [s.title, sRoute], [x.title, route]]),
         schema: [{
           '@type': 'PodcastEpisode', '@id': url + '#bolum', url, name: x.title, description: clip(desc, 300), datePublished: isoDate(x.date),
           episodeNumber: x.number ? String(x.number) : undefined, image: abs(image), timeRequired: isoDuration(x.duration), inLanguage: 'tr-TR',
           associatedMedia: x.audio ? { '@type': 'MediaObject', contentUrl: x.audio } : undefined,
-          partOfSeries: { '@id': pageUrl('podcast') + '#program' }, author: { '@id': personId() }, citation: citations(x.sources)
-        }, seriesNode()],
+          partOfSeries: { '@id': pageUrl(sRoute) + '#seri' }, author: { '@id': personId() }, citation: citations(x.sources)
+        }, seriesNode(s)],
         html: `<article class="epage tinted" style="--tint:${esc(x.tint || '#3E5640')}">
       ${audioHero({
         cover, alt, credit: x.coverCredit, title: x.title, lede: x.excerpt, key: 'podcast:' + x.id, audio: x.audio,
-        eyebrow: `<a href="${href('podcast')}">${esc(name)}</a>${c ? `<span class="sep">·</span><a href="${href(catRoute('podcast', c))}">${esc(c.name)}</a>` : ''}${x.number ? `<span class="sep">·</span>Bölüm ${esc(x.number)}` : ''}`,
+        eyebrow: `<a href="${href('podcast')}">${esc(name)}</a><span class="sep">·</span><a href="${href(sRoute)}">${esc(s.title)}</a>${x.number ? `<span class="sep">·</span>Bölüm ${esc(x.number)}` : ''}`,
         meta: [S.fmtDate(x.date), x.duration, words > 40 ? S.fmtNum(words) + ' kelime' : '']
       })}
       <div class="wrap">
         ${emb ? `<div class="embedbox ${emb.kind}">${emb.html}</div>` : ''}
         ${x.description ? `<div class="prose dropcap">${fixHtml(x.description)}</div>` : ''}
         <div class="afoot">${chipsBlock(x.tags, '')}${sourcesBlock(x.sources, 'Kaynaklar')}${relatedBlock('podcast', x)}</div>
-        ${prevNext(list, idx, (y) => href('podcast/' + y.slug), (y) => (y.number ? 'Bölüm ' + y.number : S.fmtDate(y.date)))}
+        ${prevNext(list, idx, (y) => href(epRoute(y)), (y) => (y.number ? 'Bölüm ' + y.number : S.fmtDate(y.date)))}
       </div>
     </article>`
       };
@@ -947,7 +1019,8 @@
       const parts = route.split('/');
       const [seg, arg] = parts;
       let pg;
-      if (parts.length > 2) pg = notFound();
+      // Podcast bölümleri üç parçalı: podcast/seri/bolum
+      if (parts.length > (seg === 'podcast' ? 3 : 2)) pg = notFound();
       else {
         switch (seg || '') {
           case '': pg = homePage(); break;
@@ -959,8 +1032,8 @@
             break;
           }
           case 'podcast': {
-            const c = arg && !tabList('podcast').some((x) => x.slug === arg) && liveCat('podcast', arg);
-            pg = c ? listPodcasts(c) : arg ? episodePage(arg) : listPodcasts();
+            const s = arg && findSeries(arg);
+            pg = !arg ? podcastIndex() : !s ? notFound() : parts[2] ? episodePage(s, parts[2]) : seriesPage(s);
             break;
           }
           case 'remixler': pg = arg ? remixPage(arg) : listRemixes(); break;
@@ -984,9 +1057,11 @@
         liveCats(kind).forEach(([c]) => r.push(catRoute(kind, c)));
         list.forEach((p) => r.push(postRoute(p)));
       });
-      if (pub(D.podcasts).length || menuHas('podcast')) r.push('podcast');
-      liveCats('podcast').forEach(([c]) => r.push(catRoute('podcast', c)));
-      pub(D.podcasts).forEach((p) => r.push('podcast/' + p.slug));
+      // Podcast: vitrin, her yayındaki seri (bölümü olmasa da: vitrindeki kart oraya gider) ve bölümler
+      const sers = seriesList();
+      if (sers.length || menuHas('podcast')) r.push('podcast');
+      sers.forEach((s) => r.push(seriesRoute(s)));
+      liveEps().forEach((p) => r.push(epRoute(p)));
       if (pub(D.remixes).length || menuHas('remixes')) r.push('remixler');
       pub(D.remixes).forEach((p) => r.push('remixler/' + p.slug));
       const a = D.about || {};
@@ -995,9 +1070,9 @@
       return [...new Set(r)];
     }
 
-    const tabName = (tab) => (tab === 'podcast' ? showName() : postTab(tab).name);
+    const tabName = (tab) => postTab(tab).name;
     /** İçeriği olan bütün alt kategori sayfaları: { tab, tabName, cat, count, route } */
-    const catPages = () => ['video', 'yazi', 'podcast'].flatMap((tab) => liveCats(tab).map(([c, n]) => ({ tab, tabName: tabName(tab), cat: c, count: n, route: catRoute(tab, c) })));
+    const catPages = () => ['video', 'yazi'].flatMap((tab) => liveCats(tab).map(([c, n]) => ({ tab, tabName: tabName(tab), cat: c, count: n, route: catRoute(tab, c) })));
 
     /** Konum satırı (Yazılar › Gıda › Etiket · Etiket) ve önceki/sonraki bağlantıları */
     function crail(c) {
@@ -1061,7 +1136,7 @@
       return t.filter(Boolean).join('\n  ');
     }
 
-    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages };
+    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages, seriesList };
   }
 
   global.Render = { create, ICON, SOCIAL_ICON, PAGE_SIZE, clip };
