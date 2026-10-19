@@ -180,9 +180,14 @@ const all = R.items();
 const section = (title, list) => (list.length ? `\n## ${title}\n\n${list.map((l) => `- [${l.title}](${l.url})${l.desc ? ': ' + l.desc : ''}`).join('\n')}\n` : '');
 const entry = (it) => ({ title: it.title, url: R.abs(it.href), desc: summary(it, 200) });
 const profiles = Object.values(st.social || {}).filter(S.isProfile);
+// Alt kategoriler ve yayınlandıkları diğer kanallar
+const subs = R.catPages().map((x) => ({
+  title: `${x.tabName} › ${x.cat.name}`, url: R.abs(R.href(x.route)),
+  desc: [x.cat.desc, /^https?:\/\//i.test(x.cat.link || '') ? 'Kanal: ' + x.cat.link : ''].filter(Boolean).join(' ')
+}));
 write('llms.txt', `# ${st.siteName}
 
 > ${st.description || st.tagline || ''}
-${a.name || a.role ? `\n${[a.name, a.role].filter(Boolean).join(' — ')}. Hakkında: ${R.abs(R.href('hakkinda'))}\n` : ''}${section(st.videosPage.title || 'Videolar', all.filter((i) => i.fk === 'video').map(entry))}${section(st.postsPage.title || 'Yazılar', all.filter((i) => i.fk === 'yazi').map(entry))}${section(st.podcast.name || 'Podcast', all.filter((i) => i.type === 'podcast').map(entry))}${section('Remixler', all.filter((i) => i.type === 'remix').map(entry))}${section('Sayfalar', R.pub(D.pages).map((p) => ({ title: p.title, url: R.abs(R.href('sayfa/' + p.slug)), desc: Render.clip(p.seoDesc || p.excerpt || S.strip(p.content), 200) })))}${section('Bağlantılar', profiles.map((u) => ({ title: new URL(u).hostname.replace(/^www\./, ''), url: u })))}`);
+${a.name || a.role ? `\n${[a.name, a.role].filter(Boolean).join(' — ')}. Hakkında: ${R.abs(R.href('hakkinda'))}\n` : ''}${section(st.videosPage.title || 'Videolar', all.filter((i) => i.fk === 'video').map(entry))}${section(st.postsPage.title || 'Yazılar', all.filter((i) => i.fk === 'yazi').map(entry))}${section(st.podcast.name || 'Podcast', all.filter((i) => i.type === 'podcast').map(entry))}${section('Remixler', all.filter((i) => i.type === 'remix').map(entry))}${section('Alt kategoriler', subs)}${section('Sayfalar', R.pub(D.pages).map((p) => ({ title: p.title, url: R.abs(R.href('sayfa/' + p.slug)), desc: Render.clip(p.seoDesc || p.excerpt || S.strip(p.content), 200) })))}${section('Bağlantılar', profiles.map((u) => ({ title: new URL(u).hostname.replace(/^www\./, ''), url: u })))}`);
 
 console.log(`✓ ${pages.length} sayfa, ${nImg} görsel → ${path.relative(process.cwd(), OUT) || OUT}  (${siteUrl})`);

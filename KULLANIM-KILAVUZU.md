@@ -8,7 +8,7 @@ Bu kılavuz, sitenin ve kontrol panelinin her özelliğini adım adım anlatır.
 | **Kontrol paneli** | Bu klasördeki `admin.html` (yalnızca bilgisayarınızda çalışır) |
 | **Bilgisayarınızdaki önizleme** | Bu klasördeki `index.html` |
 | **GitHub deposu** | https://github.com/akcanx/akcanx.github.io |
-| **İlk panel şifresi** | `admin` (hemen değiştirin, bkz. [Ayarlar & Tema](#15-ayarlar--tema)) |
+| **İlk panel şifresi** | `admin` (hemen değiştirin, bkz. [Ayarlar & Tema](#16-ayarlar--tema)) |
 
 ---
 
@@ -23,21 +23,22 @@ Bu kılavuz, sitenin ve kontrol panelinin her özelliğini adım adım anlatır.
 7. [Zengin metin editörü](#7-zengin-metin-editörü)
 8. [Videolar ve Yazılar](#8-videolar-ve-yazılar)
 9. [Podcast](#9-podcast)
-10. [Remixler](#10-remixler)
-11. [Özel Sayfalar](#11-özel-sayfalar)
-12. [Öne Çıkan (Hero)](#12-öne-çıkan-hero)
-13. [Menü Yönetimi](#13-menü-yönetimi)
-14. [Hakkında](#14-hakkında)
-15. [Ayarlar & Tema](#15-ayarlar--tema)
-16. [Yayın & SEO](#16-yayın--seo)
-17. [Yedekleme](#17-yedekleme)
-18. [Örnek içerikler](#18-örnek-içerikler)
-19. [Ziyaretçinin gördüğü site](#19-ziyaretçinin-gördüğü-site)
-20. [Arama motorları ve yapay zekâ: otomatik yapılanlar](#20-arama-motorları-ve-yapay-zekâ-otomatik-yapılanlar)
-21. [Görseller ve depolama alanı](#21-görseller-ve-depolama-alanı)
-22. [Kendi alan adınızı bağlamak](#22-kendi-alan-adınızı-bağlamak)
-23. [Sorun giderme](#23-sorun-giderme)
-24. [Teknik ek](#24-teknik-ek)
+10. [Alt kategoriler](#10-alt-kategoriler)
+11. [Remixler](#11-remixler)
+12. [Özel Sayfalar](#12-özel-sayfalar)
+13. [Öne Çıkan (Hero)](#13-öne-çıkan-hero)
+14. [Menü Yönetimi](#14-menü-yönetimi)
+15. [Hakkında](#15-hakkında)
+16. [Ayarlar & Tema](#16-ayarlar--tema)
+17. [Yayın & SEO](#17-yayın--seo)
+18. [Yedekleme](#18-yedekleme)
+19. [Örnek içerikler](#19-örnek-içerikler)
+20. [Ziyaretçinin gördüğü site](#20-ziyaretçinin-gördüğü-site)
+21. [Arama motorları ve yapay zekâ: otomatik yapılanlar](#21-arama-motorları-ve-yapay-zekâ-otomatik-yapılanlar)
+22. [Görseller ve depolama alanı](#22-görseller-ve-depolama-alanı)
+23. [Kendi alan adınızı bağlamak](#23-kendi-alan-adınızı-bağlamak)
+24. [Sorun giderme](#24-sorun-giderme)
+25. [Teknik ek](#25-teknik-ek)
 
 ---
 
@@ -54,7 +55,7 @@ Sitenin dört parçası vardır:
 
 **İçeriğiniz nerede durur?**
 
-- Panelde girdiğiniz her şey **bu tarayıcının depolama alanında** saklanır. Tarayıcı verilerini temizlerseniz panel içeriği silinir. Bu yüzden düzenli [yedek](#17-yedekleme) alın.
+- Panelde girdiğiniz her şey **bu tarayıcının depolama alanında** saklanır. Tarayıcı verilerini temizlerseniz panel içeriği silinir. Bu yüzden düzenli [yedek](#18-yedekleme) alın.
 - Yayında olan içeriğin bir kopyası GitHub'da da durur. **Taslaklar ve örnek içerikler** yalnızca panelde ve yedek dosyasındadır.
 
 **Bir içerik nasıl yayına çıkar?**
@@ -74,6 +75,7 @@ Kendi içeriğinizin dışındaki hiçbir şey yayına gitmez: **taslaklar, örn
 - [ ] **Ayarlar & Tema**: site adı, slogan, site açıklaması, sosyal medya profilleriniz ve e-posta adresiniz.
 - [ ] **Hakkında**: kendi fotoğrafınız, biyografiniz ve "Kısa tanım".
 - [ ] **Podcast → ⚙ Program Ayarları** ve **Remixler → ⚙ Sayfa Ayarları**: kendi kapaklarınız, açıklamalarınız ve platform profil adresleriniz.
+- [ ] **Videolar / Yazılar / Podcast → ▦ Alt Kategoriler**: alt kategorileri kendi kanallarınıza göre düzenleyin ve kanal bağlantılarını yazın (bkz. [Alt kategoriler](#10-alt-kategoriler)).
 - [ ] İlk içeriğinizi ekleyin (bir video, yazı, podcast bölümü ya da remix).
 - [ ] **Yayın & SEO → Yayın öncesi kontrol listesi**'ndeki uyarıları tek tek giderin.
 - [ ] İsterseniz **Yayın & SEO → Örnek içerikleri sil** ile örnekleri temizleyin.
@@ -130,7 +132,7 @@ Panele girince açılan ilk ekran.
 - **Ana Sayfa Öne Çıkan Manşet** kartı: şu anki manşet ve **Öne Çıkanı Değiştir →**.
 - **Son içerikler**: en yeni 8 içerik (tür, başlık, taslaksa "Taslak", tarih). Başlığa tıklayınca düzenleme açılır.
 - **Hızlı işlemler**: Yeni video, Yeni yazı, Yeni bölüm, Yeni remix, Yeni sayfa, Öne çıkanı seç.
-- **Depolama**: tarayıcıdaki kullanılan alan (yaklaşık 5 MB sınır) ve doluluk çubuğu. Bkz. [Görseller ve depolama alanı](#21-görseller-ve-depolama-alanı).
+- **Depolama**: tarayıcıdaki kullanılan alan (yaklaşık 5 MB sınır) ve doluluk çubuğu. Bkz. [Görseller ve depolama alanı](#22-görseller-ve-depolama-alanı).
 
 ---
 
@@ -141,31 +143,33 @@ Videolar, Yazılar, Podcast, Remixler ve Özel Sayfalar aynı liste düzenini ku
 **Üst kısım**
 
 - Bölümün adı ve açıklaması.
+- **▦ Alt Kategoriler** (Videolar, Yazılar ve Podcast'te): alt kategorileri ekleme, silme ve sıralama ekranı (bkz. [Alt kategoriler](#10-alt-kategoriler)).
 - **⚙ Sayfa / Program Ayarları** (Videolar, Yazılar, Podcast ve Remixler'de): sitedeki liste sayfasının üst bölümü.
-- **+ Yeni …** düğmesi (ör. **+ Yeni Video**, **+ Yeni Yazı**).
+- **+ Yeni …** düğmesi (ör. **+ Yeni Video**, **+ Yeni Yazı**). Liste bir alt kategoriye süzülmüşse yeni içerik o alt kategoride açılır.
 
 **Araç çubuğu**
 
-- **Arama kutusu**: başlıkta ve alt bilgide arar.
+- **Arama kutusu**: başlıkta, alt kategori adında ve alt bilgide arar.
 - **Durum filtresi**: Tümü / Yayında / Taslak (yanlarında sayılarıyla).
+- **Alt kategori filtresi** (Videolar, Yazılar, Podcast): Tüm alt kategoriler / bir alt kategori / Alt kategorisiz.
 
 **Tablo**
 
 | Sütun | İçerik |
 |---|---|
-| **Başlık** | Küçük resim, başlık, alt bilgi (tür, etiketler, bölüm no, BPM…). **★** = ana sayfada öne çıkan. **ÖRNEK** = örnek içerik, yayına gitmez. |
+| **Başlık** | Küçük resim, başlık, alt bilgi (yeşil yazıyla alt kategori, etiketler, bölüm no, BPM…). **★** = ana sayfada öne çıkan. **ÖRNEK** = örnek içerik, yayına gitmez. |
 | **Tarih** | Yayın tarihi. Listeler yeniden eskiye sıralanır. |
 | **Durum** | **Yayında** / **Taslak**. Rozete tıklamak durumu anında değiştirir. |
 | **İşlemler** | **Düzenle** · **↗** önizlemede aç · **⧉ Çoğalt** · **Sil** |
 
-- **⧉ Çoğalt**: içeriğin kopyasını "(kopya)" ekiyle ve **taslak** olarak oluşturur. Bağlantısının sonuna `-kopya` eklenir. Bir örnek içeriği kendi içeriğinize dönüştürmenin yolu budur (bkz. [Örnek içerikler](#18-örnek-içerikler)).
+- **⧉ Çoğalt**: içeriğin kopyasını "(kopya)" ekiyle ve **taslak** olarak oluşturur. Bağlantısının sonuna `-kopya` eklenir. Bir örnek içeriği kendi içeriğinize dönüştürmenin yolu budur (bkz. [Örnek içerikler](#19-örnek-içerikler)).
 - **Sil** onay ister ve geri alınamaz. Silinen bir özel sayfanın menü öğesi de kalkar.
 
 ---
 
 ## 6. Formlardaki ortak alanlar
 
-Form iki sütundan oluşur: solda içeriğin kendisi, sağda kartlar halinde **Yayın**, **Kapak**, **Görünüm**, **Etiketler**, **Arama & paylaşım** ayarları.
+Form iki sütundan oluşur: solda içeriğin kendisi, sağda kartlar halinde **Yayın**, **Alt kategori** (videolar, yazılar ve podcast bölümlerinde), **Kapak**, **Görünüm**, **Etiketler**, **Arama & paylaşım** ayarları.
 
 Formun üstünde **← Listeye dön**, **Görüntüle ↗** (kayıtlı içerikte) ve **Kaydet**; sağ sütunun altında **Kaydet** ve **Bu içeriği sil** vardır.
 
@@ -187,7 +191,7 @@ Sayfanın adresidir. Örneğin `/yazilar/bir-remix-nasil-dogar/`.
 | Alan | Açıklama |
 |---|---|
 | **Yayında** | Kapalıysa içerik **taslaktır**: ne önizlemede ne yayında görünür, yalnızca panelde durur. |
-| **Öne çıkar** | Açarsanız içerik ana sayfanın en üstündeki büyük manşete yerleşir. Aynı anda yalnızca bir içerik öne çıkabilir; yenisini seçince eskisi kendiliğinden kapanır. Ayrıntılar: [Öne Çıkan (Hero)](#12-öne-çıkan-hero). |
+| **Öne çıkar** | Açarsanız içerik ana sayfanın en üstündeki büyük manşete yerleşir. Aynı anda yalnızca bir içerik öne çıkabilir; yenisini seçince eskisi kendiliğinden kapanır. Ayrıntılar: [Öne Çıkan (Hero)](#13-öne-çıkan-hero). |
 | **Yayın tarihi** | Listelerdeki sıralamayı belirler. Gelecek bir tarih verirseniz içerik yine hemen yayınlanır, yalnızca listede en üstte durur. |
 
 ### Görsel alanları (kapak, paylaşım görseli…)
@@ -195,7 +199,7 @@ Sayfanın adresidir. Örneğin `/yazilar/bir-remix-nasil-dogar/`.
 - Kutuya tıklayın ya da **Yükle**'ye basıp bilgisayarınızdan görsel seçin.
 - Ya da alttaki kutuya bir görsel **bağlantısı** (`https://…`) yapıştırın.
 - **×** görseli kaldırır.
-- Yüklenen görseller otomatik olarak küçültülür ve sıkıştırılır. Bkz. [Görseller ve depolama alanı](#21-görseller-ve-depolama-alanı).
+- Yüklenen görseller otomatik olarak küçültülür ve sıkıştırılır. Bkz. [Görseller ve depolama alanı](#22-görseller-ve-depolama-alanı).
 
 ### Kapak açıklaması (alt metin)
 
@@ -300,6 +304,7 @@ Ana sayfadaki akışta ise videolar ve yazılar diğer içeriklerle birlikte, ta
 | **İçerik** | Zengin metin. **Videoda, videonun yazıya dökülmüş metnini buraya ekleyin**: arama motorları ve yapay zekâ videoyu izleyemez, bu metni okur. |
 | **Notlar ve kaynaklar** | Bkz. [Kaynaklar](#kaynaklar-notlar-ve-kaynaklar). |
 | **Görsel kaynakları ve lisanslar** | Her satıra bir görsel kaynağı; isteğe bağlı olarak `\| bağlantı`. Sayfanın sonunda ayrı bir açılır listede görünür. |
+| **Alt kategori** | Sağ sütunda; içeriğin sekme içindeki alt kategorisi (ör. Gıda). Bkz. [Alt kategoriler](#10-alt-kategoriler). |
 | Yayın, Görünüm (sayfa tonu), Etiketler, Arama & paylaşım | Bkz. [Ortak alanlar](#6-formlardaki-ortak-alanlar). |
 
 ### ⚙ Sayfa Ayarları (Videolar ve Yazılar sayfalarının üstü)
@@ -322,7 +327,7 @@ Her iki bölümün kendi ayarı vardır:
 - **Sayfa tonu**: kapaktan ya da videodan otomatik seçilir; panelden de belirlenebilir.
 - **Metin**: büyük italik özet, büyük baş harfle başlayan metin, metin arası görseller ve kaynaklı alıntılar.
 - **Sayfa sonu**: Notlar ve kaynaklar, Görsel kaynakları ve lisanslar, kavram kutuları, İlgili içerik (en fazla 6), önceki / sonraki kartları.
-- **Gezinme**: menünün altında konum satırı (Videolar ya da Yazılar › etiketler, sağda aynı sekmedeki önceki/sonraki); sayfanın en üstünde okuma ilerleme çubuğu.
+- **Gezinme**: menünün altında konum satırı (Videolar ya da Yazılar › alt kategori › etiketler, sağda aynı sekmedeki önceki/sonraki); sayfanın en üstünde okuma ilerleme çubuğu.
 
 ---
 
@@ -340,6 +345,7 @@ Her iki bölümün kendi ayarı vardır:
 | **Kaynaklar** | Her satıra `Başlık \| Bağlantı`. |
 | **Yayın** kartı | Yayında, Öne çıkar, Tarih, **Bölüm no** (yeni bölümde bir sonraki numara otomatik gelir), **Süre** ("32 dk", "1 sa 5 dk" ya da "45:30"), Bağlantı. |
 | **Kapak** kartı | Kare kapak, alt metin, **kapak görseli kaynağı** (kapağın altında küçük yazıyla görünür). |
+| **Alt kategori** kartı | Bölümün alt kategorisi. Bkz. [Alt kategoriler](#10-alt-kategoriler). |
 | Görünüm, Etiketler, Arama & paylaşım | Ortak alanlar. |
 
 ### ⚙ Program Ayarları (Podcast sayfasının üstü)
@@ -348,12 +354,57 @@ Program adı, üst etiket (ör. "Podcast · Her Pazartesi"), açıklama, alt not
 
 ### Sitede
 
-- **Podcast sayfası**: kare kapak, üst etiket, program adı, açıklama, "Dinle: Spotify · Apple Podcasts · YouTube", alt not, "→ Oku + Dinle". Altında **Bölümler** listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, tarih ve süre. Oynat düğmesi bölümü sayfadan ayrılmadan çalar.
-- **Bölüm sayfası**: tonlu üst bölüm, çerçeveli kapak ve kaynağı, başlık, italik özet, tarih · süre · kelime sayısı. Altında **ses çubuğu**: kaydırınca menünün altına yapışır. Sonra gömülü oynatıcı, bölüm metni, etiketler, kaynaklar, ilgili içerik, önceki/sonraki.
+- **Podcast sayfası**: kare kapak, üst etiket, program adı, açıklama, "Dinle: Spotify · Apple Podcasts · YouTube", alt not, "→ Oku + Dinle". Altında **Bölümler** listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, alt kategori, tarih ve süre. Oynat düğmesi bölümü sayfadan ayrılmadan çalar. "Bölümler" yazısının yanında alt kategori düğmeleri (**Hepsi · Müzik · …**) durur; bkz. [Alt kategoriler](#10-alt-kategoriler).
+- **Bölüm sayfası**: tonlu üst bölüm, çerçeveli kapak ve kaynağı, başlık, italik özet, tarih · süre · kelime sayısı. Başlığın üstünde program adı ve alt kategori bağlantısı. Altında **ses çubuğu**: kaydırınca menünün altına yapışır. Sonra gömülü oynatıcı, bölüm metni, etiketler, kaynaklar, ilgili içerik, önceki/sonraki.
 
 ---
 
-## 10. Remixler
+## 10. Alt kategoriler
+
+Farklı kanallarda ürettiğiniz içerikleri (ör. bir **yemek hikâyeleri** kanalı, **gündemi eleştirdiğiniz** ayrı bir kanal) aynı sekmede ama kendi bölümünde paylaşmak için. **Videolar**, **Yazılar** ve **Podcast** sekmelerinin her birinin kendi alt kategori listesi vardır. Başlangıçta üçünde de **Müzik · Gıda · Gündem** hazır gelir; adlarını değiştirebilir, silebilir, yenilerini ekleyebilirsiniz.
+
+### Panelde: ▦ Alt Kategoriler
+
+**Videolar**, **Yazılar** ya da **Podcast** listesinin üstündeki **▦ Alt Kategoriler** düğmesine basın. (Aynı ekrana sekmenin **⚙ Sayfa / Program Ayarları**'ndaki "Alt kategoriler" kartından da gidilir.)
+
+| İşlem | Nasıl |
+|---|---|
+| **Eklemek** | **+ Alt kategori ekle** → alanları doldurun → **Kaydet**. |
+| **Silmek** | Satırdaki kırmızı **×** → onaylayın → **Kaydet**. İçindeki içerikler **silinmez**, alt kategorisiz kalır (onay penceresi kaç içeriğin etkileneceğini söyler). |
+| **Sıralamak** | **↑ ↓** düğmeleri → **Kaydet**. Sitedeki düğmeler bu sırayla dizilir. |
+| **İçeriklerini görmek** | Satırdaki **"3 içerik"** rozeti listeyi o alt kategoriye süzer. İçeriği olmayanlarda **Boş** yazar. |
+
+Değişiklikler **Kaydet**'e basınca uygulanır; kaydetmeden ayrılmak isterseniz panel uyarır. **Ctrl+S** de çalışır.
+
+**Alanlar**
+
+| Alan | Açıklama |
+|---|---|
+| **Ad** | Zorunlu. Sitedeki düğmede ve alt kategori sayfasının başlığında görünür. |
+| **Bağlantı** | Alt kategori sayfasının adresi: `/yazilar/gida/`. Boş bırakılırsa addan oluşturulur. Aynı sekmede başka bir alt kategori ya da içerik aynı bağlantıyı kullanıyorsa sonuna `-2` eklenir ve bildirimle söylenir. |
+| **Açıklama** | Alt kategori sayfasında başlığın altında görünür; arama sonucunda açıklama olur. Boşsa içeriklerin başlıklarından bir açıklama üretilir. |
+| **Kanal bağlantısı** | Bu içerikleri yayınladığınız diğer kanal ya da hesap (`https://` ile başlamalı). Sayfada adresine göre **"YouTube kanalına git ↗"**, **"Instagram hesabına git ↗"**, **"Spotify'da dinle ↗"** gibi bir bağlantı olarak görünür. |
+
+Ekranın üstündeki **Sitede görünüşü** kartı düğmelerin sitedeki sırasını gösterir; soluk olanların yayında içeriği yoktur.
+
+### İçeriği bir alt kategoriye koymak
+
+- Her video, yazı ve podcast bölümü formunun sağ sütununda **Alt kategori** kartı vardır: **— Yok —** ya da sekmenin alt kategorilerinden biri. Bir içerik tek bir alt kategoride olur; etiketler ayrıca kullanılmaya devam eder.
+- Liste süzülmüşken (ör. Gıda) basılan **+ Yeni Yazı**, yeni yazıyı doğrudan o alt kategoride açar.
+- Listelerdeki **Tüm alt kategoriler** kutusu tabloyu bir alt kategoriye ya da **Alt kategorisiz** içeriklere süzer; alt kategorinin adı başlığın altında yeşil yazılır.
+
+### Sitede
+
+- **Düğmeler**: Videolar ve Yazılar'da başlığın altında, Podcast'te **Bölümler** yazısının yanında **Hepsi · Müzik · Gıda · Gündem** (yanlarında içerik sayıları). Mobilde tek satırdır, yana kaydırılır.
+- **Alt kategori sayfası** (ör. `/yazilar/gida/`): üstte sekmeye dönüş bağlantısı (**← Yazılar**), büyük başlık, açıklama ve kanal bağlantısı; altında yalnızca o alt kategorinin içerikleri. Etkin düğme vurgulanır.
+- **Liste satırlarında** ve ana sayfa akışında alt kategorinin adı etiketlerin önünde, vurgu renginde görünür.
+- **İçerik sayfasında** konum satırı: **Yazılar › Gıda › etiketler**; alt kategoriye tıklanınca o sayfa açılır.
+- **Boş alt kategoriler gizlenir**: yayında içeriği olmayan alt kategorinin ne düğmesi ne de sayfası vardır. Örnek içerikler yayına gitmediği için, yayındaki sitede bir alt kategori ancak ona kendi içeriğinizi koyduğunuzda görünür.
+- Alt kategori sayfaları site haritasına, site içi aramaya ve `llms.txt` dosyasına (kanal bağlantılarıyla birlikte) kendiliğinden eklenir.
+
+---
+
+## 11. Remixler
 
 Remixler sekmesi Podcast sekmesinin ikizidir: aynı düzen, aynı oynatıcı.
 
@@ -386,7 +437,7 @@ Sayfa adı, üst etiket (ör. "Remix · Edit · Bootleg"), açıklama, alt not, 
 
 ---
 
-## 11. Özel Sayfalar
+## 12. Özel Sayfalar
 
 İletişim, Ekipmanlar, Etkinlikler gibi istediğiniz kadar sayfa oluşturabilirsiniz. Adresleri `/sayfa/bağlantı/` biçimindedir.
 
@@ -402,7 +453,7 @@ Sayfa adı, üst etiket (ör. "Remix · Edit · Bootleg"), açıklama, alt not, 
 
 ---
 
-## 12. Öne Çıkan (Hero)
+## 13. Öne Çıkan (Hero)
 
 Ana sayfanın en üstündeki tam genişlikteki büyük manşet.
 
@@ -445,7 +496,7 @@ Yaptığınız her değişiklik burada anında görünür.
 
 ---
 
-## 13. Menü Yönetimi
+## 14. Menü Yönetimi
 
 Sitenin üst menüsü (ve alt bilgideki "Menü" listesi).
 
@@ -468,7 +519,7 @@ Sitenin üst menüsü (ve alt bilgideki "Menü" listesi).
 
 ---
 
-## 14. Hakkında
+## 15. Hakkında
 
 Sitenin Hakkında sayfası (`/hakkinda/`): tam ekran fotoğraf, üzerinde iki yana ayrılmış büyük italik yazı, altında vurgu renginde ortalanmış başlık ve biyografi.
 
@@ -486,7 +537,7 @@ Sosyal medya bağlantıları burada değil, **Ayarlar & Tema**'dadır.
 
 ---
 
-## 15. Ayarlar & Tema
+## 16. Ayarlar & Tema
 
 ### Site kimliği
 
@@ -525,7 +576,7 @@ En alttaki **Ayarları Kaydet**, şifre dışındaki her şeyi kaydeder.
 
 ---
 
-## 16. Yayın & SEO
+## 17. Yayın & SEO
 
 ### Yayın durumu
 
@@ -537,7 +588,7 @@ Sayfanın en üstündeki kart ve kenar çubuğundaki rozet şu durumlardan birin
 | **Değişiklikler birkaç saniye içinde gönderilecek… / Yayınlanıyor…** | Gönderim sürüyor. Bu sırada paneli kapatmaya çalışırsanız tarayıcı uyarır. |
 | **✓ Gönderildi / Yayında · saat** | Gönderim başarılı. GitHub siteyi yaklaşık 1 dakikada günceller. |
 | **✓ Yayındaki site güncel** | Değişen bir şey yoktu, gönderim yapılmadı. |
-| **✕ Gönderilemedi / Yayın hatası** | Sebebi kartta yazar (bkz. [Sorun giderme](#23-sorun-giderme)). |
+| **✕ Gönderilemedi / Yayın hatası** | Sebebi kartta yazar (bkz. [Sorun giderme](#24-sorun-giderme)). |
 | **Otomatik yayın kapalı** | Bağlantı kurulu ama "Her kaydetmede otomatik yayınla" kapalı. |
 
 Kartın altındaki bağlantılar:
@@ -571,7 +622,7 @@ Bu site için bağlantı kuruldu. Değerler şöyle:
 
 | Alan | Açıklama |
 |---|---|
-| **Site adresi** | Kendi alan adınızı bağladıysanız yazın (bkz. [bölüm 22](#22-kendi-alan-adınızı-bağlamak)). Boşsa GitHub Pages adresi kullanılır. |
+| **Site adresi** | Kendi alan adınızı bağladıysanız yazın (bkz. [bölüm 23](#23-kendi-alan-adınızı-bağlamak)). Boşsa GitHub Pages adresi kullanılır. |
 | **Varsayılan paylaşım görseli** | Kendi görseli olmayan sayfalar paylaşıldığında görünür. 1200×630 önerilir. |
 | **Google Search Console doğrulama kodu** | HTML etiketinin `content="…"` değeri; etiketin tamamını da yapıştırabilirsiniz. |
 | **Bing Webmaster Tools doğrulama kodu** | Bing'de "Google Search Console'dan içe aktar" seçerseniz gerekmez. |
@@ -614,7 +665,7 @@ Kodla yapılamayan ama sıralamayı en çok etkileyen işler:
 
 ---
 
-## 17. Yedekleme
+## 18. Yedekleme
 
 | Kart | İşlev |
 |---|---|
@@ -636,9 +687,11 @@ Kodla yapılamayan ama sıralamayı en çok etkileyen işler:
 
 ---
 
-## 18. Örnek içerikler
+## 19. Örnek içerikler
 
-Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu, 5 blog yazısı, 6 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu, 7 blog yazısı, 6 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+
+- Örnek videolar, yazılar ve bölümler **Müzik** alt kategorisindedir. **Gıda** (bir yemek hikâyesi) ve **Gündem** (haber paylaşmadan önce sorulacak sorular) alt kategorilerinde birer örnek yazı vardır; rehber yazısı alt kategorisizdir.
 
 - **"Bu Site Nasıl Kullanılır?"** rehber yazısı, her özelliği hem anlatır hem de kendi üzerinde gösterir. Panelde açıp nasıl hazırlandığına bakabilirsiniz.
 - Örnekler panelde başlıklarının yanındaki **ÖRNEK** etiketiyle görünür.
@@ -652,7 +705,7 @@ Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu
 
 ---
 
-## 19. Ziyaretçinin gördüğü site
+## 20. Ziyaretçinin gördüğü site
 
 ### Sayfalar ve adresleri
 
@@ -662,6 +715,7 @@ Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu
 | Videolar listesi / bir video | `/videolar/` · `/videolar/video-adi/` |
 | Yazılar listesi / bir yazı | `/yazilar/` · `/yazilar/yazi-adi/` |
 | Podcast / bir bölüm | `/podcast/` · `/podcast/bolum-adi/` |
+| Alt kategori sayfası | `/videolar/gundem/` · `/yazilar/gida/` · `/podcast/muzik/` |
 | Remixler / bir remix | `/remixler/` · `/remixler/remix-adi/` |
 | Hakkında | `/hakkinda/` |
 | Özel sayfa | `/sayfa/sayfa-adi/` |
@@ -686,7 +740,7 @@ Site adı ve slogan, **Menü** listesi (üst menüdeki görünür öğeler), **T
 ### Site içi arama
 
 - Sağ üstteki **🔍** düğmesi ya da klavyeden **/** veya **Ctrl+K** (⌘+K) ile açılır.
-- En az 2 harf yazın. Başlıklarda, metinlerde, etiketlerde ve özel sayfalarda arar; eşleşen kelime vurgulanır.
+- En az 2 harf yazın. Başlıklarda, metinlerde, etiketlerde, alt kategorilerde ve özel sayfalarda arar; eşleşen kelime vurgulanır.
 - **↑ ↓** ile sonuçlar arasında gezinin, **Enter** ile açın, **Esc** ile kapatın.
 - Kavram kutularına ve konum satırındaki etiketlere tıklamak da aramayı o kelimeyle açar.
 
@@ -721,7 +775,7 @@ Bütün sayfalar 360 piksel genişliğindeki telefonlardan geniş ekranlara kada
 
 ---
 
-## 20. Arama motorları ve yapay zekâ: otomatik yapılanlar
+## 21. Arama motorları ve yapay zekâ: otomatik yapılanlar
 
 Bunların hiçbiri için bir şey yapmanız gerekmez; site her yayında bunları kendisi üretir.
 
@@ -731,10 +785,10 @@ Bunların hiçbiri için bir şey yapmanız gerekmez; site her yayında bunları
   - kişi (sosyal profillerinizle), site, blog yazısı, video (Google video sonuçları için);
   - podcast programı ve bölümü, müzik kaydı (remix), konum satırı, profil sayfası;
   - yazılardaki kaynaklar.
-- **`sitemap.xml`**: görsellerle birlikte site haritası.
+- **`sitemap.xml`**: görsellerle birlikte site haritası (içeriği olan alt kategori sayfaları dahil).
 - **`robots.txt`**: arama motorlarına ve yapay zekâ arama botlarına izin; "Yapay zekâ eğitimine izin ver" kapalıysa eğitim botlarına yasak.
 - **`feed.xml`**: RSS (son 50 içerik).
-- **`llms.txt`**: yapay zekâ asistanları için site özeti.
+- **`llms.txt`**: yapay zekâ asistanları için site özeti; alt kategoriler ve yayınlandıkları kanalların bağlantıları da burada listelenir.
 - **Gerçek 404 sayfası**.
 - **Boş sayfalar arama dışında**: henüz içeriği olmayan liste sayfaları `noindex` olarak işaretlenir.
 - **Hız**:
@@ -753,7 +807,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 21. Görseller ve depolama alanı
+## 22. Görseller ve depolama alanı
 
 - Panelden yüklenen görseller en uzun kenarı **1600 piksel** olacak şekilde küçültülür ve **WebP** biçiminde sıkıştırılır.
 - Panel içeriği tarayıcıda yaklaşık **5 MB**'lık bir alanda tutulur. Gösterge Paneli'ndeki **Depolama** çubuğundan doluluğu izleyin.
@@ -775,7 +829,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 22. Kendi alan adınızı bağlamak
+## 23. Kendi alan adınızı bağlamak
 
 Şu an site `https://akcanx.github.io/` adresinde. Kendi alan adınızı (ör. `akcan.com`) bağlamak arama sonuçlarında daha güçlüdür.
 
@@ -788,7 +842,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 23. Sorun giderme
+## 24. Sorun giderme
 
 **Panelde kaydettim ama site değişmedi.**
 
@@ -840,7 +894,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 24. Teknik ek
+## 25. Teknik ek
 
 ### Klasör yapısı
 

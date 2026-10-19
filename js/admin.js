@@ -51,9 +51,10 @@
 
   function storageBytes() { return (localStorage.getItem(S.KEY) || '').length * 2; }
 
-  function uniqueSlug(coll, slug, selfId) {
+  // reserved: kullanılamayacak bağlantılar (aynı sekmenin alt kategorileri)
+  function uniqueSlug(coll, slug, selfId, reserved) {
     let base = slug || 'icerik', s = base, n = 2;
-    while ((D[coll] || []).some((x) => x.slug === s && x.id !== selfId)) s = `${base}-${n++}`;
+    while ((D[coll] || []).some((x) => x.slug === s && x.id !== selfId) || (reserved && reserved.has(s))) s = `${base}-${n++}`;
     return s;
   }
 
@@ -163,6 +164,7 @@
     { k: 'featured', t: 'switch', l: 'Öne çıkar', help: 'Ana sayfa manşetinde gösterilir.', side: 'Yayın' },
     { k: 'date', t: 'date', l: 'Yayın tarihi', side: 'Yayın' },
     { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: `Adres: /${kind === 'video' ? 'videolar' : 'yazilar'}/<b>baglanti</b>/. Boş bırakılırsa başlıktan oluşturulur.` },
+    { k: 'cat', t: 'cat', l: 'Alt kategori', tab: kind, side: 'Alt kategori' },
     { k: 'tint', t: 'color', l: 'Sayfa tonu', side: 'Görünüm', help: `Sayfanın arka plan rengi. Boş bırakılırsa ${kind === 'video' ? 'videodan' : 'kapaktan'} otomatik seçilir.` },
     { k: 'tags', t: 'tags', l: 'Kavramlar / etiketler', side: 'Etiketler', help: 'İlk üçü sayfanın üstündeki konum satırında, hepsi sayfanın sonunda görünür.' },
     ...SEO_FIELDS
@@ -206,6 +208,7 @@
         { k: 'number', t: 'number', l: 'Bölüm no', side: 'Yayın' },
         { k: 'duration', t: 'text', l: 'Süre', ph: '32 dk', side: 'Yayın' },
         { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: 'Bölümün adresi: /podcast/<b>baglanti</b>/. Boş bırakılırsa başlıktan oluşturulur.' },
+        { k: 'cat', t: 'cat', l: 'Alt kategori', tab: 'podcast', side: 'Alt kategori' },
         { k: 'cover', t: 'image', l: 'Kapak (kare)', sq: true, side: 'Kapak' },
         { k: 'coverAlt', t: 'text', l: 'Kapak açıklaması (alt metin)', ph: 'Görselde ne var?', side: 'Kapak', help: ALT_HELP },
         { k: 'coverCredit', t: 'text', l: 'Kapak görseli kaynağı', ph: 'Fotoğraf: …, lisans', side: 'Kapak' },
@@ -269,6 +272,15 @@
   // Bir videonun ya da yazının paneldeki bölümü
   const postType = (x) => (S.postKind(x) === 'video' ? 'videos' : 'posts');
 
+  /* Alt kategorisi olan bölümler: panel bölümü → sekme (store.js CAT_KEYS) ve sitedeki adresi */
+  const CAT_TABS = { videos: 'video', posts: 'yazi', podcasts: 'podcast' };
+  const TAB_TYPE = { video: 'videos', yazi: 'posts', podcast: 'podcasts' };
+  const SITE_ROUTE = { videos: 'videolar', posts: 'yazilar', podcasts: 'podcast', remixes: 'remixler' };
+  const catsOf = (type) => (CAT_TABS[type] ? S.cats(D, CAT_TABS[type]) : []);
+  const catOf = (type, x) => catsOf(type).find((c) => c.id === x.cat);
+  // İçerik bağlantısı aynı sekmedeki bir alt kategorinin bağlantısıyla çakışamaz
+  const catSlugs = (type) => new Set(catsOf(type).map((c) => c.slug));
+
   /* Liste sayfalarının üst bölüm ayarları (sitedeki "Videolar", "Yazılar", "Podcast" ve "Remixler" sayfalarının başı) */
   const SECTIONS = {
     videos: {
@@ -324,8 +336,10 @@
     }
   };
 
-  function newItem(type, kind) {
+  // cat: alt kategorinin listesinden "+ Yeni" ile açıldıysa o alt kategori seçili gelir
+  function newItem(type, kind, cat) {
     const base = { published: true, date: today(), tags: [] };
+    if (cat) base.cat = cat;
     if (type === 'posts') base.kind = kind === 'yazi' ? 'yazi' : 'video';
     if (type === 'podcasts') {
       const max = Math.max(0, ...(D.podcasts || []).map((p) => Number(p.number) || 0));
@@ -369,6 +383,12 @@
         return `<div class="fld"><span class="fld-l">${f.l}</span>${rte(f.k, val)}${help(f)}</div>`;
       case 'select':
         return `<label class="fld"><span>${lbl(f)}</span><select data-k="${f.k}">${f.options.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>${help(f)}</label>`;
+      case 'cat': {
+        // Seçenekler sekmenin güncel alt kategori listesinden gelir
+        const list = S.cats(D, f.tab);
+        return `<div class="fld"><span class="fld-l">${lbl(f)}</span><select data-k="${f.k}"><option value="">— Yok —</option>${list.map((c) => `<option value="${esc(c.id)}" ${c.id === val ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>
+          <small>${list.length ? 'Sitede sekmenin üstündeki filtrede ve alt kategorinin kendi sayfasında listelenir.' : 'Bu sekmede henüz alt kategori yok.'} <a href="#${TAB_TYPE[f.tab]}/cats" style="color:var(--acid)">Alt kategorileri düzenle →</a></small></div>`;
+      }
       case 'color': {
         // Değer metin kutusunda tutulur; boş = otomatik
         const v = /^#[0-9a-f]{6}$/i.test(val || '') ? val.toUpperCase() : '';
@@ -754,7 +774,10 @@
     if (v === 'posts' && a === 'new' && id === 'video') { location.replace('#videos/new'); return; }
     if (TYPES[v]) {
       if (a === 'settings' && SECTIONS[v]) return sectionView(v);
-      if (a === 'new') return formView(v, null);
+      // Alt kategoriler: #posts/cats düzenleme ekranı, #posts/cat/kimlik süzülmüş liste, #posts/new/kimlik o alt kategoride yeni içerik
+      if (a === 'cats' && CAT_TABS[v]) return catsView(v);
+      if (a === 'cat' && CAT_TABS[v]) return listView(v, id);
+      if (a === 'new') return formView(v, null, id);
       if (a === 'edit') return formView(v, id);
       return listView(v);
     }
@@ -940,27 +963,36 @@
   /* ======================================================================
      Liste görünümü
      ====================================================================== */
-  function listView(type) {
+  // catId: yalnızca bu alt kategorinin içerikleri ('-': alt kategorisizler)
+  function listView(type, catId) {
     const T = TYPES[type];
     const C = collOf(type);
-    crumbs([T.title]);
     const arr = (D[C] || []).filter((x) => inType(type, x)).sort(byDate);
-    const newBtns = `<a class="btn btn-acid" href="#${type}/new">+ Yeni ${T.one}</a>`;
+    const cats = catsOf(type);
+    const catKey = (x) => (catOf(type, x) ? x.cat : '-');
+    const cur = cats.find((c) => c.id === catId);
+    if (catId !== '-' && !cur) catId = '';
+    crumbs(catId ? [`<a href="#${type}">${T.title}</a>`, cur ? esc(cur.name) : 'Alt kategorisiz'] : [T.title]);
+    const newBtns = `<a class="btn btn-acid" href="#${type}/new${cur ? '/' + cur.id : ''}">+ Yeni ${T.one}</a>`;
+    const nCat = (k) => arr.filter((x) => catKey(x) === k).length;
 
     view.innerHTML = `
       <div class="vh"><div><h1>${T.title}</h1><p>${T.desc}</p></div>
-        <div class="vh-actions">${SECTIONS[type] ? `<a class="btn btn-ghost" href="#${type}/settings">⚙ ${SECTIONS[type].btn}</a>` : ''}${newBtns}</div></div>
+        <div class="vh-actions">${CAT_TABS[type] ? `<a class="btn btn-ghost" href="#${type}/cats">▦ Alt Kategoriler</a>` : ''}${SECTIONS[type] ? `<a class="btn btn-ghost" href="#${type}/settings">⚙ ${SECTIONS[type].btn}</a>` : ''}${newBtns}</div></div>
       ${arr.length ? `
       <div class="toolbar">
         <label class="search"><input type="search" id="q" placeholder="${T.title} içinde ara..."></label>
         <select id="st" style="width:auto"><option value="">Tümü (${arr.length})</option><option value="1">Yayında (${arr.filter((x) => x.published !== false).length})</option><option value="0">Taslak (${arr.filter((x) => x.published === false).length})</option></select>
+        ${CAT_TABS[type] ? `<select id="ct" style="width:auto" title="Alt kategori"><option value="">Tüm alt kategoriler</option>${cats.map((c) => `<option value="${esc(c.id)}" ${c.id === catId ? 'selected' : ''}>${esc(c.name)} (${nCat(c.id)})</option>`).join('')}<option value="-" ${catId === '-' ? 'selected' : ''}>Alt kategorisiz (${nCat('-')})</option></select>` : ''}
       </div>
       <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>Başlık</th><th>Tarih</th><th>Durum</th><th style="text-align:right">İşlemler</th></tr></thead>
         <tbody>${arr.map((x) => {
           const th = T.thumb(x);
-          return `<tr data-id="${x.id}" data-s="${esc((x.title + ' ' + (T.sub(x) || '')).toLocaleLowerCase('tr'))}" data-p="${x.published === false ? 0 : 1}">
-            <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}</div><div class="ts">${esc(T.sub(x) || '')}</div></div></div></td>
+          const cn = catOf(type, x);
+          const sub = [cn ? `<b class="ccat">${esc(cn.name)}</b>` : '', esc(T.sub(x) || '')].filter(Boolean).join(' · ');
+          return `<tr data-id="${x.id}" data-s="${esc((x.title + ' ' + (cn ? cn.name + ' ' : '') + (T.sub(x) || '')).toLocaleLowerCase('tr'))}" data-p="${x.published === false ? 0 : 1}" data-c="${esc(catKey(x))}">
+            <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}</div><div class="ts">${sub}</div></div></div></td>
             <td class="dt">${S.fmtDate(x.date)}</td>
             <td><button class="pill ${x.published === false ? '' : 'on'}" data-toggle title="Durumu değiştir">${x.published === false ? 'Taslak' : 'Yayında'}</button></td>
             <td><div class="acts">
@@ -973,14 +1005,17 @@
       <div class="tbl-wrap"><div class="empty"><b>Henüz ${T.one.toLowerCase()} yok</b>İlk içeriğinizi ekleyerek başlayın.<br><br><div class="empty-acts">${newBtns}</div></div></div>`}`;
 
     const filter = () => {
-      const q = ($('#q').value || '').toLocaleLowerCase('tr'), st = $('#st').value;
+      const q = ($('#q').value || '').toLocaleLowerCase('tr'), st = $('#st').value, ct = $('#ct') ? $('#ct').value : '';
       $$('tbody tr', view).forEach((tr) => {
-        tr.hidden = !(tr.dataset.s.includes(q) && (st === '' || tr.dataset.p === st));
+        tr.hidden = !(tr.dataset.s.includes(q) && (st === '' || tr.dataset.p === st) && (ct === '' || tr.dataset.c === ct));
       });
     };
     if (arr.length) {
       $('#q').addEventListener('input', filter);
       $('#st').addEventListener('change', filter);
+      // Alt kategori seçimi adrese yazılır (#posts/cat/kimlik): "+ Yeni" o alt kategoride açılır, geri tuşu çalışır
+      if ($('#ct')) $('#ct').addEventListener('change', (e) => { location.hash = e.target.value ? `#${type}/cat/${e.target.value}` : '#' + type; });
+      if (catId) filter();
     }
 
     view.onclick = (e) => {
@@ -993,7 +1028,7 @@
       else if (e.target.closest('[data-toggle]')) {
         item.published = item.published === false;
         persist(item.published ? 'Yayına alındı' : 'Taslağa alındı');
-        listView(type);
+        listView(type, catId);
       } else if (e.target.closest('[data-dup]')) {
         const copy = JSON.parse(JSON.stringify(item));
         copy.id = S.uid();
@@ -1001,16 +1036,16 @@
         copy.title = item.title + ' (kopya)';
         copy.published = false;
         copy.featured = false;
-        if (copy.slug) copy.slug = uniqueSlug(C, item.slug + '-kopya');
+        if (copy.slug) copy.slug = uniqueSlug(C, item.slug + '-kopya', null, catSlugs(type));
         D[C].push(copy);
         persist('Kopya oluşturuldu (taslak)');
-        listView(type);
+        listView(type, catId);
       } else if (e.target.closest('[data-del]')) {
         if (!confirm(`“${item.title}” silinsin mi? Bu işlem geri alınamaz.`)) return;
         D[C].splice(idx, 1);
         if (type === 'pages') D.menu = D.menu.filter((m) => !(m.type === 'page' && m.target === item.slug));
         persist('Silindi');
-        listView(type);
+        listView(type, catId);
       }
     };
   }
@@ -1018,12 +1053,14 @@
   /* ======================================================================
      Form görünümü (ekle / düzenle)
      ====================================================================== */
-  function formView(type, id) {
+  // preCat: yeni içerik bu alt kategoride başlar (#posts/new/kimlik)
+  function formView(type, id, preCat) {
     view.onclick = null;
     const T = TYPES[type];
     const C = collOf(type);
     const isNew = !id;
-    let item = isNew ? newItem(C, T.kind) : (D[C] || []).find((x) => x.id === id);
+    if (preCat && !catsOf(type).some((c) => c.id === preCat)) preCat = '';
+    let item = isNew ? newItem(C, T.kind, preCat) : (D[C] || []).find((x) => x.id === id);
     if (!item) { toast('İçerik bulunamadı', true); go('#' + type); return; }
     // Video Yazılar'dan (ya da yazı Videolar'dan) açıldıysa kendi bölümüne geç
     if (!isNew && !inType(type, item)) { location.replace(`#${postType(item)}/edit/${id}`); return; }
@@ -1060,13 +1097,14 @@
       if (!v.title) { toast('Başlık zorunludur', true); $('[data-k="title"]', frm).focus(); return; }
       if (T.kind === 'video' && !S.ytId(v.video)) { toast('Video için geçerli bir YouTube bağlantısı girin', true); $('[data-k="video"]', frm).focus(); return; }
       if (T.kind === 'yazi' && !v.cover) { toast('Yazı için bir kapak görseli ekleyin', true); $('[data-k="cover"]', frm).focus(); return; }
-      if ('slug' in v) v.slug = uniqueSlug(C, S.slugify(v.slug || v.title), item.id);
+      if ('slug' in v) v.slug = uniqueSlug(C, S.slugify(v.slug || v.title), item.id, catSlugs(type));
 
       const inMenu = v.inMenu;
       delete v.inMenu;
       const oldSlug = item.slug;
       const rec = { ...item, ...v };
       delete rec.inMenu;
+      if (!rec.cat) delete rec.cat; // "— Yok —": alt kategorisiz
       if (T.kind) rec.kind = T.kind;
       rec.updated = today(); // site haritası ve yapılandırılmış veride "son güncelleme"
 
@@ -1133,15 +1171,155 @@
         </div></div>
       <form class="form-grid" id="frm" novalidate>
         <div class="form-main">${C.fields.filter((f) => !f.side).map((f) => field(f, cur[f.k])).join('')}</div>
-        <div class="form-side">${sideGroups(C.fields, cur)}<button type="button" class="btn btn-acid btn-block" data-save>Kaydet</button></div>
+        <div class="form-side">${sideGroups(C.fields, cur)}${CAT_TABS[type] ? `<div class="card"><h3>Alt kategoriler</h3><p class="muted" style="margin:0 0 12px">${catsOf(type).map((c) => esc(c.name)).join(' · ') || 'Henüz alt kategori yok.'}</p><a class="btn btn-block" href="#${type}/cats">▦ Alt kategorileri düzenle →</a></div>` : ''}<button type="button" class="btn btn-acid btn-block" data-save>Kaydet</button></div>
       </form>`;
     const frm = $('#frm');
     bindForm(frm);
     const save = () => {
-      D.settings[C.key] = { ...cur, ...collect(frm, C.fields) };
+      // Alt kategoriler (cats) ayrı ekranda düzenlenir; burada korunur
+      D.settings[C.key] = { ...(D.settings[C.key] || {}), ...collect(frm, C.fields) };
       if (persist(C.title + ' kaydedildi')) dirty = false;
     };
     $$('[data-save]', view).forEach((b) => b.addEventListener('click', save));
+    view._save = save;
+  }
+
+  /* ======================================================================
+     Alt kategoriler (Videolar, Yazılar, Podcast)
+     Her sekmenin kendi listesi; sayfa ayarında "cats" olarak durur. İçerik, alt kategorisini kimliğiyle (cat) tutar.
+     ====================================================================== */
+  function catsView(type) {
+    view.onclick = null;
+    const T = TYPES[type], tabTitle = { videos: 'Videolar', posts: 'Yazılar', podcasts: 'Podcast' }[type], tab = CAT_TABS[type], key = S.CAT_KEYS[tab], route = SITE_ROUTE[type];
+    crumbs([`<a href="#${type}">${T.title}</a>`, 'Alt Kategoriler']);
+    view.dataset.form = '1';
+    const clone = (o) => JSON.parse(JSON.stringify(o));
+    let draft = clone((D.settings[key] || {}).cats || []);
+    const items = () => (D[collOf(type)] || []).filter((x) => inType(type, x));
+    const count = (id) => items().filter((x) => x.cat === id).length;
+    const slugOf = (c) => S.slugify(c.slug || c.name);
+
+    const rowHTML = (c, i) => {
+      const n = count(c.id);
+      return `
+      <div class="crow" data-i="${i}">
+        <div class="crow-f">
+          <label class="fld"><span>Ad <i class="req">*</i></span><input type="text" data-f="name" value="${esc(c.name || '')}" placeholder="Ör. Gıda"></label>
+          <label class="fld"><span>Bağlantı</span><input type="text" data-f="slug" value="${esc(c.slug || '')}" placeholder="otomatik" spellcheck="false"><small>Adres: /${route}/<b data-addr>${esc(slugOf(c) || 'baglanti')}</b>/</small></label>
+          <label class="fld crow-w"><span>Açıklama</span><textarea data-f="desc" rows="2" placeholder="Bu alt kategoride neler paylaşıyorsunuz?">${esc(c.desc || '')}</textarea><small>Alt kategori sayfasında başlığın altında görünür; arama sonucunda açıklama olarak kullanılır.</small></label>
+          <label class="fld crow-w"><span>Kanal bağlantısı</span><input type="url" data-f="link" value="${esc(c.link || '')}" placeholder="https://www.youtube.com/@kanaliniz"><small>Bu içerikleri yayınladığınız diğer kanal ya da hesap. Sayfada “YouTube kanalına git ↗” gibi bir bağlantı olarak görünür.</small></label>
+        </div>
+        <div class="crow-a">
+          ${n ? `<a class="pill on" href="#${type}/cat/${esc(c.id)}" title="Bu alt kategorideki içerikler">${n} içerik</a>` : '<span class="pill" title="İçeriği olmayan alt kategori sitede görünmez">Boş</span>'}
+          <div class="crow-btns">
+            <button type="button" class="btn btn-sm btn-icon btn-ghost" data-mv="-1" title="Yukarı" ${i === 0 ? 'disabled' : ''}>↑</button>
+            <button type="button" class="btn btn-sm btn-icon btn-ghost" data-mv="1" title="Aşağı" ${i === draft.length - 1 ? 'disabled' : ''}>↓</button>
+            <button type="button" class="btn btn-sm btn-icon btn-danger" data-rm title="Alt kategoriyi sil">×</button>
+          </div>
+        </div>
+      </div>`;
+    };
+
+    // Sitedeki düğmelerin önizlemesi (yayında içeriği olmayanlar sitede görünmez)
+    const preview = () => {
+      const el = $('#cprev');
+      const live = (id) => items().some((x) => x.cat === id && x.published !== false);
+      if (el) el.innerHTML = `<span class="on">Hepsi</span>${draft.filter((c) => (c.name || '').trim()).map((c) => `<span class="${live(c.id) ? '' : 'off'}" title="${live(c.id) ? '' : 'Yayında içeriği yok: sitede görünmez'}">${esc(c.name)}</span>`).join('')}`;
+    };
+
+    const render = () => {
+      view.innerHTML = `
+        <div class="vh"><div><h1>${tabTitle} — Alt Kategoriler</h1><p>${tabTitle} sekmesinin alt kategorileri. Farklı kanallarda ürettiğiniz içerikleri (yemek hikâyeleri, gündem…) aynı sekmede kendi bölümlerinde toplayın. Her alt kategorinin sitede kendi sayfası olur: <code>/${route}/baglanti/</code>.</p></div>
+          <div class="vh-actions">
+            <a class="btn btn-ghost" href="#${type}">← ${T.title}</a>
+            <a class="btn btn-ghost" href="index.html#/${route}" target="_blank">Görüntüle ↗</a>
+            <button class="btn btn-acid" data-csave>Kaydet</button>
+          </div></div>
+        <div class="form-grid">
+          <div>
+            <div class="card"><h3>Sitede görünüşü</h3><div class="cprev" id="cprev"></div><small class="help">Sekmenin üstündeki düğmeler. Soluk olanların henüz yayında içeriği yok; sitede görünmezler.</small></div>
+            <div class="card"><h3>Alt kategoriler</h3>
+              <div class="clist" id="clist">${draft.map(rowHTML).join('') || '<p class="muted">Henüz alt kategori yok. Aşağıdaki düğmeyle ilkini ekleyin.</p>'}</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button type="button" class="btn" data-cadd>+ Alt kategori ekle</button></div>
+            </div>
+          </div>
+          <div class="form-side">
+            <div class="card"><h3>Nasıl çalışır?</h3>
+              <ol class="todo">
+                <li>Buradan alt kategori ekleyin, sıralayın ya da silin; <b>Kaydet</b>’e basın.</li>
+                <li>Her ${T.one.toLowerCase()} formunun sağ sütunundaki <b>Alt kategori</b> kutusundan içeriğin alt kategorisini seçin.</li>
+                <li>Sitede ${tabTitle} sekmesinin üstünde <b>Hepsi · …</b> düğmeleri ve her alt kategorinin kendi sayfası görünür.</li>
+                <li>Silinen alt kategorinin içerikleri silinmez; alt kategorisiz kalır.</li>
+              </ol>
+            </div>
+            <div class="card"><h3>Alt kategorisiz içerik</h3><p class="muted" style="margin:0 0 12px">${items().filter((x) => !draft.some((c) => c.id === x.cat)).length} ${T.one.toLowerCase()} herhangi bir alt kategoride değil; sitede yalnızca “Hepsi” altında görünür.</p><a class="btn btn-block" href="#${type}/cat/-">Listede göster →</a></div>
+            <button type="button" class="btn btn-acid btn-block" data-csave>Kaydet</button>
+          </div>
+        </div>`;
+      preview();
+    };
+
+    render();
+
+    view.oninput = (e) => {
+      const row = e.target.closest('.crow');
+      if (!row || !e.target.dataset.f) return;
+      const c = draft[+row.dataset.i];
+      c[e.target.dataset.f] = e.target.value;
+      if (e.target.dataset.f === 'name' || e.target.dataset.f === 'slug') {
+        $('[data-addr]', row).textContent = slugOf(c) || 'baglanti';
+        preview();
+      }
+      dirty = true;
+    };
+
+    view.onclick = (e) => {
+      const row = e.target.closest('.crow');
+      const i = row ? +row.dataset.i : -1;
+      if (e.target.closest('[data-rm]')) {
+        const c = draft[i], n = count(c.id);
+        if (!confirm(`“${c.name || 'Adsız'}” alt kategorisi silinsin mi?${n ? `\n\nİçindeki ${n} içerik silinmez, alt kategorisiz kalır.` : ''}\n\nDeğişiklik Kaydet’e basınca uygulanır.`)) return;
+        draft.splice(i, 1); dirty = true; render();
+      } else if (e.target.closest('[data-mv]')) {
+        const j = i + Number(e.target.closest('[data-mv]').dataset.mv);
+        if (j < 0 || j >= draft.length) return;
+        [draft[i], draft[j]] = [draft[j], draft[i]]; dirty = true; render();
+      } else if (e.target.closest('[data-cadd]')) {
+        draft.push({ id: S.uid(), name: '', slug: '', desc: '', link: '' });
+        dirty = true; render();
+        const last = $$('.crow').pop();
+        if (last) { last.scrollIntoView({ behavior: 'smooth', block: 'center' }); $('[data-f="name"]', last).focus(); }
+      } else if (e.target.closest('[data-csave]')) save();
+    };
+
+    function save() {
+      // Bağlantılar: boşsa addan; aynı sekmede başka bir alt kategoriyle ya da içerikle çakışırsa sonuna -2, -3…
+      const taken = new Set((D[collOf(type)] || []).map((x) => x.slug));
+      const used = new Set();
+      const out = [];
+      for (const c of draft) {
+        const name = (c.name || '').trim();
+        if (!name) { toast('Her alt kategorinin bir adı olmalı', true); return; }
+        const link = (c.link || '').trim();
+        if (link && !/^https?:\/\/[^/\s]+/i.test(link)) { toast(`“${name}” için kanal bağlantısı https:// ile başlamalı`, true); return; }
+        const base = slugOf(c) || 'kategori';
+        let s = base, n = 2;
+        while (used.has(s) || taken.has(s)) s = `${base}-${n++}`;
+        if (s !== base) toast(`“${base}” bağlantısı kullanılıyor; “${name}” için “${s}” seçildi`);
+        used.add(s);
+        out.push({ id: c.id || S.uid(), name, slug: s, desc: (c.desc || '').trim(), link });
+      }
+      // Silinen alt kategorilerin içerikleri alt kategorisiz kalır
+      const ids = new Set(out.map((c) => c.id));
+      let freed = 0;
+      items().forEach((x) => { if (x.cat && !ids.has(x.cat)) { delete x.cat; freed++; } });
+      D.settings[key] = { ...(D.settings[key] || {}), cats: out };
+      if (persist(freed ? `Alt kategoriler kaydedildi · ${freed} içerik alt kategorisiz kaldı` : 'Alt kategoriler kaydedildi')) {
+        dirty = false;
+        draft = clone(out);
+        render();
+      }
+    }
     view._save = save;
   }
 

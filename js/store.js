@@ -15,7 +15,9 @@
   /* ---------- Varsayılan içerik ---------- */
   const O = global.AKCAN_ORNEK || {};
   // Örnek içerik sürümü: yükseltildiğinde, kayıtlı verisi olan tarayıcılara da yeni örnekler bir kez eklenir
-  const SAMPLE_VERSION = 3;
+  const SAMPLE_VERSION = 4;
+  // Sürüm 4'te eklenen örnekler (Gıda ve Gündem alt kategorilerinin yazıları)
+  const NEW_SAMPLES_4 = new Set(['yazi-gida', 'yazi-gundem']);
 
   /* ---------- Örnek içeriği tanıma ---------- */
   const SAMPLE_IDS = new Set(['posts', 'podcasts', 'remixes', 'pages'].flatMap((c) => (O[c] || []).map((x) => x.id)));
@@ -31,9 +33,21 @@
   /** Örnek içerik mi? Örnekler panelde ve önizlemede görünür, yayına hiç gönderilmez. */
   const isSample = (x) => !!x && (x.sample === true || SAMPLE_IDS.has(x.id));
 
-  // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler (bkz. migrate)
+  /* ---------- Alt kategoriler ---------- */
+  // Videolar, Yazılar ve Podcast sekmelerinin her birinin kendi listesi; ilgili sayfa ayarında (cats) durur
+  const CAT_KEYS = { video: 'videosPage', yazi: 'postsPage', podcast: 'podcast' };
+  const cat = (id, name, desc) => ({ id, name, slug: id, desc, link: '' });
+  const startCats = (what) => [
+    cat('muzik', 'Müzik', `Prodüksiyon, remix, canlı performans ve sesin hikâyeleri üzerine ${what}.`),
+    cat('gida', 'Gıda', `Yemek hikâyeleri: mutfaklardan, sofralardan ve tariflerin arkasındaki insanlardan ${what}.`),
+    cat('gundem', 'Gündem', `Gündemi eleştirel bir gözle ele aldığım ${what}.`)
+  ];
+  /** Bir sekmenin alt kategorileri (tab: 'video' | 'yazi' | 'podcast'); adı ya da bağlantısı olmayanlar sayılmaz */
+  const cats = (data, tab) => ((((data && data.settings) || {})[CAT_KEYS[tab]] || {}).cats || []).filter((c) => c && c.id && c.name && c.slug);
+
+  // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler, 3 → alt kategoriler (bkz. migrate)
   const DEFAULTS = {
-    version: 2,
+    version: 3,
     sampleVersion: SAMPLE_VERSION,
     settings: {
       siteName: 'Akcan',
@@ -55,13 +69,15 @@
       videosPage: {
         title: 'Videolar',
         intro: 'Her hafta YouTube’a yeni bir video yüklüyorum. Burada videolarımı, yazıya dökülmüş notları ve kaynaklarıyla birlikte bulacaksınız.',
-        tint: '#7A1E2E'
+        tint: '#7A1E2E',
+        cats: startCats('videolar')
       },
       // Yazılar (blog) liste sayfası
       postsPage: {
         title: 'Yazılar',
         intro: 'Müzik, prodüksiyon ve sesin hikâyeleri üzerine yazılarım: bazen bir şarkının arkasındaki hikâye, bazen stüdyodan bir not.',
-        tint: '#7A4E1E'
+        tint: '#7A4E1E',
+        cats: startCats('yazılar')
       },
       // Podcast programı (liste sayfasının üst bölümü)
       podcast: {
@@ -74,7 +90,8 @@
         apple: 'https://podcasts.apple.com/',
         youtube: '',
         readText: 'Oku + Dinle',
-        tint: '#1F5A50'
+        tint: '#1F5A50',
+        cats: startCats('bölümler')
       },
       // Remixler sayfasının üst bölümü (Podcast programının ikizi)
       remixPage: {
@@ -189,6 +206,21 @@
       data.version = 2;
       changed = true;
     }
+    // 3: alt kategoriler. Başlangıç listeleri (Müzik, Gıda, Gündem) varsayılanlardan gelir; örnek içerikler
+    // kendi alt kategorilerine yerleşir, dokunulmamış rehber yazısı alt kategorileri de anlatır
+    if (!(data.version >= 3)) {
+      ['posts', 'podcasts'].forEach((c) => {
+        (data[c] || []).forEach((x) => {
+          const def = (O[c] || []).find((y) => y.id === x.id);
+          if (def && def.cat && !('cat' in x)) x.cat = def.cat;
+        });
+      });
+      const guide = (O.posts || []).find((x) => x.id === 'yazi-rehber');
+      const mine = (data.posts || []).find((x) => x.id === 'yazi-rehber' && !x.updated);
+      if (guide && mine) mine.content = guide.content;
+      data.version = 3;
+      changed = true;
+    }
     const f = data.settings && data.settings.featured;
     if (f && f.type === 'videos') { f.type = 'posts'; changed = true; }
     // Her yazıya tür: videosu olan "video", olmayan "yazi" (kapak görselli blog yazısı)
@@ -225,16 +257,22 @@
       data.remixes = (data.remixes || []).filter((x) => OLD_SAMPLE_REMIXES[x.id] !== x.title);
       if (data.remixes.length < before) addSamples(data, ['remixes']);
     }
+    // 4: Gıda ve Gündem alt kategorilerine iki örnek yazı. Örnekleri silmiş olana eklenmez
+    if (sv < 4 && (data.posts || []).some(isSample)) addSamples(data, ['posts'], NEW_SAMPLES_4);
     if (sv < SAMPLE_VERSION) { data.sampleVersion = SAMPLE_VERSION; changed = true; }
     return changed;
   }
 
-  /** Örnek içeriklerden eksik olanları ekler (kimliği ya da bağlantısı zaten varsa atlar). Eklenen sayısını döner. */
-  function addSamples(data, cols = ['posts', 'podcasts', 'remixes', 'pages']) {
+  /**
+   * Örnek içeriklerden eksik olanları ekler (kimliği ya da bağlantısı zaten varsa atlar). Eklenen sayısını döner.
+   * only: yalnızca bu kimlikteki örnekler
+   */
+  function addSamples(data, cols = ['posts', 'podcasts', 'remixes', 'pages'], only) {
     let n = 0;
     cols.forEach((c) => {
       data[c] = data[c] || [];
       (DEFAULTS[c] || []).forEach((x) => {
+        if (only && !only.has(x.id)) return;
         if (data[c].some((y) => y.id === x.id || (x.slug && y.slug === x.slug))) return;
         data[c].push(clone(x));
         n++;
@@ -410,6 +448,6 @@
   global.Store = {
     KEY, DEFAULTS, uid, get, save, onSave, reset, exportJSON, importJSON, normalize,
     slugify, esc, strip, fmtDate, fmtDateShort, fmtNum, isProfile, ytId, ytThumb, embed, wordCount, readingTime, hash, MONTHS,
-    postKind, addSamples, isSample
+    postKind, addSamples, isSample, CAT_KEYS, cats
   };
 })(typeof window !== 'undefined' ? window : globalThis);

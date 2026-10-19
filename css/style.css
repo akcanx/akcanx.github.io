@@ -349,6 +349,27 @@ button { font: inherit; }
 .ix-plain { padding-top: 0; }
 .ix-plain .feed > .erow:first-child { border-top: 1px solid var(--rule); }
 
+/* ---------- Alt kategoriler: sekme içi düğmeler ve alt kategori sayfasının başı ---------- */
+.catbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 26px; }
+.ix .head .catbar { margin: 0; }
+.catbar a { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; color: var(--fg-3); border: 1px solid var(--rule-2); border-radius: 999px; padding: 6px 15px; transition: all .2s var(--ease); }
+.catbar a:hover { color: var(--fg); border-color: var(--fg-3); }
+.catbar a.on { color: var(--ink); background: var(--acid); border-color: var(--acid); }
+.catbar .pc { margin-left: 7px; font-size: 10px; opacity: .55; font-variant-numeric: tabular-nums; }
+.pkicker { display: inline-block; margin: 0 0 18px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-3); transition: color .2s var(--ease); }
+.pkicker::before { content: "← "; }
+.pkicker:hover { color: var(--acid); }
+.phead .catlink { margin-top: 26px; }
+@media (max-width: 600px) {
+  /* Mobilde tek satır, yatay kaydırılabilir (ana sayfa akış filtresi gibi) */
+  .catbar { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin: 0 calc(var(--gutter) * -1) 20px 0; padding-right: var(--gutter); min-width: 0; }
+  .catbar::-webkit-scrollbar { display: none; }
+  .catbar a { flex: none; padding: 7px 14px; }
+  .ix .head .catbar { margin: 0 calc(var(--gutter) * -1) 0 0; }
+  .pkicker { margin-bottom: 14px; font-size: 11px; }
+  .phead .catlink { margin-top: 20px; font-size: 17px; }
+}
+
 /* ---------- Ortak: tonlu detay sayfası ---------- */
 /* --tint: içeriğin rengi (panelden seçilir ya da kapak görselinden otomatik çıkarılır) */
 .tinted { --tint-fg: color-mix(in srgb, var(--tint) 45%, #F4ECD8); position: relative; isolation: isolate; padding-bottom: 64px; }

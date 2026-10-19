@@ -34,12 +34,19 @@
   - **Metin arası görseller:** ortada, sağa yaslı, sola yaslı, geniş — her birine açıklama ve kaynak satırı.
   - **Kaynaklı alıntılar** (alıntının altında kimin söylediği).
   - Sayfa sonunda açılır **Notlar ve kaynaklar**, **Görsel kaynakları ve lisanslar**, tıklanabilir **kavram kutuları** ve ortak etiketlere göre **ilgili içerik**.
-  - Menünün altında konum satırı (Videolar ya da Yazılar › Etiket › …) ile aynı sekmedeki önceki / sonraki bağlantıları, üstte okuma ilerleme çubuğu.
+  - Menünün altında konum satırı (Videolar ya da Yazılar › Alt kategori › Etiket …) ile aynı sekmedeki önceki / sonraki bağlantıları, üstte okuma ilerleme çubuğu.
   - Sayfa tonu: kapak görselinden ya da videodan otomatik seçilir veya panelden belirlenir.
+
+### Alt kategoriler (Videolar, Yazılar, Podcast)
+- Her sekmenin kendi alt kategori listesi var; başlangıçta **Müzik · Gıda · Gündem**. Farklı kanallarda üretilen içerikler (yemek hikâyeleri, gündem…) aynı sekmede kendi bölümünde toplanır.
+- Sekmenin üstünde **Hepsi · Müzik · Gıda · Gündem** düğmeleri (Podcast'te "Bölümler" satırında); mobilde tek satır, yana kaydırılır.
+- Her alt kategorinin kendi sayfası: `/yazilar/gida/`, `/videolar/gundem/`, `/podcast/muzik/` — ad, açıklama, **kanal bağlantısı** ("YouTube kanalına git ↗") ve yalnızca o alt kategorinin içerikleri.
+- Liste satırlarında ve ana sayfa akışında alt kategori adı vurgulu; içerik sayfasının konum satırında bağlantılı.
+- Yayında içeriği olmayan alt kategoriler gizlenir. Alt kategori sayfaları site haritasına, aramaya, `llms.txt`'ye ve yapılandırılmış veriye (konum satırı, kanal bağlantısı) girer.
 
 ### Podcast
 - barisozcan.com/podcast düzeni: kare program kapağı, program adı, açıklama, Spotify / Apple Podcasts / YouTube bağlantıları ve "Oku + Dinle".
-- Bölüm listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, tarih ve süre.
+- Bölüm listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, alt kategori, tarih ve süre.
 - **Bölüm sayfası:** çerçeveli kapak ve kaynağı, büyük başlık, italik özet. Ses çubuğu sayfa kaydırılınca menünün altına yapışır. Bölüm metni görseller ve alıntılarla zenginleştirilebilir.
 - Sitenin altında sabit ses oynatıcı: 10 sn geri/ileri, hız (`1x`–`2x`), ses seviyesi, sürüklenebilir zaman çubuğu, klavye kısayolları (Boşluk, ← →).
 
@@ -65,6 +72,7 @@
   - **+ Yeni Video**: YouTube bağlantısı zorunlu (başlık otomatik gelir). **+ Yeni Yazı**: kapak görseli zorunlu.
   - Her bölümün kendi **⚙ Sayfa Ayarları**: sitedeki sekmenin başlığı, açıklaması ve ışık rengi.
   - İkisi de aynı veride (`posts`) durur; içeriğin türü hangi sekmede görüneceğini belirler.
+- **▦ Alt Kategoriler** (Videolar, Yazılar, Podcast): alt kategori ekleme, silme (içerikler silinmez, alt kategorisiz kalır), ↑↓ sıralama; ad, bağlantı, açıklama ve kanal bağlantısı. Formlarda **Alt kategori** seçimi, listelerde alt kategori filtresi; süzülmüş listede **+ Yeni** o alt kategoride açılır. Alt kategori bağlantıları aynı sekmedeki içeriklerle çakışamaz.
 - **Zengin metin editörü:** başlıklar, kalın/italik, listeler, bağlantılar, **▣ Görsel** (yerleşim seçmeli pencere; eklenen görsele tıklayınca düzenlenir), **❝ Kaynaklı** alıntı, YouTube gömme ve HTML kaynak düzenleme.
 - **Podcast:** bölümler (özet, MP3, gömülü oynatıcı, bölüm metni, kaynaklar, kapak kaynağı) ve **⚙ Program Ayarları** (kapak, ad, açıklama, platform bağlantıları).
 - **Remixler:** remixler (orijinal parça, özet, MP3, gömülü oynatıcı, remixin hikâyesi, notlar ve kaynaklar, süre, tür, BPM, kapak kaynağı, sayfa tonu) ve **⚙ Sayfa Ayarları** (kapak, ad, üst etiket, açıklama, SoundCloud / Mixcloud / Spotify / YouTube bağlantıları, ışık rengi).
@@ -80,7 +88,8 @@
 
 Site ilk açıldığında kullanımı öğrenmek için örnek içeriklerle gelir:
 
-- 12 YouTube videosu, 5 blog yazısı, 6 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+- 12 YouTube videosu, 7 blog yazısı, 6 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+- Örneklerin çoğu **Müzik** alt kategorisinde; **Gıda** ve **Gündem** alt kategorilerinde birer örnek yazı var.
 - **"Bu Site Nasıl Kullanılır?"** rehber yazısı, her özelliğin panelde nasıl yapıldığını anlatırken o özelliği kendi üzerinde gösterir.
 - **Örnek içerikler hiçbir zaman yayına gönderilmez**; yalnızca panelde (başlığın yanında **Örnek** etiketiyle) ve bilgisayarınızdaki önizlemede görünür. Sitenin ilk sürümünden kalan örnekler de başlıklarından tanınır ve yayına gönderilmez.
 - Örnekler panelden tek tek ya da **Yayın & SEO → Örnek içerikleri sil** ile hepsi birden silinebilir; **Yedekleme → Örnek İçerikleri Ekle** ile geri getirilebilir. Kendi içerikleriniz bu işlemlerden etkilenmez.

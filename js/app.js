@@ -427,7 +427,7 @@
     selIdx = -1;
     if (q.length < 2 || !R) { results.innerHTML = ''; hint.hidden = false; return; }
     hint.hidden = true;
-    const hits = R.searchIndex().filter((i) => norm(i.title + ' ' + i.text + ' ' + (i.tags || []).join(' ')).includes(q)).slice(0, 30);
+    const hits = R.searchIndex().filter((i) => norm(i.title + ' ' + i.text + ' ' + (i.tags || []).join(' ') + ' ' + (i.cat || '')).includes(q)).slice(0, 30);
     if (!hits.length) { results.innerHTML = `<div class="sm-empty">“${esc(input.value)}” için sonuç bulunamadı.</div>`; return; }
     results.innerHTML = hits.map((h) => {
       let ex = h.text || '';
