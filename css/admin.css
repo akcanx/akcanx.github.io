@@ -744,3 +744,6 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
   .srow .acts { width: 100%; }
   .srow .acts > * { flex: 1 1 0; }
 }
+
+/* Kitaplar listesinde dikey (2:3) küçük resim */
+.srow .th.tall { width: 40px; height: 60px; border-radius: 4px; }

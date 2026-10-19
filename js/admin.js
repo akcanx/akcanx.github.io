@@ -243,6 +243,37 @@
         ...SEO_FIELDS
       ]
     },
+    // Kitaplar: basılı kitaplar ve satış platformları (listedeki sıra = vitrindeki sıra); ekranı #books
+    books: {
+      title: 'Kitaplar', one: 'Kitap', icon: '❐',
+      desc: 'Basılı ve yayımlanmış kitaplarınız. Sitedeki Kitaplar sekmesinde kapakları yan yana durur; her kitabın kendi sayfasında künyesi ve satış platformlarına bağlantılar bulunur. Vitrindeki sıra bu listedeki sıradır: ↑ ↓ ile değiştirin.',
+      view: (x) => '#/kitaplar/' + x.slug,
+      thumb: (x) => x.cover,
+      sub: (x) => [S.BOOK_STATUS[x.status], String(x.date || '').slice(0, 4), x.publisher].filter(Boolean).join(' · '),
+      fields: [
+        { k: 'title', t: 'title', l: 'Kitabın adı', req: true },
+        { k: 'subtitle', t: 'text', l: 'Alt başlık', help: 'Kitap sayfasında adın altında italik olarak görünür.' },
+        { k: 'tagline', t: 'text', l: 'Kısa tanıtım', ph: 'Müzik, hafıza ve duygular üzerine bir deneme', help: 'Vitrindeki kartta ve arama sonucunda tek satır.' },
+        { k: 'description', t: 'richtext', l: 'Tanıtım metni', help: 'Kitap sayfasında: kitap neyi anlatıyor, kimler için? Arama motorları ve yapay zekâ bu metni okur.' },
+        { k: 'quote', t: 'textarea', l: 'Kitaptan bir alıntı (isteğe bağlı)', rows: 2, help: 'Tanıtım metninin altında büyük italik alıntı olarak görünür.' },
+        { k: 'published', t: 'switch', l: 'Yayında', side: 'Yayın' },
+        { k: 'status', t: 'select', l: 'Durum', side: 'Yayın', options: Object.entries(S.BOOK_STATUS), help: '“Ön sipariş” ve “Yakında” vitrindeki kapağın köşesinde görünür.' },
+        { k: 'date', t: 'date', l: 'Yayın tarihi', side: 'Yayın' },
+        { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: 'Kitabın adresi: /kitaplar/<b>baglanti</b>/. Boş bırakılırsa addan oluşturulur.' },
+        { k: 'publisher', t: 'text', l: 'Yayınevi', side: 'Künye' },
+        { k: 'pages', t: 'number', l: 'Sayfa sayısı', side: 'Künye' },
+        { k: 'isbn', t: 'text', l: 'ISBN', ph: '978-…', side: 'Künye' },
+        { k: 'edition', t: 'text', l: 'Baskı', ph: '1. baskı', side: 'Künye' },
+        { k: 'language', t: 'text', l: 'Dil', ph: 'Türkçe', side: 'Künye' },
+        { k: 'format', t: 'select', l: 'Biçim', side: 'Künye', options: Object.entries(S.BOOK_FORMAT) },
+        { k: 'cover', t: 'image', l: 'Kapak (dikey, 2:3)', side: 'Kapak', help: 'Ön kapağın görseli, ör. 800×1200.' },
+        { k: 'coverAlt', t: 'text', l: 'Kapak açıklaması (alt metin)', ph: 'Görselde ne var?', side: 'Kapak', help: ALT_HELP },
+        ...S.BOOK_SHOPS.map(([k, n], i) => ({ k, t: 'url', l: n, ph: 'Kitabın ' + n + ' sayfası', side: 'Satış platformları', help: i ? '' : 'Kitabın o platformdaki sayfasının tam adresi. Boş bıraktığınız ya da yalnızca platformun ana adresini yazdığınız platform sitede görünmez.' })),
+        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Kitap sayfasının üst kısmındaki yumuşak renkli ışık.' },
+        { k: 'tags', t: 'tags', l: 'Konular / etiketler', side: 'Etiketler' },
+        ...SEO_FIELDS
+      ]
+    },
     remixes: {
       title: 'Remixler', one: 'Remix', icon: '♫',
       desc: 'Remixler sekmesi Podcast sekmesiyle aynı düzendedir: üstte sayfa kapağı ve tanıtımı, altında remix listesi. Her remixin kendi sayfasında kaydırınca menünün altına yapışan ses çubuğu ve hikâyesini anlatan metin bulunur.',
@@ -337,6 +368,16 @@
         { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Sayfanın üst kısmındaki yumuşak renkli ışık.' }
       ]
     },
+    books: {
+      key: 'booksPage', title: 'Kitaplar Sayfası', btn: 'Sayfa Ayarları',
+      desc: 'Kitaplar sekmesinin (kitap vitrini) başlığı, üst etiketi, tanıtım metni ve ışık rengi. Kitapların kendisi Kitaplar listesinde.',
+      fields: [
+        { k: 'title', t: 'title', l: 'Sayfa başlığı' },
+        { k: 'eyebrow', t: 'text', l: 'Üst etiket', ph: 'Kitap · Basılı ve yayımlanmış', help: 'Başlığın üstünde küçük büyük harflerle görünür.' },
+        { k: 'intro', t: 'textarea', l: 'Tanıtım metni', rows: 4, help: 'Başlığın altında, kapakların üstünde görünür.' },
+        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Sayfanın üst kısmındaki yumuşak renkli ışık.' }
+      ]
+    },
     remixes: {
       key: 'remixPage', title: 'Remixler Sayfası', btn: 'Sayfa Ayarları',
       desc: 'Remixler sayfasının üstünde görünen kapak, ad, açıklama ve dinleme platformları (Podcast programıyla aynı düzen).',
@@ -360,6 +401,7 @@
   // podcast bölümünde aynı yerden seri gelir (#podcasts/new/seri-kimligi), yoksa ilk seri
   function newItem(type, kind, cat) {
     if (type === 'series') return { published: true, status: 'devam' };
+    if (type === 'books') return { published: true, status: 'yayinda', format: 'karton', language: 'Türkçe' };
     const base = { published: true, date: today(), tags: [] };
     if (type === 'podcasts') {
       // Ön seçim yoksa yayındaki ilk kendi seriniz (örnek seriye düşen bölüm yayına gitmez), o da yoksa ilk seri
@@ -827,7 +869,7 @@
       if (a === 'cat' && CAT_TABS[v]) return listView(v, id);
       // Podcast: bölümler seriye göre süzülür; #series serilerin kendi ekranı
       if (a === 'seri' && v === 'podcasts') return listView(v, id);
-      if (v === 'series' && a !== 'new' && a !== 'edit') return seriesView();
+      if ((v === 'series' || v === 'books') && a !== 'new' && a !== 'edit') return orderedView(v);
       if (a === 'new') return formView(v, null, id);
       if (a === 'edit') return formView(v, id);
       return listView(v);
@@ -1279,44 +1321,60 @@
   }
 
   /* ======================================================================
-     Podcast serileri (#series): vitrindeki sıra, ekle / düzenle / sil
+     Vitrin sıralı listeler: Podcast serileri (#series) ve Kitaplar (#books)
+     Listedeki sıra sitedeki vitrinin sırasıdır; ekle / düzenle / sırala / sil
      ====================================================================== */
-  function seriesView() {
+  const ORDERED = {
+    series: {
+      parent: '<a href="#podcasts">Podcast Bölümleri</a>', back: '<a class="btn btn-ghost" href="#podcasts">← Bölümler</a>', settings: '#podcasts/settings',
+      site: 'podcast', thumb: 'sq', sampleTip: 'Örnek seri: panelde ve önizlemede görünür, yayına gönderilmez', one: 'Seri',
+      sub: (s) => [S.SERIES_STATUS[s.status], s.frequency, (D.podcasts || []).filter((x) => x.series === s.id).length + ' bölüm'],
+      empty: 'İlk serinizi ekleyin; bölümler bir seriye bağlanır.', del: (s) => deleteSeries(s)
+    },
+    books: {
+      parent: '', back: '', settings: '#books/settings',
+      site: 'kitaplar', thumb: 'tall', sampleTip: 'Örnek kitap: panelde ve önizlemede görünür, yayına gönderilmez', one: 'Kitap',
+      sub: (b) => [S.BOOK_STATUS[b.status], String(b.date || '').slice(0, 4), b.publisher],
+      empty: 'İlk kitabınızı ekleyin: kapak, künye ve satış platformlarının adresleri.',
+      del: (b) => Promise.resolve(confirm(`“${b.title}” silinsin mi? Bu işlem geri alınamaz.`) && (D.books = D.books.filter((x) => x.id !== b.id), persist('Kitap silindi')))
+    }
+  };
+
+  function orderedView(type) {
     view.onclick = null;
-    const T = TYPES.series;
-    crumbs(['<a href="#podcasts">Podcast Bölümleri</a>', T.title]);
-    const list = D.series || [];
-    const nEp = (s) => (D.podcasts || []).filter((x) => x.series === s.id).length;
+    const T = TYPES[type], O2 = ORDERED[type];
+    crumbs(O2.parent ? [O2.parent, T.title] : [T.title]);
+    const list = D[type] || [];
     view.innerHTML = `
       <div class="vh"><div><h1>${T.title}</h1><p>${T.desc}</p></div>
-        <div class="vh-actions"><a class="btn btn-ghost" href="#podcasts">← Bölümler</a><a class="btn btn-ghost" href="#podcasts/settings">⚙ Sayfa Ayarları</a><a class="btn btn-acid" href="#series/new">+ Yeni Seri</a></div></div>
+        <div class="vh-actions">${O2.back}<a class="btn btn-ghost" href="${O2.settings}">⚙ Sayfa Ayarları</a><a class="btn btn-acid" href="#${type}/new">+ Yeni ${O2.one}</a></div></div>
       ${list.length ? `<div class="slist">${list.map((s, i) => `
         <div class="srow" data-id="${esc(s.id)}">
-          <span class="th sq" style="${s.cover ? `background-image:url('${esc(s.cover)}')` : ''}"></span>
-          <div class="sinfo"><div class="tn" data-edit>${esc(s.title || '(adsız)')}${S.isSample(s) ? '<span class="smp" title="Örnek seri: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}</div>
-            <div class="ts">${esc([S.SERIES_STATUS[s.status], s.frequency, nEp(s) + ' bölüm'].filter(Boolean).join(' · '))}</div></div>
+          <span class="th ${O2.thumb}" style="${s.cover ? `background-image:url('${esc(s.cover)}')` : ''}"></span>
+          <div class="sinfo"><div class="tn" data-edit>${esc(s.title || '(adsız)')}${S.isSample(s) ? `<span class="smp" title="${O2.sampleTip}">Örnek</span>` : ''}</div>
+            <div class="ts">${esc(O2.sub(s).filter(Boolean).join(' · '))}</div></div>
           <button class="pill ${s.published === false ? '' : 'on'}" data-toggle title="Durumu değiştir">${s.published === false ? 'Taslak' : 'Yayında'}</button>
           <div class="acts">
             <button class="btn btn-sm btn-ghost" data-up title="Vitrinde bir öne al" ${i === 0 ? 'disabled' : ''}>↑</button>
             <button class="btn btn-sm btn-ghost" data-down title="Vitrinde bir geri al" ${i === list.length - 1 ? 'disabled' : ''}>↓</button>
             <button class="btn btn-sm" data-edit>Düzenle</button>
-            <a class="btn btn-sm btn-ghost" href="index.html#/podcast/${esc(s.slug)}" target="_blank" title="Önizlemede aç">↗</a>
+            <a class="btn btn-sm btn-ghost" href="index.html#/${O2.site}/${esc(s.slug)}" target="_blank" title="Önizlemede aç">↗</a>
             <button class="btn btn-sm btn-danger" data-del>Sil</button>
           </div>
         </div>`).join('')}</div>` : `
-      <div class="tbl-wrap"><div class="empty"><b>Henüz seri yok</b>İlk serinizi ekleyin; bölümler bir seriye bağlanır.<br><br><div class="empty-acts"><a class="btn btn-acid" href="#series/new">+ Yeni Seri</a></div></div></div>`}`;
+      <div class="tbl-wrap"><div class="empty"><b>Henüz ${O2.one.toLocaleLowerCase('tr')} yok</b>${O2.empty}<br><br><div class="empty-acts"><a class="btn btn-acid" href="#${type}/new">+ Yeni ${O2.one}</a></div></div></div>`}`;
 
     view.onclick = (e) => {
       const row = e.target.closest('.srow');
       if (!row) return;
       const i = list.findIndex((s) => s.id === row.dataset.id);
       const s = list[i];
-      const swap = (j) => { [list[i], list[j]] = [list[j], list[i]]; persist('Vitrin sırası güncellendi'); seriesView(); };
-      if (e.target.closest('[data-edit]')) location.hash = '#series/edit/' + s.id;
-      else if (e.target.closest('[data-toggle]')) { s.published = s.published === false; persist(s.published ? 'Seri yayına alındı' : 'Seri taslağa alındı'); seriesView(); }
+      const swap = (j) => { [list[i], list[j]] = [list[j], list[i]]; persist('Vitrin sırası güncellendi'); orderedView(type); };
+      if (e.target.closest('[data-edit]')) location.hash = `#${type}/edit/${s.id}`;
+      else if (e.target.closest('[data-toggle]')) { s.published = s.published === false; persist(s.published ? `${O2.one} yayına alındı` : `${O2.one} taslağa alındı`); orderedView(type); }
       else if (e.target.closest('[data-up]') && i > 0) swap(i - 1);
       else if (e.target.closest('[data-down]') && i < list.length - 1) swap(i + 1);
-      else if (e.target.closest('[data-del]')) deleteSeries(s).then((ok) => { if (ok) seriesView(); });
+      else if (e.target.closest('[data-del]')) O2.del(s).then((ok) => { if (ok) orderedView(type); });
     };
   }
 
@@ -1946,7 +2004,7 @@
      ====================================================================== */
   const MENU_TYPES = [
     ['home', 'Ana Sayfa'], ['videos', 'Videolar'], ['blog', 'Yazılar'], ['podcast', 'Podcast'],
-    ['remixes', 'Remixler'], ['about', 'Hakkında'], ['page', 'Özel Sayfa'], ['url', 'Dış Bağlantı (URL)']
+    ['remixes', 'Remixler'], ['books', 'Kitaplar'], ['about', 'Hakkında'], ['page', 'Özel Sayfa'], ['url', 'Dış Bağlantı (URL)']
   ];
   const AUTO_PATH = { home: '#/', videos: '#/videolar', blog: '#/yazilar', podcast: '#/podcast', remixes: '#/remixler', about: '#/hakkinda' };
 
@@ -2358,7 +2416,7 @@
     const O = window.AKCAN_ORNEK || {};
     const live = (c) => (D[c] || []).filter((x) => x.published !== false && !S.isSample(x));
     const own = ['posts', 'podcasts', 'remixes', 'pages'].reduce((n, c) => n + live(c).length, 0);
-    const nSamples = ['posts', 'podcasts', 'remixes', 'pages', 'series'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
+    const nSamples = ['posts', 'podcasts', 'remixes', 'pages', 'series', 'books'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
     const noDesc = ['posts', 'podcasts', 'remixes'].flatMap(live).filter((x) => !(x.seoDesc || x.excerpt));
     const noAlt = [...live('posts').filter((p) => S.postKind(p) === 'yazi'), ...live('podcasts'), ...live('remixes'), ...live('pages')].filter((x) => x.cover && !x.coverAlt);
     const badSocial = SOCIALS.filter(([k]) => k !== 'email' && so[k] && !S.isProfile(so[k]) && !(st.socialOff || []).includes(k)).map(([, l]) => l);
@@ -2369,7 +2427,9 @@
     const strayEps = live('podcasts').filter((x) => !ownSerIds.has(x.series));
     const rc = st.remixPage || {};
     const badSeries = ownSeries.flatMap((s) => [['Spotify', s.spotify], ['Apple Podcasts', s.apple], ['YouTube', s.youtube]].filter(([, u]) => u && !S.isProfile(u)).map(([l]) => `${s.title} → ${l}`));
-    const badPlatforms = [...badSeries, ...[['Remixler → SoundCloud', rc.soundcloud], ['Remixler → Mixcloud', rc.mixcloud], ['Remixler → Spotify', rc.spotify], ['Remixler → YouTube', rc.youtube]]
+    // Kitapların satış sayfaları: ürün ya da arama sayfası olmalı (platformun ana sayfası gösterilmez)
+    const badBooks = live('books').flatMap((b) => S.BOOK_SHOPS.filter(([k]) => b[k] && !S.isProfile(b[k])).map(([, n]) => b.title + ' → ' + n));
+    const badPlatforms = [...badSeries, ...badBooks, ...[['Remixler → SoundCloud', rc.soundcloud], ['Remixler → Mixcloud', rc.mixcloud], ['Remixler → Spotify', rc.spotify], ['Remixler → YouTube', rc.youtube]]
       .filter(([, u]) => u && !S.isProfile(u)).map(([l]) => l)];
     const sampleAbout = !!(O.about && a.bio && a.bio === O.about.bio);
     const ownRole = a.role && !(O.about && a.role === O.about.role);
@@ -2383,7 +2443,7 @@
       [sampleAbout || !a.bio ? 'warn' : 'ok', 'Hakkında sayfası', sampleAbout ? 'Hakkında sayfasında örnek metin duruyor. Kendi biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.' : a.bio ? 'Biyografiniz yazılmış.' : 'Biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.', '#about'],
       [ownRole ? 'ok' : 'warn', 'Kısa tanım', ownRole ? `“${esc(a.role)}”` : 'Hakkında’ya kim olduğunuzu anlatan tek cümlelik kendi tanımınızı yazın (ör. “Müzik prodüktörü ve DJ”).', '#about'],
       [badSocial.length ? 'warn' : 'ok', 'Sosyal medya profilleri', badSocial.length ? `${badSocial.join(', ')} bağlantısı bir profil adresi değil (ör. https://www.youtube.com/@kanaliniz); sitede gösterilmez.` : 'Profil bağlantılarınız arama motorlarına “aynı kişi” olarak bildirilir.', '#sosyal'],
-      [badPlatforms.length ? 'warn' : 'ok', 'Podcast ve remix platformları', badPlatforms.length ? `${badPlatforms.join(', ')}: profil adresi değil, sitede gösterilmez. Seriler için ◫ Seriler’de serinin formuna, remixler için Remixler → ⚙ Sayfa Ayarları’na programınızın ya da profilinizin tam adresini yazın.` : 'Platform bağlantıları profil adresi.', badSeries.length ? '#series' : '#remixes/settings'],
+      [badPlatforms.length ? 'warn' : 'ok', 'Podcast, remix ve kitap platformları', badPlatforms.length ? `${badPlatforms.join(', ')}: profil adresi değil, sitede gösterilmez. Seriler için ◫ Seriler’de serinin formuna, kitaplar için kitabın formuna, remixler için Remixler → ⚙ Sayfa Ayarları’na programınızın ya da profilinizin tam adresini yazın.` : 'Platform bağlantıları profil adresi.', badSeries.length ? '#series' : badBooks.length ? '#books' : '#remixes/settings'],
       [strayEps.length ? 'warn' : ownSeries.length ? 'ok' : 'info', 'Podcast serileri', strayEps.length ? `${strayEps.length} bölüm yayında olmayan ya da örnek bir seriye bağlı; yayına gitmez. Bölümü kendi serinize taşıyın ya da seriyi yayına alın.` : ownSeries.length ? `${ownSeries.length} seri yayında.` : 'Yayında seri yok: Podcast sayfası boş görünür. ◫ Seriler’den kendi serinizi ekleyin.', '#series'],
       [sampleMail ? 'warn' : 'ok', 'E-posta adresi', sampleMail ? `“${esc(so.email)}” örnek bir adres; kendi adresinizi yazın, silin ya da pasif yapın.` : 'Örnek adres kullanılmıyor.', '#sosyal'],
       [picsum ? 'warn' : 'ok', 'Örnek görseller', picsum ? 'Yayına giden ayarlarda ya da içeriklerde örnek görsel (picsum.photos) var: manşet görseli, podcast kapağı, Hakkında fotoğrafı… Kendi görsellerinizi yükleyin.' : 'Örnek görsel kullanılmıyor.', '#settings'],
@@ -2486,10 +2546,10 @@
     });
     const del = $('#delSamples');
     if (del) del.addEventListener('click', () => {
-      if (!confirm('Panel’deki bütün örnek içerikler (videolar, yazılar, podcast serileri ve bölümleri, remixler, sayfalar) silinsin mi? Kendi içerikleriniz değişmez.')) return;
-      const ids = new Set(['posts', 'podcasts', 'remixes', 'pages'].flatMap((k) => (D[k] || []).filter(S.isSample).map((x) => x.id)));
+      if (!confirm('Panel’deki bütün örnek içerikler (videolar, yazılar, podcast serileri ve bölümleri, remixler, kitaplar, sayfalar) silinsin mi? Kendi içerikleriniz değişmez.')) return;
+      const ids = new Set(['posts', 'podcasts', 'remixes', 'pages', 'books'].flatMap((k) => (D[k] || []).filter(S.isSample).map((x) => x.id)));
       const slugs = new Set((D.pages || []).filter((p) => ids.has(p.id)).map((p) => p.slug));
-      ['posts', 'podcasts', 'remixes', 'pages'].forEach((k) => { D[k] = (D[k] || []).filter((x) => !ids.has(x.id)); });
+      ['posts', 'podcasts', 'remixes', 'pages', 'books'].forEach((k) => { D[k] = (D[k] || []).filter((x) => !ids.has(x.id)); });
       // Örnek seriler de silinir; kendi bölümünüzün bağlı olduğu örnek seri kalır
       const used = new Set((D.podcasts || []).map((x) => x.series));
       D.series = (D.series || []).filter((s) => !S.isSample(s) || used.has(s.id));
