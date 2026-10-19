@@ -53,7 +53,7 @@
     cat('gida', 'Gıda', `Yemek hikâyeleri: mutfaklardan, sofralardan ve tariflerin arkasındaki insanlardan ${what}.`),
     cat('gundem', 'Gündem', `Gündemi eleştirel bir gözle ele aldığım ${what}.`)
   ];
-  /** Bir sekmenin alt kategorileri (tab: 'video' | 'yazi' | 'podcast'); adı ya da bağlantısı olmayanlar sayılmaz */
+  /** Bir sekmenin alt kategorileri (tab: 'video' | 'yazi'); adı ya da bağlantısı olmayanlar sayılmaz */
   const cats = (data, tab) => ((((data && data.settings) || {})[CAT_KEYS[tab]] || {}).cats || []).filter((c) => c && c.id && c.name && c.slug);
 
   // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler, 3 → alt kategoriler, 4 → podcast serileri (bkz. migrate)
@@ -243,8 +243,13 @@
         spotify: pc.spotify || '', apple: pc.apple || '', youtube: pc.youtube || '', published: true
       };
       const ornek = (O.series || []).find((x) => x.id === 'seri-frekans');
-      const s = pc.name === OLD_SHOW.name && pc.description === OLD_SHOW.description
-        ? { ...fromShow, ...(ornek ? clone(ornek) : {}), id: 'seri-frekans', sample: true }
+      // Kendi (örnek olmayan) bölümü olan program her durumda kendi serinizdir: bölümleri yayında kalır
+      const oldSample = (x) => LEGACY_SAMPLES.podcasts.includes(x.title) && !JSON.stringify(x).includes('data:');
+      const ownEps = (data.podcasts || []).some((x) => !isSample(x) && !oldSample(x));
+      // Örnek programda da kullanıcının girdiği alanlar (kapak, adresler, sıklık) korunur; boş olanlar örnekten dolar
+      const filled = Object.fromEntries(Object.entries(fromShow).filter(([, v]) => v !== ''));
+      const s = !ownEps && pc.name === OLD_SHOW.name && pc.description === OLD_SHOW.description
+        ? { ...(ornek ? clone(ornek) : {}), ...filled, id: 'seri-frekans', sample: true }
         : { ...fromShow, id: 'seri-' + uid() };
       // Sürüm 3 kaydında seri yoktur: birleştirmede varsayılanlardan gelen örnek seriler atılır
       data.series = [s];
@@ -281,7 +286,8 @@
     // 4: Gıda ve Gündem alt kategorilerine iki örnek yazı. Örnekleri silmiş olana eklenmez
     if (sv < 4 && (data.posts || []).some(isSample)) addSamples(data, ['posts'], NEW_SAMPLES_4);
     // 5: iki örnek podcast serisi ve Sofra bölümleri. Örnekleri silmiş olana eklenmez
-    if (sv < 5 && ['posts', 'podcasts', 'remixes', 'pages', 'series'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['series', 'podcasts'], NEW_SAMPLES_5);
+    // (seriler sayılmaz: değiştirilmemiş programdan geçişte oluşan örnek seri, örnekleri silmiş kayıtta da vardır)
+    if (sv < 5 && ['posts', 'podcasts', 'remixes', 'pages'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['series', 'podcasts'], NEW_SAMPLES_5);
     if (sv < SAMPLE_VERSION) { data.sampleVersion = SAMPLE_VERSION; changed = true; }
     // Podcast bölümleri ve remixler de kimlik yerine okunur adresle açılır (/podcast/seri/bolum-adi/).
     // Örnek eklemelerinden sonra: yeni eklenen örneklerin de bağlantısı olsun

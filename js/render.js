@@ -7,7 +7,8 @@
    İki adres biçimi:
    - local: panelle aynı bilgisayardaki önizleme → #/yazilar/yazi-adi, #/videolar/video-adi
    - site:  yayınlanan site → /yazilar/yazi-adi/, /videolar/video-adi/ (GitHub Pages'te /depo-adi/... altında)
-   Alt kategori sayfaları sekmenin altındadır: /yazilar/gida/, /podcast/muzik/
+   Alt kategori sayfaları sekmenin altındadır: /yazilar/gida/, /videolar/gundem/
+   Podcast: seri vitrini /podcast/, seri /podcast/seri-adi/, bölüm /podcast/seri-adi/bolum-adi/
    ========================================================================== */
 (function (global) {
   'use strict';
@@ -722,7 +723,7 @@
         <div class="pcast-txt">
           <div class="pcast-eyebrow rise d1">${ICON.wave}${esc(c.eyebrow || eyebrow)}</div>
           <h1 class="rise d2">${esc(name)}</h1>
-          ${c.description ? `<p class="desc rise d3">${esc(c.description)}</p>` : ''}
+          ${String(c.description || '').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).map((p) => `<p class="desc rise d3">${nl2br(p)}</p>`).join('')}
           ${links.length ? `<p class="pnote rise d3">Dinle: ${links.map(([l, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${l}</a>`).join(' · ')}</p>` : ''}
           ${extra}
           ${c.note ? `<p class="pnote rise d3">${esc(c.note)}</p>` : ''}

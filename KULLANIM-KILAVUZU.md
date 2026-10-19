@@ -392,7 +392,7 @@ Panelde **Podcast** listesinin üstündeki **◫ Seriler** düğmesi (adres `#se
 | **Kaynaklar** | Her satıra `Başlık \| Bağlantı`. |
 | **Yayın** kartı | Yayında, Öne çıkar, Tarih, **Bölüm no** (yeni bölümde bir sonraki numara otomatik gelir), **Süre** ("32 dk", "1 sa 5 dk" ya da "45:30"), Bağlantı. |
 | **Kapak** kartı | Kare kapak, alt metin, **kapak görseli kaynağı** (kapağın altında küçük yazıyla görünür). |
-| **Seri** kartı | Zorunlu: bölümün bağlı olduğu seri. Yeni bölümde, listede süzdüğünüz seri (yoksa ilk seri) seçili gelir; **Bölüm no** o serinin bir sonraki numarasıdır. Seriyi değiştirirseniz bölümün adresi de değişir. |
+| **Seri** kartı | Zorunlu: bölümün bağlı olduğu seri. Yeni bölümde, listede süzdüğünüz seri seçili gelir; süzme yoksa yayındaki ilk kendi seriniz (o da yoksa ilk seri); **Bölüm no** o serinin bir sonraki numarasıdır. Seriyi değiştirirseniz bölümün adresi de değişir. |
 | Görünüm, Etiketler, Arama & paylaşım | Ortak alanlar. |
 
 **Bölüm listesi:** üstteki seçim kutusuyla seriye göre süzülür (**Tüm seriler** / bir seri); süzülmüşken **+ Yeni Bölüm** o seride açılır. Satırın alt bilgisinde serinin adı yeşil yazıyla görünür.
@@ -770,13 +770,14 @@ Kodla yapılamayan ama sıralamayı en çok etkileyen işler:
 
 Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu, 7 blog yazısı, 3 podcast serisi (Frekans, Sofra ve "Yakında" durumundaki Satır Arası) ile 9 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
 
-- Örnek videolar, yazılar ve bölümler **Müzik** alt kategorisindedir. **Gıda** (bir yemek hikâyesi) ve **Gündem** (haber paylaşmadan önce sorulacak sorular) alt kategorilerinde birer örnek yazı vardır; rehber yazısı alt kategorisizdir.
+- Örnek videolar ve yazılar **Müzik** alt kategorisindedir; örnek podcast bölümleri **Frekans** ve **Sofra** serilerindedir, **Satır Arası** henüz bölümü olmayan, fragmanlı bir "Yakında" serisidir. **Gıda** (bir yemek hikâyesi) ve **Gündem** (haber paylaşmadan önce sorulacak sorular) alt kategorilerinde birer örnek yazı vardır; rehber yazısı alt kategorisizdir.
 
 - **"Bu Site Nasıl Kullanılır?"** rehber yazısı, her özelliği hem anlatır hem de kendi üzerinde gösterir. Panelde açıp nasıl hazırlandığına bakabilirsiniz.
 - Örnekler panelde başlıklarının yanındaki **ÖRNEK** etiketiyle görünür.
 - **Örnek içerikler hiçbir zaman yayına gönderilmez.** Yalnızca panelde ve bilgisayarınızdaki önizlemede görünürler. Sebebi şu: örnek videolar başka kanallara, görseller picsum.photos'a, sesler SoundHelix'e aittir; yayınlanırlarsa Google sizi bu sahte içerikle tanır.
 - Sitenin ilk sürümünden kalan eski örnekler de başlıklarından tanınır ve yayına gönderilmez.
 - **Örneği kendi içeriğinize dönüştürmek**: düzenlemek yetmez, panel onu yine örnek sayar. Listede **⧉ Çoğalt** ile kopyalayın; kopya sizin içeriğinizdir. Düzenleyip **Yayında** yapın, sonra örneğin aslını silin.
+- **Örnek podcast serileri** de düzenlense örnek kalır ve Seriler ekranında Çoğalt yoktur: kendi serinizi **◫ Seriler → + Yeni Seri** ile ekleyin. Örnek ya da taslak bir seriye bağlı kendi bölümleriniz yayına gitmez; bölüm listesinde **Yayına gitmez** etiketiyle işaretlenir. Bölümün formunda seriyi kendi serinize çevirin.
 - **Silmek**: tek tek (listede **Sil**) ya da hepsini birden (**Yayın & SEO → Örnek içerikleri sil**).
 - **Geri getirmek**: **Yedekleme → Örnek İçerikleri Ekle**.
 

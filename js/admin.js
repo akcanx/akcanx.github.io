@@ -361,7 +361,9 @@
     if (type === 'series') return { published: true, status: 'devam' };
     const base = { published: true, date: today(), tags: [] };
     if (type === 'podcasts') {
-      base.series = cat || ((D.series || [])[0] || {}).id;
+      // Ön seçim yoksa yayındaki ilk kendi seriniz (örnek seriye düşen bölüm yayına gitmez), o da yoksa ilk seri
+      const own = (D.series || []).find((s) => s.published !== false && !S.isSample(s));
+      base.series = cat || (own || (D.series || [])[0] || {}).id;
       const max = Math.max(0, ...(D.podcasts || []).filter((p) => p.series === base.series).map((p) => Number(p.number) || 0));
       base.number = max + 1;
     } else if (cat) base.cat = cat;
@@ -1083,9 +1085,12 @@
         <tbody>${arr.map((x) => {
           const th = T.thumb(x);
           const cn = grpOf(x);
+          // Kendi bölümünüz örnek ya da taslak bir seriye bağlıysa yayına gitmez: satırda belirtilir
+          const sr = type === 'podcasts' && !S.isSample(x) && x.published !== false && S.seriesOf(D, x);
+          const stray = sr && (S.isSample(sr) || sr.published === false);
           const sub = [cn ? `<b class="ccat">${esc(cn.name)}</b>` : '', esc(T.sub(x) || '')].filter(Boolean).join(' · ');
           return `<tr data-id="${x.id}" data-s="${esc((x.title + ' ' + (cn ? cn.name + ' ' : '') + (T.sub(x) || '')).toLocaleLowerCase('tr'))}" data-p="${x.published === false ? 0 : 1}" data-c="${esc(catKey(x))}">
-            <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}</div><div class="ts">${sub}</div></div></div></td>
+            <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}${stray ? '<span class="smp warn" title="Bağlı olduğu seri örnek ya da taslak: bu bölüm yayına gitmez. Bölümü kendi serinize taşıyın ya da seriyi yayına alın.">Yayına gitmez</span>' : ''}</div><div class="ts">${sub}</div></div></div></td>
             <td class="dt">${S.fmtDate(x.date)}</td>
             <td><button class="pill ${x.published === false ? '' : 'on'}" data-toggle title="Durumu değiştir">${x.published === false ? 'Taslak' : 'Yayında'}</button></td>
             <td><div class="acts">
@@ -2355,7 +2360,7 @@
       [sampleAbout || !a.bio ? 'warn' : 'ok', 'Hakkında sayfası', sampleAbout ? 'Hakkında sayfasında örnek metin duruyor. Kendi biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.' : a.bio ? 'Biyografiniz yazılmış.' : 'Biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.', '#about'],
       [ownRole ? 'ok' : 'warn', 'Kısa tanım', ownRole ? `“${esc(a.role)}”` : 'Hakkında’ya kim olduğunuzu anlatan tek cümlelik kendi tanımınızı yazın (ör. “Müzik prodüktörü ve DJ”).', '#about'],
       [badSocial.length ? 'warn' : 'ok', 'Sosyal medya profilleri', badSocial.length ? `${badSocial.join(', ')} bağlantısı bir profil adresi değil (ör. https://www.youtube.com/@kanaliniz); sitede gösterilmez.` : 'Profil bağlantılarınız arama motorlarına “aynı kişi” olarak bildirilir.', '#sosyal'],
-      [badPlatforms.length ? 'warn' : 'ok', 'Podcast ve remix platformları', badPlatforms.length ? `${badPlatforms.join(', ')}: profil adresi değil, sitede gösterilmez. ⚙ Program / Sayfa Ayarları’na programınızın ya da profilinizin tam adresini yazın.` : 'Platform bağlantıları profil adresi.', badSeries.length ? '#series' : '#remixes/settings'],
+      [badPlatforms.length ? 'warn' : 'ok', 'Podcast ve remix platformları', badPlatforms.length ? `${badPlatforms.join(', ')}: profil adresi değil, sitede gösterilmez. Seriler için ◫ Seriler’de serinin formuna, remixler için Remixler → ⚙ Sayfa Ayarları’na programınızın ya da profilinizin tam adresini yazın.` : 'Platform bağlantıları profil adresi.', badSeries.length ? '#series' : '#remixes/settings'],
       [strayEps.length ? 'warn' : ownSeries.length ? 'ok' : 'info', 'Podcast serileri', strayEps.length ? `${strayEps.length} bölüm yayında olmayan ya da örnek bir seriye bağlı; yayına gitmez. Bölümü kendi serinize taşıyın ya da seriyi yayına alın.` : ownSeries.length ? `${ownSeries.length} seri yayında.` : 'Yayında seri yok: Podcast sayfası boş görünür. ◫ Seriler’den kendi serinizi ekleyin.', '#series'],
       [sampleMail ? 'warn' : 'ok', 'E-posta adresi', sampleMail ? `“${esc(so.email)}” örnek bir adres; kendi adresinizi yazın, silin ya da pasif yapın.` : 'Örnek adres kullanılmıyor.', '#sosyal'],
       [picsum ? 'warn' : 'ok', 'Örnek görseller', picsum ? 'Yayına giden ayarlarda ya da içeriklerde örnek görsel (picsum.photos) var: manşet görseli, podcast kapağı, Hakkında fotoğrafı… Kendi görsellerinizi yükleyin.' : 'Örnek görsel kullanılmıyor.', '#settings'],

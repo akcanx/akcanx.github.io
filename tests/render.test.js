@@ -91,3 +91,10 @@ test('akis-ve-arama', () => {
   assert.match(it.href, /^#\/podcast\/frekans\//);
   assert.ok(R.searchIndex().some((i) => i.label === 'Podcast serisi' && i.title === 'Sofra'));
 });
+
+test('seri-tanitim-paragraflari', () => { // tanıtım metni boş satırla paragraflara ayrılır
+  const d = S.normalize({});
+  d.series[0].description = 'Birinci paragraf.\n\nİkinci paragraf.';
+  const html = Render.create(d, { mode: 'local' }).page('podcast/frekans').html;
+  assert.equal(count(html, /<p class="desc[^"]*">/g), 2);
+});

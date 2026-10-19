@@ -92,3 +92,30 @@ test('forPublish-ornek-seri-bolumu', () => { // örnek ya da yayında olmayan se
   assert.equal('adminHash' in p.settings, false);
   assert.equal(d.series.length, 5); // kaynak değişmez
 });
+
+test('gecis-kullanici-alanlari-korunur', () => { // örnek program sayılsa da kullanıcının kapağı, adresleri ve sıklığı kalır
+  const d = S.normalize(v3({ cover: 'data:image/webp;base64,AAA', spotify: 'https://open.spotify.com/show/MINE', eyebrow: 'Podcast · Her Cuma' }));
+  const s = d.series[0];
+  assert.equal(s.id, 'seri-frekans');
+  assert.equal(s.cover, 'data:image/webp;base64,AAA');
+  assert.equal(s.spotify, 'https://open.spotify.com/show/MINE');
+  assert.equal(s.frequency, 'Her Cuma');
+  assert.equal(s.tagline, 'Müziğin, sesin ve hafızanın izinde'); // boş alanlar örnekten dolar
+});
+
+test('gecis-kendi-bolumlu-program-kendi-serisi', () => { // kendi bölümleri olan program yayından kalkmaz
+  const raw = v3();
+  raw.podcasts = raw.podcasts.map((p) => ({ ...p, id: 'k-' + p.id, title: 'Kendi ' + p.title }));
+  const d = S.normalize(raw);
+  assert.equal(S.isSample(d.series[0]), false);
+  assert.notEqual(d.series[0].id, 'seri-frekans');
+  assert.equal(S.forPublish(d).podcasts.length, raw.podcasts.length);
+});
+
+test('ornek-silmis-program-degismemis-eklenmez', () => { // örnekleri silmiş ama programa dokunmamış kullanıcı
+  const raw = v3();
+  raw.posts = []; raw.remixes = []; raw.pages = []; raw.podcasts = [];
+  mem.clear();
+  mem.set(S.KEY, JSON.stringify(raw));
+  assert.deepEqual(S.get().series.map((s) => s.id), ['seri-frekans']);
+});
