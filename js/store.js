@@ -259,17 +259,6 @@
     (data.posts || []).forEach((p) => {
       if (p.kind !== 'video' && p.kind !== 'yazi') { p.kind = ytId(p.video) ? 'video' : 'yazi'; changed = true; }
     });
-    // Podcast bölümleri ve remixler de kimlik yerine okunur adresle açılır (/podcast/bolum-adi/)
-    ['podcasts', 'remixes'].forEach((c) => {
-      (data[c] || []).forEach((x) => {
-        if (x.slug) return;
-        const base = slugify(x.title) || (c === 'podcasts' ? 'bolum' : 'remix');
-        let slug = base, n = 2;
-        while (data[c].some((y) => y.slug === slug)) slug = `${base}-${n++}`;
-        x.slug = slug;
-        changed = true;
-      });
-    });
     // İlk sürümün örnekleri yayına gitmesin: başlığı tutan ve içinde panelden yüklenmiş görsel olmayanlar örnek sayılır
     Object.keys(LEGACY_SAMPLES).forEach((c) => {
       (data[c] || []).forEach((x) => {
@@ -294,6 +283,18 @@
     // 5: iki örnek podcast serisi ve Sofra bölümleri. Örnekleri silmiş olana eklenmez
     if (sv < 5 && ['posts', 'podcasts', 'remixes', 'pages', 'series'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['series', 'podcasts'], NEW_SAMPLES_5);
     if (sv < SAMPLE_VERSION) { data.sampleVersion = SAMPLE_VERSION; changed = true; }
+    // Podcast bölümleri ve remixler de kimlik yerine okunur adresle açılır (/podcast/seri/bolum-adi/).
+    // Örnek eklemelerinden sonra: yeni eklenen örneklerin de bağlantısı olsun
+    ['podcasts', 'remixes'].forEach((c) => {
+      (data[c] || []).forEach((x) => {
+        if (x.slug) return;
+        const base = slugify(x.title) || (c === 'podcasts' ? 'bolum' : 'remix');
+        let slug = base, n = 2;
+        while (data[c].some((y) => y.slug === slug)) slug = `${base}-${n++}`;
+        x.slug = slug;
+        changed = true;
+      });
+    });
     // Bağı kopuk bölümler (serisi silinmiş, eski yedek…) ilk seriye bağlanır; hiç seri yoksa "Podcast" serisi açılır
     data.series = data.series || [];
     if ((data.podcasts || []).length) {

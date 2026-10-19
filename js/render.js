@@ -776,9 +776,7 @@
       const meta = [n ? n + ' bölüm' : '', s.frequency].filter(Boolean).join(' · ');
       return `<a class="scard reveal" href="${href(seriesRoute(s))}">
         <span class="scover">${s.cover ? `<img src="${esc(asset(s.cover))}" alt="${esc(s.coverAlt || s.title)}" loading="lazy" decoding="async">` : ''}${badge}</span>
-        <span class="st">${esc(s.title)}</span>
-        ${s.tagline ? `<span class="sl">${esc(s.tagline)}</span>` : ''}
-        ${meta ? `<span class="sm">${esc(meta)}</span>` : ''}
+        <span class="sbody"><span class="st">${esc(s.title)}</span>${s.tagline ? `<span class="sl">${esc(s.tagline)}</span>` : ''}${meta ? `<span class="sm">${esc(meta)}</span>` : ''}</span>
       </a>`;
     }
 
@@ -817,7 +815,8 @@
       const eyebrow = [name, s.frequency, S.SERIES_STATUS[s.status]].filter(Boolean).join(' · ');
       const links = [['Spotify', s.spotify], ['Apple Podcasts', s.apple], ['YouTube', s.youtube]];
       const emb = S.embed(s.trailer);
-      const trailerBtn = trailerAudio(s) ? `<button class="readlink trailer rise d3" data-play="seri:${esc(s.id)}"><span class="arr">▶</span> Fragmanı dinle</button>` : '';
+      // Oynatıcı çalarken yalnızca .ic içindeki simgeyi değiştirir (oynat ↔ duraklat)
+      const trailerBtn = trailerAudio(s) ? `<button class="readlink trailer rise d3" data-play="seri:${esc(s.id)}"><span class="ic">${ICON.play}</span>Fragmanı dinle</button>` : '';
       return {
         title: s.seoTitle || `${s.title} — ${name} — ${st.siteName}`, name: s.title, desc: s.seoDesc || s.tagline || s.description,
         image: asset(s.ogImage) || asset(s.cover), imageAlt: s.coverAlt || s.title, ogType: 'website',

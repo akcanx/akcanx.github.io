@@ -51,6 +51,7 @@ test('ornek-surum-5-eklenir', () => { // panelde kayıtlı eski veri: örnek ser
   const d = S.get();
   assert.deepEqual(d.series.map((s) => s.id), ['seri-frekans', 'seri-sofra', 'seri-satir-arasi']);
   assert.equal(d.podcasts.filter((p) => p.series === 'seri-sofra').length, 3);
+  assert.ok(d.podcasts.every((p) => p.slug), 'sonradan eklenen örnek bölümlerin de bağlantısı olmalı');
   assert.equal(JSON.parse(mem.get(S.KEY)).sampleVersion, 5);
 });
 
