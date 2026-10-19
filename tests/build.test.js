@@ -39,3 +39,21 @@ test('derleme-tam-metin-ve-simge', () => { // GEO: llms-full.txt; dokunmatik cih
   assert.match(site('index.html'), /<link rel="apple-touch-icon" href="\/apple-touch-icon\.png">/);
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('derleme-kitaplar-llms', () => { // kendi kitabı: sayfası, llms.txt bölümü, llms-full.txt künye ve satış bağlantısı
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'akcan-'));
+  fs.mkdirSync(path.join(dir, 'veri'));
+  const raw = v3({ name: 'Kendi' });
+  raw.podcasts = [];
+  raw.version = 5;
+  raw.series = [];
+  raw.books = [{ id: 'kb', title: 'Kendi Kitabım', slug: 'kendi-kitabim', published: true, isbn: '978-605-123-456-7', publisher: 'Yayınevi', tagline: 'Kısa tanıtım', amazon: 'https://www.amazon.com.tr/dp/123' }];
+  fs.writeFileSync(path.join(dir, 'veri', 'site.json'), JSON.stringify(raw));
+  execFileSync(process.execPath, [path.join(__dirname, '..', 'build.js'), '--veri', path.join(dir, 'veri'), '--cikti', path.join(dir, '_site'), '--site-url', 'https://ornek.test/'], { stdio: 'pipe' });
+  const site = (f) => fs.readFileSync(path.join(dir, '_site', f), 'utf8');
+  assert.ok(fs.existsSync(path.join(dir, '_site', 'kitaplar', 'kendi-kitabim', 'index.html')));
+  assert.match(site('llms.txt'), /## Kitaplar[\s\S]*Kendi Kitabım/);
+  assert.match(site('llms-full.txt'), /978-605-123-456-7/);
+  assert.match(site('llms-full.txt'), /https:\/\/www\.amazon\.com\.tr\/dp\/123/);
+  fs.rmSync(dir, { recursive: true, force: true });
+});

@@ -239,11 +239,12 @@
       const pages = pub(D.pages).map((p) => ({ type: 'page', label: 'Sayfa', title: p.title, href: href('sayfa/' + p.slug), text: S.strip(p.content), tags: [] }));
       const subs = catPages().map((x) => ({ type: 'cat', label: 'Alt kategori', title: x.tabName + ' › ' + x.cat.name, href: href(x.route), text: x.cat.desc || '', tags: [] }));
       const sers = seriesList().map((s) => ({ type: 'series', label: 'Podcast serisi', title: s.title, href: href(seriesRoute(s)), text: [s.tagline, s.description].filter(Boolean).join(' '), tags: [] }));
-      return [...items(), ...sers, ...subs, ...pages];
+      const books = bookList().map((b) => ({ type: 'book', label: 'Kitap', title: b.title, href: href(bookRoute(b)), text: [b.subtitle, b.tagline, S.strip(b.description), b.publisher].filter(Boolean).join(' '), tags: b.tags || [] }));
+      return [...items(), ...sers, ...books, ...subs, ...pages];
     }
 
     /* ---------- Menü & alt bilgi ---------- */
-    const ROUTE_OF = { home: '', videos: 'videolar', blog: 'yazilar', podcast: 'podcast', remixes: 'remixler', about: 'hakkinda' };
+    const ROUTE_OF = { home: '', videos: 'videolar', blog: 'yazilar', podcast: 'podcast', remixes: 'remixler', books: 'kitaplar', about: 'hakkinda' };
     function menuHref(m) {
       switch (m.type) {
         case 'home': return href('');
@@ -251,6 +252,7 @@
         case 'blog': return href('yazilar');
         case 'podcast': return href('podcast');
         case 'remixes': return href('remixler');
+        case 'books': return href('kitaplar');
         case 'about': return href('hakkinda');
         case 'page': return href('sayfa/' + (m.target || ''));
         case 'url': return link(m.target) || '#';
@@ -905,6 +907,100 @@
       };
     }
 
+    /* ---------- Kitaplar: vitrin (/kitaplar/) ve kitap sayfası (/kitaplar/kitap-adi/) ---------- */
+    /** Yayındaki kitaplar, paneldeki sırayla (vitrin sırası) */
+    const bookList = () => (D.books || []).filter((b) => b.published !== false);
+    const bookRoute = (b) => 'kitaplar/' + b.slug;
+    const booksName = () => (st.booksPage || {}).title || 'Kitaplar';
+    const yearOf = (d) => (/^\d{4}/.test(d || '') ? String(d).slice(0, 4) : '');
+    // Satış platformları: yalnızca gerçek ürün ya da arama adresleri (platformun ana sayfası sayılmaz)
+    const bookShops = (b) => S.BOOK_SHOPS.filter(([k]) => isProfile(b[k])).map(([k, name]) => [name, b[k]]);
+    const BOOK_SCHEMA_FORMAT = { karton: 'Paperback', ciltli: 'Hardcover', ekitap: 'EBook', sesli: 'AudiobookFormat' };
+
+    /** Vitrin kartı: dikey kapak (köşede Ön sipariş / Yakında), ad, kısa tanıtım, yıl · yayınevi */
+    function bookCard(b) {
+      const badge = b.status === 'onsiparis' || b.status === 'yakinda' ? `<span class="sbadge">${S.BOOK_STATUS[b.status]}</span>` : '';
+      const meta = [yearOf(b.date), b.publisher].filter(Boolean).join(' · ');
+      const sub = b.tagline || b.subtitle;
+      return `<a class="scard reveal" href="${href(bookRoute(b))}">
+        <span class="scover">${b.cover ? `<img src="${esc(asset(b.cover))}" alt="${esc(b.coverAlt || b.title)}" loading="lazy" decoding="async">` : ''}${badge}</span>
+        <span class="sbody"><span class="st">${esc(b.title)}</span>${sub ? `<span class="sl">${esc(sub)}</span>` : ''}${meta ? `<span class="sm">${esc(meta)}</span>` : ''}</span>
+      </a>`;
+    }
+
+    function booksIndex() {
+      const bp = st.booksPage || {};
+      const name = booksName();
+      const list = bookList();
+      return {
+        title: name + ' — ' + st.siteName, name, desc: bp.intro, image: asset((list[0] || {}).cover), imageAlt: name, ogType: 'website',
+        noindex: !list.length, crumbs: crumbs([[name, 'kitaplar']]),
+        schema: [listNode('CollectionPage', 'kitaplar', name, bp.intro, list.map((b) => ({ href: href(bookRoute(b)), title: b.title })))],
+        html: `<div class="page-wash" style="--wash:${esc(bp.tint || '#4A3A1E')}"></div>
+      <header class="phead phead-plain phead-pod"><div class="wrap">
+        ${bp.eyebrow ? `<div class="pcast-eyebrow rise d1">${esc(bp.eyebrow)}</div>` : ''}
+        <h1 class="rise d1">${esc(name)}</h1>
+        ${bp.intro ? `<p class="pintro rise d2">${esc(bp.intro)}</p>` : ''}
+        ${list.length ? `<p class="pmeta rise d2">${list.length} kitap</p>` : ''}
+      </div></header>
+      <section class="ix ix-plain" id="kitaplar"><div class="wrap">
+        ${list.length ? `<div class="sgrid books">${list.map(bookCard).join('')}</div>` : '<div class="empty-note">Henüz yayınlanmış kitap yok.</div>'}
+      </div></section>`
+      };
+    }
+
+    /** Kitap sayfası: kapak, satın alma düğmeleri, tanıtım, alıntı, künye ve diğer kitaplar */
+    function bookPage(b) {
+      const name = booksName();
+      const route = bookRoute(b);
+      const cover = asset(b.cover);
+      const shops = bookShops(b);
+      const fmt = S.BOOK_FORMAT[b.format];
+      const eyebrow = ['Kitap', b.publisher, b.status && b.status !== 'yayinda' ? S.BOOK_STATUS[b.status] : ''].filter(Boolean).join(' · ');
+      const meta = [yearOf(b.date), b.pages ? b.pages + ' sayfa' : '', fmt].filter(Boolean);
+      const kunye = [['Yayınevi', b.publisher], ['Yayın tarihi', S.fmtDate(b.date)], ['Baskı', b.edition], ['Sayfa', b.pages], ['ISBN', b.isbn], ['Dil', b.language], ['Biçim', fmt]].filter(([, v]) => v);
+      // İlk geçerli platform vurgulu; hiç yoksa satış notu
+      const buy = shops.length
+        ? `<div class="buy rise d3">${shops.map(([n, u], i) => `<a class="buybtn${i ? '' : ' primary'}" href="${esc(u)}" target="_blank" rel="noopener">${i ? esc(n) : 'Satın al · ' + esc(n)}</a>`).join('')}</div>`
+        : '<p class="pnote rise d3">Yakında satışta.</p>';
+      const others = bookList().filter((x) => x.id !== b.id);
+      const desc = b.seoDesc || [b.tagline, S.strip(b.description)].filter(Boolean).join(' — ');
+      return {
+        title: b.seoTitle || `${b.title} — ${st.siteName}`, name: b.title, desc, image: asset(b.ogImage) || cover, imageAlt: b.coverAlt || b.title, ogType: 'book',
+        published: b.date, modified: b.updated || b.date, tags: b.tags, isbn: b.isbn,
+        ctx: { crail: [{ label: name, href: href('kitaplar') }, { label: b.title, href: href(route) }], tint: b.tint, tintSrc: cover },
+        crumbs: crumbs([[name, 'kitaplar'], [b.title, route]]),
+        schema: [{
+          '@type': 'Book', '@id': pageUrl(route) + '#kitap', url: pageUrl(route), name: b.title, alternativeName: b.subtitle,
+          author: { '@id': personId() }, isbn: b.isbn, numberOfPages: b.pages ? Number(b.pages) : undefined, bookEdition: b.edition,
+          publisher: b.publisher ? { '@type': 'Organization', name: b.publisher } : undefined, datePublished: b.date, image: abs(cover),
+          inLanguage: !b.language || b.language === 'Türkçe' ? 'tr-TR' : b.language,
+          bookFormat: BOOK_SCHEMA_FORMAT[b.format] ? 'https://schema.org/' + BOOK_SCHEMA_FORMAT[b.format] : undefined,
+          description: clip(S.strip(b.description) || b.tagline || '', 300), keywords: (b.tags || []).join(', '),
+          potentialAction: shops.map(([n, u]) => ({ '@type': 'BuyAction', target: u, seller: { '@type': 'Organization', name: n } }))
+        }],
+        html: `<article class="bpage tinted" style="--tint:${esc(b.tint || '#4A3A1E')}">
+      <div class="page-wash" style="--wash:${esc(b.tint || '#4A3A1E')}"></div>
+      <section class="bhero"><div class="wrap bhero-grid">
+        <div class="bcover rise d1">${cover ? `<img src="${esc(cover)}" alt="${esc(b.coverAlt || b.title)}" fetchpriority="high">` : ''}</div>
+        <div class="btxt">
+          <div class="pcast-eyebrow rise d1">${esc(eyebrow)}</div>
+          <h1 class="rise d2">${esc(b.title)}</h1>
+          ${b.subtitle ? `<p class="bsub rise d2">${esc(b.subtitle)}</p>` : ''}
+          ${meta.length ? `<div class="bmeta rise d3">${meta.map(esc).join('<span class="sep">·</span>')}</div>` : ''}
+          ${buy}
+        </div>
+      </div></section>
+      <div class="wrap">
+        ${b.description ? `<div class="prose dropcap">${fixHtml(b.description)}</div>` : ''}
+        ${b.quote ? `<blockquote class="bquote"><p>“${esc(String(b.quote).replace(/^[“"]+|[”"]+$/g, ''))}”</p></blockquote>` : ''}
+        <div class="afoot">${chipsBlock(b.tags, '')}${kunye.length ? `<div class="blk"><h4>Künye</h4><dl class="kunye">${kunye.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div>` : ''}</div>
+        ${others.length ? `<section class="blk bmore"><h4>Diğer kitaplar</h4><div class="sgrid books">${others.map(bookCard).join('')}</div></section>` : ''}
+      </div>
+    </article>`
+      };
+    }
+
     /* ---------- Remixler (Podcast sekmesinin ikizi) ---------- */
     const REMIX_DESC = 'Yeniden yorumladığım parçalar, editler ve bootlegler.';
     const rmRow = (r) => audioRow('remix:' + r.id, href('remixler/' + r.slug), r.audio, r.title, '', [r.genre, r.bpm ? r.bpm + ' BPM' : '', S.fmtDateShort(r.date)]);
@@ -1060,6 +1156,11 @@
             break;
           }
           case 'remixler': pg = arg ? remixPage(arg) : listRemixes(); break;
+          case 'kitaplar': {
+            const b = arg && bookList().find((x) => x.slug === arg);
+            pg = !arg ? booksIndex() : b ? bookPage(b) : notFound();
+            break;
+          }
           case 'hakkinda': pg = aboutPage(); break;
           case 'sayfa': pg = customPage(arg); break;
           default: pg = notFound();
@@ -1089,6 +1190,10 @@
       if (sers.length || menuHas('podcast')) r.push('podcast');
       sers.forEach((s) => r.push(seriesRoute(s)));
       liveEps().forEach((p) => r.push(epRoute(p)));
+      // Kitaplar: yayında kitap varsa ya da menüde görünüyorsa (menüde gizliyken yalnızca kendi kitaplarınız varsa)
+      const books = bookList();
+      if (books.length || menuHas('books')) r.push('kitaplar');
+      books.forEach((b) => r.push(bookRoute(b)));
       if (pub(D.remixes).length || menuHas('remixes')) r.push('remixler');
       pub(D.remixes).forEach((p) => r.push('remixler/' + p.slug));
       const a = D.about || {};
@@ -1139,6 +1244,7 @@
         m('og:title', name), m('og:description', pg.desc), pg.status === 404 ? '' : m('og:url', url),
         m('og:image', image), image ? m('og:image:alt', imageAlt) : ''
       );
+      if (pg.ogType === 'book') t.push(m('book:isbn', pg.isbn), m('book:release_date', isoDate(pg.published)));
       if (pg.ogType === 'article') {
         t.push(m('article:published_time', isoDate(pg.published)), m('article:modified_time', isoDate(pg.modified)));
         (pg.tags || []).slice(0, 6).forEach((tag) => t.push(m('article:tag', tag)));
@@ -1163,7 +1269,7 @@
       return t.filter(Boolean).join('\n  ');
     }
 
-    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages, seriesList };
+    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages, seriesList, bookList };
   }
 
   global.Render = { create, ICON, SOCIAL_ICON, PAGE_SIZE, clip };

@@ -156,3 +156,60 @@ test('uzmanlik-alanlari', () => { // kişi kaydında en çok kullanılan konular
   assert.ok(Array.isArray(person.knowsAbout) && person.knowsAbout.includes(top), JSON.stringify(person.knowsAbout));
   assert.ok(person.knowsAbout.length <= 10);
 });
+
+/* ---------- Kitaplar ---------- */
+test('kitap-vitrini', () => {
+  const pg = R.page('kitaplar');
+  assert.equal(count(pg.html, /class="scard/g), 3);
+  assert.match(pg.html, /class="sgrid books"/);
+  assert.match(pg.html, /class="sbadge">Ön sipariş</);
+  assert.match(pg.html, /3 kitap/);
+});
+
+test('kitap-sayfasi', () => {
+  const b = S.normalize({}).books[0];
+  const pg = R.page('kitaplar/' + b.slug);
+  assert.match(pg.html, new RegExp(`<h1[^>]*>${b.title}</h1>`));
+  const book = pg.schema.find((n) => n['@type'] === 'Book');
+  assert.equal(book.isbn, b.isbn);
+  assert.equal(book.numberOfPages, b.pages);
+  assert.equal(book.potentialAction.length, 7);
+  assert.equal(book.potentialAction[0]['@type'], 'BuyAction');
+  assert.match(pg.html, /class="kunye"/);
+});
+
+test('kitap-satin-alma-dugmeleri', () => { // yalnızca gerçek ürün/arama adresleri; hiç yoksa not
+  const d = S.normalize({});
+  Object.assign(d.books[0], { amazon: 'https://www.amazon.com.tr/', dr: '', kitapyurdu: 'amazon', idefix: '', bkm: '', hepsiburada: '', trendyol: 'https://www.trendyol.com/sr?q=x' });
+  const html = Render.create(d, { mode: 'local' }).page('kitaplar/' + d.books[0].slug).html;
+  assert.equal(count(html, /class="buybtn/g), 1);
+  assert.match(html, /class="buybtn primary"[^>]*>Satın al · Trendyol</);
+  d.books[0].trendyol = '';
+  assert.match(Render.create(d, { mode: 'local' }).page('kitaplar/' + d.books[0].slug).html, /Yakında satışta/);
+});
+
+test('asgari-kitap', () => {
+  const d = S.normalize({});
+  d.books = [{ id: 'a', title: 'Asgari', slug: 'asgari', published: true }];
+  const r = Render.create(d, { mode: 'local' });
+  assert.equal(count(r.page('kitaplar').html, /class="scard/g), 1);
+  assert.match(r.page('kitaplar/asgari').html, /<h1[^>]*>Asgari<\/h1>/);
+  for (const route of ['kitaplar', 'kitaplar/asgari']) assert.doesNotMatch(r.page(route).html, /undefined|null|NaN/);
+  assert.doesNotMatch(r.page('kitaplar/asgari').html, /class="kunye"/);
+});
+
+test('kitap-rotalari-gizli-menu', () => { // gizli menü + yalnızca örnekler: yayında kitaplar sayfası yok
+  const site = Render.create(S.forPublish(S.normalize({})), { mode: 'site', siteUrl: 'https://ornek.test/' });
+  assert.ok(!site.routes().some((x) => x.startsWith('kitaplar')));
+  const d = S.normalize({});
+  d.books.push({ id: 'k', title: 'Kendi', slug: 'kendi', published: true });
+  const r2 = Render.create(S.forPublish(d), { mode: 'site', siteUrl: 'https://ornek.test/' });
+  assert.ok(r2.routes().includes('kitaplar') && r2.routes().includes('kitaplar/kendi'));
+  assert.doesNotMatch(r2.navLinks(), /kitaplar/); // menüde gizli
+});
+
+test('kitap-adresleri', () => {
+  assert.equal(R.page('kitaplar/yok/olmaz').status, 404);
+  assert.equal(R.page('kitaplar/yok').status, 404);
+  assert.ok(R.searchIndex().some((i) => i.label === 'Kitap'));
+});

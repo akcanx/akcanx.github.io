@@ -183,6 +183,8 @@ const entry = (it) => ({ title: it.title, url: R.abs(it.href), desc: summary(it,
 const profiles = R.socials().map(([, u]) => u).filter(S.isProfile);
 // Podcast serileri (vitrindeki sırayla), ardından bölümler
 const podcastSeries = R.seriesList().map((s) => ({ title: s.title, url: R.abs(R.href('podcast/' + s.slug)), desc: s.tagline || Render.clip(s.description || '', 200) }));
+// Kitaplar (vitrindeki sırayla)
+const bookEntries = R.bookList().map((b) => ({ title: b.title, url: R.abs(R.href('kitaplar/' + b.slug)), desc: b.tagline || Render.clip(S.strip(b.description), 200) }));
 // Alt kategoriler ve yayınlandıkları diğer kanallar
 const subs = R.catPages().map((x) => ({
   title: `${x.tabName} › ${x.cat.name}`, url: R.abs(R.href(x.route)),
@@ -193,7 +195,7 @@ write('llms.txt', `# ${st.siteName}
 > ${st.description || st.tagline || ''}
 ${a.name || a.role ? `\n${[a.name, a.role].filter(Boolean).join(' — ')}. Hakkında: ${R.abs(R.href('hakkinda'))}\n` : ''}
 Sitenin bütün içeriğinin tam metni: ${siteUrl}llms-full.txt
-${section(st.videosPage.title || 'Videolar', all.filter((i) => i.fk === 'video').map(entry))}${section(st.postsPage.title || 'Yazılar', all.filter((i) => i.fk === 'yazi').map(entry))}${section(st.podcast.name || 'Podcast', [...podcastSeries, ...all.filter((i) => i.type === 'podcast').map(entry)])}${section('Remixler', all.filter((i) => i.type === 'remix').map(entry))}${section('Alt kategoriler', subs)}${section('Sayfalar', R.pub(D.pages).map((p) => ({ title: p.title, url: R.abs(R.href('sayfa/' + p.slug)), desc: Render.clip(p.seoDesc || p.excerpt || S.strip(p.content), 200) })))}${section('Bağlantılar', profiles.map((u) => ({ title: new URL(u).hostname.replace(/^www\./, ''), url: u })))}`);
+${section(st.videosPage.title || 'Videolar', all.filter((i) => i.fk === 'video').map(entry))}${section(st.postsPage.title || 'Yazılar', all.filter((i) => i.fk === 'yazi').map(entry))}${section(st.podcast.name || 'Podcast', [...podcastSeries, ...all.filter((i) => i.type === 'podcast').map(entry)])}${section('Remixler', all.filter((i) => i.type === 'remix').map(entry))}${section(st.booksPage.title || 'Kitaplar', bookEntries)}${section('Alt kategoriler', subs)}${section('Sayfalar', R.pub(D.pages).map((p) => ({ title: p.title, url: R.abs(R.href('sayfa/' + p.slug)), desc: Render.clip(p.seoDesc || p.excerpt || S.strip(p.content), 200) })))}${section('Bağlantılar', profiles.map((u) => ({ title: new URL(u).hostname.replace(/^www\./, ''), url: u })))}`);
 
 /* ---------- llms-full.txt: bütün içeriğin tam metni (yapay zekâ asistanları siteyi tek dosyada okur) ---------- */
 // Zengin metin → düz metin: ara başlıklar ###, maddeler -, alıntılar >, görsel açıklamaları [Görsel]
@@ -218,6 +220,11 @@ write('llms-full.txt', `# ${st.siteName}\n\n> ${st.description || st.tagline || 
   ...R.seriesList().map((x) => fullBlock(x.title, R.abs(R.href('podcast/' + x.slug)), ['Podcast serisi', x.frequency].filter(Boolean).join(' · '), [x.tagline, x.description].filter(Boolean).join('\n\n'))),
   ...all.map((it) => fullBlock(it.title, R.abs(it.href), [it.label, it.cat, it.date].filter(Boolean).join(' · '),
     [it.raw.excerpt, toText(it.raw.content || it.raw.description)].filter(Boolean).join('\n\n'), it.raw.sources)),
+  // Kitaplar: tanıtım, alıntı, künye ve satış bağlantıları
+  ...R.bookList().map((b) => fullBlock(b.title + (b.subtitle ? ': ' + b.subtitle : ''), R.abs(R.href('kitaplar/' + b.slug)), ['Kitap', b.publisher, b.date && String(b.date).slice(0, 4)].filter(Boolean).join(' · '),
+    [b.tagline, toText(b.description), b.quote ? '> ' + b.quote : '',
+      'Künye: ' + [['Yayınevi', b.publisher], ['Yayın tarihi', b.date], ['Baskı', b.edition], ['Sayfa', b.pages], ['ISBN', b.isbn], ['Dil', b.language], ['Biçim', S.BOOK_FORMAT[b.format]]].filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join(' · '),
+      S.BOOK_SHOPS.filter(([k]) => S.isProfile(b[k])).map(([k, n]) => `- ${n}: ${b[k]}`).join('\n').replace(/^(?=-)/, 'Satın al:\n')].filter((x) => x && x !== 'Künye: ').join('\n\n'))),
   ...R.pub(D.pages).map((p) => fullBlock(p.title, R.abs(R.href('sayfa/' + p.slug)), 'Sayfa', [p.excerpt, toText(p.content)].filter(Boolean).join('\n\n')))
 ].filter(Boolean).join('\n\n---\n\n') + '\n');
 
