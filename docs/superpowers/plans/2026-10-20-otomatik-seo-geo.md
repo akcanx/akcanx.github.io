@@ -12,6 +12,7 @@
 
 ## Global Constraints
 
+- **Yapay zekâdan bağımsız, yerel:** hiçbir yapay zekâ servisi, API anahtarı ya da sunucu kullanılmaz. Otomatik değerler, puan ve önizleme kurallarla, panelde (tarayıcı) ve derlemede (Node) hesaplanır. Tek dış istek, yayından sonra GitHub'da IndexNow'a giden adres listesidir.
 - Yeni bağımlılık yok; Node 22 yerleşik `fetch` ve `crypto` kullanılır.
 - Kullanıcının yazdığı alanlar (`seoTitle`, `seoDesc`, `excerpt`, `tagline`, `coverAlt`) hiçbir kayıtta değiştirilmez; otomatik değerler kayda yazılmaz.
 - Mevcut dışa aktarımlar korunur (`Render.clip`, `R.page`, `R.routes` …); `js/seo.js` ve panel dosyaları yayına gitmez (`build.js` `ASSETS` listesine eklenmez).
