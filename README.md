@@ -159,8 +159,9 @@ Yayındaki site, Google'ın ve ChatGPT, Claude, Perplexity gibi yapay zekâ asis
 - **Her sayfa hazır HTML olarak gelir:** içerik JavaScript çalışmadan da okunur (yapay zekâ tarayıcıları JavaScript çalıştırmaz). Ziyaretçi için site yine tek sayfa gibi akar; sayfa değişince ses oynatıcı susmaz.
 - **Her sayfaya özel** başlık, açıklama, kanonik adres, Open Graph / X paylaşım kartı (WhatsApp, X, LinkedIn önizlemesi).
 - **Yapılandırılmış veri (schema.org):** `Person` (sosyal profillerinizle), `WebSite`, `BlogPosting`, `VideoObject` (Google video sonuçları), `PodcastSeries` / `PodcastEpisode`, `MusicRecording`, `BreadcrumbList`, `ProfilePage`; yazılardaki kaynaklar `citation` olarak.
-- **Otomatik üretilen dosyalar:** `sitemap.xml` (görsellerle), `robots.txt`, `feed.xml` (RSS), `llms.txt` (yapay zekâ asistanları için site özeti), gerçek `404.html`.
-- **Hız:** yazı tipleri sitenin kendi sunucusundan, görseller WebP olarak ve gerektiğinde yüklenir, YouTube oynatıcısı yalnızca tıklanınca açılır, kod güncellenince tarayıcı önbelleği yenilenir.
+- **Otomatik üretilen dosyalar:** `sitemap.xml` (görsellerle, son güncelleme tarihleriyle), `robots.txt`, `feed.xml` (RSS), `llms.txt` (yapay zekâ asistanları için site özeti), `llms-full.txt` (bütün içeriğin tam metni tek dosyada), `apple-touch-icon.png`, gerçek `404.html`.
+- **GEO:** kişi kaydında sosyal profiller ve içeriklerde en çok geçen konular (`knowsAbout`), video kayıtlarında süre, uzun başlıklarda site adı eki atılır, video paylaşım görseli varsa 1280×720.
+- **Hız:** yazı tipleri sitenin kendi sunucusundan, görseller WebP olarak ve gerektiğinde yüklenir, görsellerin boyutu sayfaya yazılır (sayfa kayması / CLS yok), YouTube oynatıcısı yalnızca tıklanınca açılır, kod güncellenince tarayıcı önbelleği yenilenir.
 - **Boş sayfalar dizine girmez:** henüz içeriği olmayan liste sayfaları `noindex` olarak işaretlenir.
 
 Kodla yapılamayan işler panelde **Yayın & SEO → Site dışında yapılacaklar** listesinde: Search Console, Bing Webmaster Tools, YouTube açıklamaları, profiller, video ve bölüm metinleri.

@@ -163,6 +163,7 @@
     { k: 'published', t: 'switch', l: 'Yayında', help: 'Kapalıysa taslak olarak saklanır.', side: 'Yayın' },
     { k: 'featured', t: 'switch', l: 'Öne çıkar', help: 'Ana sayfa manşetinde gösterilir.', side: 'Yayın' },
     { k: 'date', t: 'date', l: 'Yayın tarihi', side: 'Yayın' },
+    ...(kind === 'video' ? [{ k: 'duration', t: 'text', l: 'Video süresi', ph: '12:34', side: 'Yayın', help: 'İsteğe bağlı. Google video sonuçlarında ve sayfada tarihin yanında görünür: <code>12:34</code>, <code>1:02:15</code> ya da <code>45 dk</code>.' }] : []),
     { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: `Adres: /${kind === 'video' ? 'videolar' : 'yazilar'}/<b>baglanti</b>/. Boş bırakılırsa başlıktan oluşturulur.` },
     { k: 'cat', t: 'cat', l: 'Alt kategori', tab: kind, side: 'Alt kategori' },
     { k: 'tint', t: 'color', l: 'Sayfa tonu', side: 'Görünüm', help: `Sayfanın arka plan rengi. Boş bırakılırsa ${kind === 'video' ? 'videodan' : 'kapaktan'} otomatik seçilir.` },
@@ -568,8 +569,21 @@
 
   function figureHTML(v) {
     const cap = v.caption || v.credit ? `<figcaption>${esc(v.caption || '')}${v.credit ? `<span class="cr">${esc(v.credit)}</span>` : ''}</figcaption>` : '';
-    return `<figure class="epfig${LAYOUT_CLS[v.layout] || ''}" contenteditable="false"><img src="${esc(v.src)}" alt="${esc(v.caption || '')}">${cap}</figure>`;
+    const wh = v.w && v.h ? ` width="${v.w}" height="${v.h}"` : '';
+    return `<figure class="epfig${LAYOUT_CLS[v.layout] || ''}" contenteditable="false"><img src="${esc(v.src)}" alt="${esc(v.caption || '')}"${wh}>${cap}</figure>`;
   }
+
+  // Görselin gerçek boyutu: sayfada yeri yüklenmeden ayrılsın (sayfa kayması / CLS). Okunamazsa null
+  function imgDims(src) {
+    return new Promise((res) => {
+      const i = new Image();
+      const t = setTimeout(() => res(null), 6000);
+      i.onload = () => { clearTimeout(t); res(i.naturalWidth ? [i.naturalWidth, i.naturalHeight] : null); };
+      i.onerror = () => { clearTimeout(t); res(null); };
+      i.src = src;
+    });
+  }
+  const withDims = (v) => imgDims(v.src).then((wh) => (wh ? { ...v, w: wh[0], h: wh[1] } : v));
 
   function figureValues(fig) {
     const img = $('img', fig), cap = $('figcaption', fig), cr = cap && $('.cr', cap);
@@ -636,7 +650,7 @@
         if (tag === 'SPAN') el.className = n.getAttribute('class');
         if (tag === 'FIGURE') el.className = (n.getAttribute('class') || '').split(/\s+/).filter((c) => /^(epfig|flo|flo-right|flo-left|wide)$/.test(c)).join(' ') || 'epfig';
         if (tag === 'A' && n.getAttribute('href')) el.setAttribute('href', n.getAttribute('href'));
-        if (tag === 'IMG') { if (!n.getAttribute('src')) { n.remove(); return; } el.setAttribute('src', n.getAttribute('src')); el.setAttribute('alt', n.getAttribute('alt') || ''); }
+        if (tag === 'IMG') { if (!n.getAttribute('src')) { n.remove(); return; } el.setAttribute('src', n.getAttribute('src')); el.setAttribute('alt', n.getAttribute('alt') || ''); ['width', 'height'].forEach((a) => { if (/^d+$/.test(n.getAttribute(a) || '')) el.setAttribute(a, n.getAttribute(a)); }); }
         el.append(...n.childNodes);
         n.replaceWith(el);
       });
@@ -658,7 +672,7 @@
       dialog({ title: 'Görseli düzenle', fields: FIG_FIELDS, values: figureValues(fig), submit: 'Kaydet', remove: true }).then((v) => {
         if (!v) return;
         if (v._remove) fig.remove();
-        else if (v.src) fig.outerHTML = figureHTML(v);
+        else if (v.src) { withDims(v).then((x) => { if (fig.isConnected) fig.outerHTML = figureHTML(x); markDirty(); }); return; }
         markDirty();
       });
     });
@@ -730,9 +744,11 @@
         case 'image': {
           dialog({ title: 'Görsel ekle', fields: FIG_FIELDS, values: { layout: 'center' } }).then((v) => {
             if (!v || !v.src) return;
-            restore();
-            ex('insertHTML', figureHTML(v) + '<p><br></p>');
-            markDirty();
+            withDims(v).then((x) => {
+              restore();
+              ex('insertHTML', figureHTML(x) + '<p><br></p>');
+              markDirty();
+            });
           });
           break;
         }
@@ -1235,6 +1251,13 @@
         if (!inMenu && exists) D.menu = D.menu.filter((m) => !(m.type === 'page' && m.target === rec.slug));
       }
 
+      // Paylaşım kartı: YouTube'un 1280×720 karesi her videoda yoktur (yoksa 120×90 boş kare gelir); varsa ytMax ile işaretlenir
+      if (T.kind === 'video' && (rec.ytMax === undefined || rec.video !== item.video)) {
+        imgDims(S.ytThumb(rec.video, 'maxresdefault')).then((wh) => {
+          const x = (D.posts || []).find((p) => p.id === rec.id), ok = !!wh && wh[0] > 120;
+          if (x && x.ytMax !== ok) { x.ytMax = ok; S.save(D); }
+        });
+      }
       if (persist(isNew ? `${T.one} oluşturuldu` : 'Değişiklikler kaydedildi')) {
         dirty = false;
         go(`#${type}/edit/${rec.id}`);
@@ -2093,7 +2116,7 @@
     const frm = $('#frm');
     bindForm(frm);
     const save = () => {
-      D.about = { ...D.about, ...collect(frm, ABOUT_FIELDS) };
+      D.about = { ...D.about, ...collect(frm, ABOUT_FIELDS), updated: today() }; // site haritasında son güncelleme
       if (persist('Hakkında sayfası kaydedildi')) dirty = false;
     };
     $$('[data-save]', view).forEach((b) => b.addEventListener('click', save));

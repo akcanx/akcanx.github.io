@@ -55,6 +55,21 @@
 
   const isProfile = S.isProfile;
 
+  /* ---------- Görsel boyutları (sayfa kayması, CLS) ---------- */
+  // Boyutu adresinden bilinen kaynaklar: picsum.photos/…/genişlik/yükseklik ve YouTube küçük resimleri
+  const YT_SIZE = { maxresdefault: [1280, 720], sddefault: [640, 480], hqdefault: [480, 360], mqdefault: [320, 180], default: [120, 90] };
+  function imgSize(src) {
+    let m = String(src).match(/picsum\.photos\/(?:seed\/[^/]+|id\/\d+)\/(\d+)\/(\d+)/);
+    if (m) return [m[1], m[2]];
+    m = String(src).match(/i\.ytimg\.com\/vi\/[\w-]+\/(\w+)\.jpg/);
+    return m ? YT_SIZE[m[1]] : null;
+  }
+  /** width/height taşımayan görsellere, boyutu biliniyorsa ekler: tarayıcı yerini görsel yüklenmeden ayırır */
+  const sizeImgs = (html) => String(html || '').replace(/<img\b(?![^>]*\swidth=)([^>]*?)\ssrc="([^"]+)"/g, (m, pre, src) => {
+    const s = imgSize(src);
+    return s ? `<img${pre} width="${s[0]}" height="${s[1]}" src="${src}"` : m;
+  });
+
   /** "32 dk", "1 sa 5 dk", "45:30" → ISO 8601 süre (PT32M) */
   function isoDuration(s) {
     s = String(s || '').trim();
@@ -329,12 +344,19 @@
     const homeUrl = () => abs(href(''));
     const personId = () => homeUrl() + '#kisi';
     const pageUrl = (route) => abs(href(route));
+    // Uzmanlık alanları: yayındaki içeriklerde en çok kullanılan konular (yapay zekâ kişiyi bu konularla eşleştirir)
+    function topics(n = 10) {
+      const c = {};
+      [...pub(D.posts), ...liveEps(), ...pub(D.remixes)].forEach((x) => (x.tags || []).forEach((t) => { c[t] = (c[t] || 0) + 1; }));
+      return Object.entries(c).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'tr')).slice(0, n).map(([t]) => t);
+    }
     function personNode() {
       const a = D.about || {};
       return {
         '@type': 'Person', '@id': personId(), name: a.name || st.siteName, url: pageUrl('hakkinda'),
         image: abs(asset(a.photo)), jobTitle: a.role, description: clip(S.strip((a.lead || '') + ' ' + (a.bio || '')), 300),
-        sameAs: socials().map(([, u]) => u).filter(isProfile)
+        sameAs: socials().map(([, u]) => u).filter(isProfile),
+        knowsAbout: topics()
       };
     }
     const crumbs = (list) => list.map(([name, route]) => ({ name, route }));
@@ -433,7 +455,7 @@
     function feedHTML(filter, limit) {
       const list = items().filter((i) => filter === 'all' || i.fk === filter);
       return {
-        html: list.length ? list.slice(0, limit).map((i) => row(i)).join('') : '<div class="empty-note">Henüz içerik yok.</div>',
+        html: list.length ? sizeImgs(list.slice(0, limit).map((i) => row(i)).join('')) : '<div class="empty-note">Henüz içerik yok.</div>',
         more: list.length > limit
       };
     }
@@ -494,8 +516,8 @@
       const title = st.siteName + (st.tagline ? ' — ' + st.tagline : '');
       return {
         home: true, title, name: st.siteName, desc: st.description, ogType: 'website',
-        // Paylaşım görseli: YouTube'un en büyük karesi her videoda bulunmadığından her zaman var olan kare
-        image: (featHero ? featHero.cover : asset(st.heroImage)).replace(/\/maxresdefault\.jpg$/, '/hqdefault.jpg'), modified: all[0] && all[0].date,
+        // Paylaşım görseli: YouTube'un en büyük karesi her videoda bulunmaz; panel varlığını doğruladıysa (ytMax) o, yoksa her zaman var olan kare
+        image: featHero && featHero.item && featHero.item.ytMax ? featHero.cover : (featHero ? featHero.cover : asset(st.heroImage)).replace(/\/maxresdefault\.jpg$/, '/hqdefault.jpg'), modified: all[0] && all[0].date,
         schema: [{ '@type': 'WebPage', '@id': homeUrl(), url: homeUrl(), name: title, description: st.description, inLanguage: 'tr-TR', isPartOf: { '@id': homeUrl() + '#site' }, about: { '@id': personId() } }],
         html: `${hero}${stat}
       <div class="seam"></div>
@@ -661,7 +683,8 @@
 
       const url = pageUrl(route);
       const desc = p.seoDesc || p.excerpt || S.strip(p.content);
-      const image = asset(p.ogImage) || (yt ? S.ytThumb(p.video, 'hqdefault') : asset(p.cover));
+      // Paylaşım görseli: panel 1280×720 karenin varlığını doğruladıysa (ytMax) o, yoksa her videoda bulunan kare
+      const image = asset(p.ogImage) || (yt ? S.ytThumb(p.video, p.ytMax ? 'maxresdefault' : 'hqdefault') : asset(p.cover));
       const schema = [{
         '@type': 'BlogPosting', '@id': url + '#yazi', mainEntityOfPage: url, url, headline: clip(p.title, 110), description: clip(desc, 300),
         image: abs(image), datePublished: isoDate(p.date), dateModified: isoDate(p.updated || p.date), inLanguage: 'tr-TR',
@@ -671,7 +694,7 @@
       if (yt) {
         schema.push({
           '@type': 'VideoObject', '@id': url + '#video', name: p.title, description: clip(desc, 300) || p.title,
-          thumbnailUrl: [S.ytThumb(p.video, 'maxresdefault'), S.ytThumb(p.video, 'hqdefault')], uploadDate: isoDate(p.date),
+          thumbnailUrl: [S.ytThumb(p.video, 'maxresdefault'), S.ytThumb(p.video, 'hqdefault')], uploadDate: isoDate(p.date), duration: isoDuration(p.duration),
           embedUrl: 'https://www.youtube.com/embed/' + yt, url: 'https://www.youtube.com/watch?v=' + yt, inLanguage: 'tr-TR', author: { '@id': personId() }
         });
       }
@@ -687,7 +710,7 @@
         ${media}
         <div class="phero-txt">
           <h1 class="rise d2">${esc(p.title)}</h1>
-          <div class="phero-meta rise d3"><span>${S.fmtDate(p.date)}</span><span class="sep">·</span><span>${S.fmtNum(words)} kelime</span><span class="sep">·</span><span>${S.readingTime((p.excerpt || '') + ' ' + (p.content || ''))} dk okuma</span>
+          <div class="phero-meta rise d3"><span>${S.fmtDate(p.date)}</span><span class="sep">·</span>${yt && p.duration ? `<span>${esc(p.duration)}</span><span class="sep">·</span>` : ''}<span>${S.fmtNum(words)} kelime</span><span class="sep">·</span><span>${S.readingTime((p.excerpt || '') + ' ' + (p.content || ''))} dk okuma</span>
             ${yt ? `<a class="ytlink" href="https://www.youtube.com/watch?v=${esc(yt)}" target="_blank" rel="noopener">YouTube'da izle →</a>` : ''}</div>
         </div>
       </div></section>
@@ -819,7 +842,7 @@
       // Oynatıcı çalarken yalnızca .ic içindeki simgeyi değiştirir (oynat ↔ duraklat)
       const trailerBtn = trailerAudio(s) ? `<button class="readlink trailer rise d3" data-play="seri:${esc(s.id)}"><span class="ic">${ICON.play}</span>Fragmanı dinle</button>` : '';
       return {
-        title: s.seoTitle || `${s.title} — ${name} — ${st.siteName}`, name: s.title, desc: s.seoDesc || s.tagline || s.description,
+        title: s.seoTitle || `${s.title} — ${name} — ${st.siteName}`, name: s.title, desc: s.seoDesc || [s.tagline, s.description].filter(Boolean).join(' — '),
         image: asset(s.ogImage) || asset(s.cover), imageAlt: s.coverAlt || s.title, ogType: 'website',
         modified: list[0] && list[0].date, noindex: !list.length, crumbs: crumbs([[name, 'podcast'], [s.title, route]]),
         ctx: { crail: [{ label: name, href: href('podcast') }, { label: s.title, href: href(route) }] },
@@ -965,7 +988,7 @@
       const title = 'Hakkında — ' + st.siteName;
       return {
         title, name: a.name || 'Hakkında', desc: [a.role, S.strip((a.lead || '') + ' ' + (a.bio || ''))].filter(Boolean).join('. '),
-        image: photo, imageAlt: a.name, ogType: 'profile', crumbs: crumbs([['Hakkında', 'hakkinda']]),
+        image: photo, imageAlt: a.name, ogType: 'profile', modified: a.updated, crumbs: crumbs([['Hakkında', 'hakkinda']]),
         schema: [{ '@type': 'ProfilePage', '@id': pageUrl('hakkinda'), url: pageUrl('hakkinda'), name: title, inLanguage: 'tr-TR', mainEntity: { '@id': personId() }, isPartOf: { '@id': homeUrl() + '#site' } }],
         html: `<section class="about2" style="--about:${esc(a.accent || '#3A9FF0')}">
       <div class="about-hero">
@@ -1044,6 +1067,10 @@
       }
       pg.route = route;
       pg.desc = clip(S.strip(pg.desc) || st.description || '');
+      if (pg.html) pg.html = sizeImgs(pg.html);
+      // Google başlığı ~60 karakterden sonra keser: uzun başlıkta "— Site adı" eki yazılmaz
+      const sfx = ' — ' + st.siteName;
+      if (pg.title && pg.title.length > 60 && pg.title.endsWith(sfx)) pg.title = pg.title.slice(0, -sfx.length);
       return pg;
     }
 

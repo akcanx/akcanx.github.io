@@ -80,7 +80,7 @@ const ver = crypto.createHash('sha1').update(ASSETS.map((a) => read(path.join(RO
 
 let tpl = read(path.join(ROOT, 'index.html')).replace(/\r\n/g, '\n');
 tpl = swap(tpl, '  <script src="js/ornek-icerik.js"></script>\n', '');
-tpl = tpl.replace(/(href|src)="((?:favicon\.svg|fonts\/|css\/|js\/)[^"]*)"/g, (m, a, u) => `${a}="${base}${u}${/\.(css|js)$/.test(u) ? '?v=' + ver : ''}"`);
+tpl = tpl.replace(/(href|src)="((?:favicon\.svg|apple-touch-icon\.png|fonts\/|css\/|js\/)[^"]*)"/g, (m, a, u) => `${a}="${base}${u}${/\.(css|js)$/.test(u) ? '?v=' + ver : ''}"`);
 tpl = swap(tpl, `<script src="${base}js/store.js?v=${ver}"></script>`, `<script>window.AKCAN_SITE=__AKCAN_SITE__</script>\n  <script src="${base}js/store.js?v=${ver}"></script>`);
 // Gövde yazı tipi erken yüklensin (yerel file:// önizlemede tarayıcı engellediği için yalnızca yayında)
 tpl = swap(tpl, `<link rel="stylesheet" href="${base}css/fonts.css?v=${ver}">`, `<link rel="preload" href="${base}fonts/fraunces-normal-latin.woff2" as="font" type="font/woff2" crossorigin>\n  <link rel="stylesheet" href="${base}css/fonts.css?v=${ver}">`);
@@ -123,7 +123,7 @@ write('404.html', renderPage('', R.page('__bulunamadi__'), { notFound: true }));
 /* ---------- Veri, görseller ve site dosyaları ---------- */
 write('veri/site.json', JSON.stringify(D));
 const nImg = copyDir(path.join(VERI, 'gorsel'), path.join(OUT, 'veri/gorsel'));
-[...ASSETS, 'favicon.svg'].forEach(copy);
+[...ASSETS, 'favicon.svg', 'apple-touch-icon.png'].forEach(copy);
 copyDir(path.join(ROOT, 'fonts'), path.join(OUT, 'fonts'));
 write('.nojekyll', '');
 
@@ -191,6 +191,34 @@ const subs = R.catPages().map((x) => ({
 write('llms.txt', `# ${st.siteName}
 
 > ${st.description || st.tagline || ''}
-${a.name || a.role ? `\n${[a.name, a.role].filter(Boolean).join(' — ')}. Hakkında: ${R.abs(R.href('hakkinda'))}\n` : ''}${section(st.videosPage.title || 'Videolar', all.filter((i) => i.fk === 'video').map(entry))}${section(st.postsPage.title || 'Yazılar', all.filter((i) => i.fk === 'yazi').map(entry))}${section(st.podcast.name || 'Podcast', [...podcastSeries, ...all.filter((i) => i.type === 'podcast').map(entry)])}${section('Remixler', all.filter((i) => i.type === 'remix').map(entry))}${section('Alt kategoriler', subs)}${section('Sayfalar', R.pub(D.pages).map((p) => ({ title: p.title, url: R.abs(R.href('sayfa/' + p.slug)), desc: Render.clip(p.seoDesc || p.excerpt || S.strip(p.content), 200) })))}${section('Bağlantılar', profiles.map((u) => ({ title: new URL(u).hostname.replace(/^www\./, ''), url: u })))}`);
+${a.name || a.role ? `\n${[a.name, a.role].filter(Boolean).join(' — ')}. Hakkında: ${R.abs(R.href('hakkinda'))}\n` : ''}
+Sitenin bütün içeriğinin tam metni: ${siteUrl}llms-full.txt
+${section(st.videosPage.title || 'Videolar', all.filter((i) => i.fk === 'video').map(entry))}${section(st.postsPage.title || 'Yazılar', all.filter((i) => i.fk === 'yazi').map(entry))}${section(st.podcast.name || 'Podcast', [...podcastSeries, ...all.filter((i) => i.type === 'podcast').map(entry)])}${section('Remixler', all.filter((i) => i.type === 'remix').map(entry))}${section('Alt kategoriler', subs)}${section('Sayfalar', R.pub(D.pages).map((p) => ({ title: p.title, url: R.abs(R.href('sayfa/' + p.slug)), desc: Render.clip(p.seoDesc || p.excerpt || S.strip(p.content), 200) })))}${section('Bağlantılar', profiles.map((u) => ({ title: new URL(u).hostname.replace(/^www\./, ''), url: u })))}`);
+
+/* ---------- llms-full.txt: bütün içeriğin tam metni (yapay zekâ asistanları siteyi tek dosyada okur) ---------- */
+// Zengin metin → düz metin: ara başlıklar ###, maddeler -, alıntılar >, görsel açıklamaları [Görsel]
+function toText(html) {
+  const s = String(html || '')
+    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, '')
+    .replace(/<h[1-6][^>]*>/gi, '\n\n### ').replace(/<\/h[1-6]>/gi, '\n\n')
+    .replace(/<li[^>]*>/gi, '\n- ')
+    .replace(/<blockquote[^>]*>/gi, '\n\n> ')
+    .replace(/<figcaption[^>]*>/gi, '\n\n[Görsel] ')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|ul|ol|li|blockquote|figure|figcaption)>/gi, '\n\n');
+  return s.split('\n').map((l) => S.strip(l)).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+const sourceList = (src) => {
+  const l = String(src || '').split('\n').map((x) => x.split('|').map((y) => y.trim())).filter(([t]) => t);
+  return l.length ? 'Kaynaklar:\n' + l.map(([t, u]) => `- ${t}${u ? ': ' + u : ''}`).join('\n') : '';
+};
+const fullBlock = (title, url, meta, body, src) => [`## ${title}`, `Adres: ${url}`, meta, body, sourceList(src)].filter(Boolean).join('\n\n');
+write('llms-full.txt', `# ${st.siteName}\n\n> ${st.description || st.tagline || ''}\n\n---\n\n` + [
+  a.name || a.bio ? fullBlock('Hakkında' + (a.name ? ': ' + a.name : ''), R.abs(R.href('hakkinda')), a.role || '', toText((a.lead ? '<p>' + a.lead + '</p>' : '') + (a.bio || ''))) : '',
+  ...R.seriesList().map((x) => fullBlock(x.title, R.abs(R.href('podcast/' + x.slug)), ['Podcast serisi', x.frequency].filter(Boolean).join(' · '), [x.tagline, x.description].filter(Boolean).join('\n\n'))),
+  ...all.map((it) => fullBlock(it.title, R.abs(it.href), [it.label, it.cat, it.date].filter(Boolean).join(' · '),
+    [it.raw.excerpt, toText(it.raw.content || it.raw.description)].filter(Boolean).join('\n\n'), it.raw.sources)),
+  ...R.pub(D.pages).map((p) => fullBlock(p.title, R.abs(R.href('sayfa/' + p.slug)), 'Sayfa', [p.excerpt, toText(p.content)].filter(Boolean).join('\n\n')))
+].filter(Boolean).join('\n\n---\n\n') + '\n');
 
 console.log(`✓ ${pages.length} sayfa, ${nImg} görsel → ${path.relative(process.cwd(), OUT) || OUT}  (${siteUrl})`);

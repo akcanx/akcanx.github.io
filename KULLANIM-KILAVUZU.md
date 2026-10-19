@@ -321,6 +321,7 @@ Ana sayfadaki akışta ise videolar ve yazılar diğer içeriklerle birlikte, ta
 | **İçerik** | Zengin metin. **Videoda, videonun yazıya dökülmüş metnini buraya ekleyin**: arama motorları ve yapay zekâ videoyu izleyemez, bu metni okur. |
 | **Notlar ve kaynaklar** | Bkz. [Kaynaklar](#kaynaklar-notlar-ve-kaynaklar). |
 | **Görsel kaynakları ve lisanslar** | Her satıra bir görsel kaynağı; isteğe bağlı olarak `\| bağlantı`. Sayfanın sonunda ayrı bir açılır listede görünür. |
+| **Video süresi** (video) | İsteğe bağlı, sağ sütundaki Yayın kartında: `12:34`, `1:02:15` ya da `45 dk`. Sayfada tarihin yanında ve Google video sonuçlarında görünür. |
 | **Alt kategori** | Sağ sütunda; içeriğin sekme içindeki alt kategorisi (ör. Gıda). Bkz. [Alt kategoriler](#10-alt-kategoriler). |
 | Yayın, Görünüm (sayfa tonu), Etiketler, Arama & paylaşım | Bkz. [Ortak alanlar](#6-formlardaki-ortak-alanlar). |
 
@@ -865,20 +866,23 @@ Bütün sayfalar 360 piksel genişliğindeki telefonlardan geniş ekranlara kada
 Bunların hiçbiri için bir şey yapmanız gerekmez; site her yayında bunları kendisi üretir.
 
 - **Her içeriğin kendi adresi** ve **hazır HTML sayfası**: içerik JavaScript çalışmadan da okunur. ChatGPT, Claude ve Perplexity gibi yapay zekâ tarayıcıları JavaScript çalıştırmadığı için bu önemlidir.
-- **Her sayfaya özel** başlık, açıklama, kanonik adres ve WhatsApp / X / LinkedIn paylaşım kartı.
+- **Her sayfaya özel** başlık, açıklama, kanonik adres ve WhatsApp / X / LinkedIn paylaşım kartı. Başlık "— Site adı" ekiyle 60 karakteri aşıyorsa ek yazılmaz (Google uzun başlığı keser). Video sayfalarında paylaşım görseli YouTube'un 1280×720 karesidir; panel videoyu kaydederken bu karenin var olup olmadığını denetler, yoksa her videoda bulunan küçük kare kullanılır.
 - **Yapılandırılmış veri (schema.org)**:
-  - kişi (sosyal profillerinizle), site, blog yazısı, video (Google video sonuçları için);
+  - kişi (sosyal profillerinizle ve içeriklerinizde en çok geçen konularla: "uzmanlık alanları"), site, blog yazısı, video (süresiyle; Google video sonuçları için);
   - podcast serisi ve bölümü (bölüm kendi serisine bağlı), müzik kaydı (remix), konum satırı, profil sayfası;
   - yazılardaki kaynaklar.
-- **`sitemap.xml`**: görsellerle birlikte site haritası (içeriği olan alt kategori sayfaları dahil).
+- **`sitemap.xml`**: görsellerle birlikte site haritası (içeriği olan alt kategori sayfaları dahil). Her sayfanın son güncelleme tarihi, Hakkında ve özel sayfalar için kaydettiğiniz gün.
 - **`robots.txt`**: arama motorlarına ve yapay zekâ arama botlarına izin; "Yapay zekâ eğitimine izin ver" kapalıysa eğitim botlarına yasak.
 - **`feed.xml`**: RSS (son 50 içerik).
-- **`llms.txt`**: yapay zekâ asistanları için site özeti; alt kategoriler ve yayınlandıkları kanalların bağlantıları da burada listelenir.
+- **`llms.txt`**: yapay zekâ asistanları için site özeti; podcast serileri, alt kategoriler ve yayınlandıkları kanalların bağlantıları da burada listelenir.
+- **`llms-full.txt`**: sitenin bütün içeriğinin tam metni tek dosyada (Hakkında, seriler, her yazı, video notu, bölüm ve remix metni kaynaklarıyla, özel sayfalar). Yapay zekâ asistanları siteyi tek seferde okuyabilir; `llms.txt` bu dosyayı gösterir.
+- **Dokunmatik cihaz simgesi** (`apple-touch-icon.png`): iPhone ana ekranı ve bazı paylaşım önizlemeleri için.
 - **Gerçek 404 sayfası**.
 - **Boş sayfalar arama dışında**: henüz içeriği olmayan liste sayfaları `noindex` olarak işaretlenir.
 - **Hız**:
   - Yazı tipleri sitenin kendi sunucusundan yüklenir.
   - Görseller WebP biçiminde, ihtiyaç duyulduğunda yüklenir.
+  - Görsellerin genişliği ve yüksekliği sayfaya yazılır; sayfa görseller yüklenirken kaymaz (Google'ın Core Web Vitals ölçütü CLS). Panel, metne eklediğiniz görselin boyutunu kendisi kaydeder.
   - YouTube oynatıcısı yalnızca tıklanınca açılır.
   - Kod güncellenince tarayıcı önbelleği kendiliğinden yenilenir.
 

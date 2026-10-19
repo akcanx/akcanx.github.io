@@ -98,3 +98,61 @@ test('seri-tanitim-paragraflari', () => { // tanıtım metni boş satırla parag
   const html = Render.create(d, { mode: 'local' }).page('podcast/frekans').html;
   assert.equal(count(html, /<p class="desc[^"]*">/g), 2);
 });
+
+/* ---------- SEO / GEO ---------- */
+const graphOf = (r, route) => JSON.parse(r.head(r.page(route)).match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1].replace(/\u003c/g, '<'))['@graph'];
+
+test('gorsel-boyutlari', () => { // sayfa kaymasını (CLS) önlemek için bilinen kaynakların boyutu yazılır
+  const html = R.page('yazilar/site-nasil-kullanilir').html + R.page('').html;
+  const imgs = [...html.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]).filter((t) => /picsum\.photos\/(?:seed\/[^/]+|id\/\d+)\/\d+\/\d+|i\.ytimg\.com/.test(t));
+  assert.ok(imgs.length > 3);
+  for (const t of imgs) assert.match(t, /\swidth="\d+"\s+height="\d+"/, t.slice(0, 120));
+  const pic = imgs.find((t) => /picsum\.photos\/seed\/[^/]+\/(\d+)\/(\d+)/.test(t));
+  const [, w, h] = pic.match(/picsum\.photos\/seed\/[^/]+\/(\d+)\/(\d+)/);
+  assert.match(pic, new RegExp(`width="${w}" height="${h}"`));
+});
+
+test('video-suresi', () => {
+  const d = S.normalize({});
+  const v = d.posts.find((p) => S.postKind(p) === 'video');
+  v.duration = '12:34';
+  const r = Render.create(d, { mode: 'local' });
+  const pg = r.page('videolar/' + v.slug);
+  assert.equal(pg.schema.find((n) => n['@type'] === 'VideoObject').duration, 'PT12M34S');
+  assert.match(pg.html, /12:34/);
+});
+
+test('uzun-baslik', () => { // "— Site adı" eki başlığı 60 karakterin üstüne taşıyorsa eklenmez
+  const v = S.normalize({}).posts.find((p) => p.slug === 'bicep-printworks-canli-performans');
+  const t = R.page('videolar/' + v.slug).title;
+  assert.equal(t, v.title);
+  assert.equal(R.page('hakkinda').title, 'Hakkında — Akcan');
+});
+
+test('seri-aciklamasi', () => { // seri sayfasının arama açıklaması kısa tanım + tanıtım metni
+  assert.ok(R.page('podcast/frekans').desc.length >= 100);
+});
+
+test('hakkinda-tarihi', () => { // site haritasında Hakkında'nın son güncelleme tarihi
+  const d = S.normalize({});
+  d.about.updated = '2026-10-01';
+  assert.equal(Render.create(d, { mode: 'local' }).page('hakkinda').modified, '2026-10-01');
+});
+
+test('video-paylasim-gorseli', () => { // panel 1280×720 karenin varlığını doğruladıysa (ytMax) paylaşım kartında o kullanılır
+  const d = S.normalize({});
+  const v = d.posts.find((p) => S.postKind(p) === 'video');
+  assert.match(Render.create(d, { mode: 'local' }).page('videolar/' + v.slug).image, /\/hqdefault\.jpg$/);
+  v.ytMax = true;
+  assert.match(Render.create(d, { mode: 'local' }).page('videolar/' + v.slug).image, /\/maxresdefault\.jpg$/);
+});
+
+test('uzmanlik-alanlari', () => { // kişi kaydında en çok kullanılan konular (knowsAbout)
+  const d = S.normalize({});
+  const n = {};
+  ['posts', 'podcasts', 'remixes'].forEach((c) => d[c].filter((x) => x.published !== false).forEach((x) => (x.tags || []).forEach((t) => { n[t] = (n[t] || 0) + 1; })));
+  const top = Object.entries(n).sort((a, b) => b[1] - a[1])[0][0];
+  const person = graphOf(R, '').find((x) => x['@type'] === 'Person');
+  assert.ok(Array.isArray(person.knowsAbout) && person.knowsAbout.includes(top), JSON.stringify(person.knowsAbout));
+  assert.ok(person.knowsAbout.length <= 10);
+});
