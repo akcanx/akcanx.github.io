@@ -899,7 +899,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 ### Klasör yapısı
 
 ```
-Akcan Webpage/
+akcanakdag.com/
 ├── index.html            Site (önizlemede doğrudan, yayında her sayfanın şablonu)
 ├── admin.html            Kontrol paneli (yayına girmez)
 ├── build.js              Yayın derleyicisi: sayfalar, sitemap, robots, RSS, llms.txt
