@@ -256,6 +256,16 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .sw input:checked + .tg { background: var(--acid); border-color: var(--acid); }
 .sw input:checked + .tg::after { left: 20px; background: var(--ink); }
 
+/* Sosyal medya: adres + görünürlük anahtarı */
+.so-nav { padding: 0 0 16px; margin-bottom: 16px; border-bottom: 1px solid var(--rule); }
+.so-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.so-row { display: flex; align-items: flex-end; gap: 12px; }
+.so-row .fld { flex: 1; min-width: 0; }
+.so-row .sw { flex: none; padding: 0 0 26px; gap: 8px; }
+.so-row .sw .swl { font-size: 11px; font-weight: 400; color: var(--fg-3); }
+.so-row:has([data-so-on]:not(:checked)) .fld input { opacity: .45; }
+@media (max-width: 600px) { .so-list { grid-template-columns: minmax(0, 1fr); } }
+
 /* Görsel alanı */
 .imgf .prev { position: relative; aspect-ratio: 16/9; max-height: 280px; border-radius: 8px; border: 1px dashed var(--rule-2); background: var(--bg) center/cover no-repeat; display: flex; align-items: center; justify-content: center; color: var(--fg-3); font-size: 12px; margin-bottom: 8px; overflow: hidden; cursor: pointer; transition: border-color .2s; }
 .imgf .prev:hover { border-color: var(--acid); }
@@ -687,3 +697,18 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
   .crow-a { flex-direction: row; justify-content: space-between; align-items: center; }
 }
 @media (pointer: coarse) { .crow input, .crow textarea { font-size: 16px; } }
+
+/* ---------- Önizleme (site panelin içinde) ---------- */
+.view.view-full { max-width: none; }
+.pv-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.pv-saved { flex: 1; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--fg-3); }
+.seg { display: inline-flex; border: 1px solid var(--rule-2); border-radius: 8px; overflow: hidden; }
+.seg button { background: transparent; border: 0; color: var(--fg-2); padding: 7px 14px; font: 500 12px var(--sans); cursor: pointer; transition: all .18s var(--ease); }
+.seg button + button { border-left: 1px solid var(--rule-2); }
+.seg button:hover { color: var(--fg); background: var(--bg-3); }
+.seg button.on { background: var(--acid); color: var(--ink); }
+.pv-stage { display: flex; justify-content: center; height: max(520px, calc(100vh - 250px)); background: var(--bg-2); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+.pv-stage.dev { padding: 16px; }
+.pv-frame { display: block; width: 100%; max-width: 100%; height: 100%; border: 0; background: var(--bg); transition: width .25s var(--ease); }
+.pv-stage.dev .pv-frame { border: 1px solid var(--rule-2); border-radius: 10px; }
+@media (max-width: 960px) { .pv-stage { height: max(480px, calc(100vh - 280px)); } }

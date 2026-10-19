@@ -18,6 +18,9 @@
 
 ## ✨ Sitedeki Sayfalar
 
+### Üst Menü
+- Menü bağlantıları, arama ve **sosyal medya simgeleri** (YouTube, Instagram, TikTok, X, LinkedIn, Spotify, SoundCloud, e-posta). Simgeler menüye sığmadığında üst bantta gizlenir; telefonda menü çekmecesinin altında durur. Hangi hesabın görüneceği panelden seçilir.
+
 ### Ana Sayfa
 - Öne çıkan içerik büyük manşet olarak gösterilir (video ise "İzle", yazı ise "Oku" düğmesiyle).
 - İstatistik bandı: "… video, … yazı, … podcast bölümü ve … remix".
@@ -68,6 +71,7 @@
 
 - **Giriş:** Şifre korumalı (ilk şifre: `admin` — Ayarlar'dan değiştirin).
 - **Gösterge Paneli:** Video, yazı, podcast, remix, sayfa ve menü sayıları; öne çıkan manşet kartı; son içerikler; depolama göstergesi.
+- **Önizleme:** Site panelin içinde açılır; örnek içerikler dahil her kayıt anında görünür. Masaüstü / Tablet / Mobil genişlik, **↻ Yenile** (site kodunu da yeniden yükler), yeni sekmede ya da yayındaki siteyi açma, son kayıt saati.
 - **Videolar** ve **Yazılar** ayrı bölümler:
   - **+ Yeni Video**: YouTube bağlantısı zorunlu (başlık otomatik gelir). **+ Yeni Yazı**: kapak görseli zorunlu.
   - Her bölümün kendi **⚙ Sayfa Ayarları**: sitedeki sekmenin başlığı, açıklaması ve ışık rengi.
@@ -76,7 +80,7 @@
 - **Zengin metin editörü:** başlıklar, kalın/italik, listeler, bağlantılar, **▣ Görsel** (yerleşim seçmeli pencere; eklenen görsele tıklayınca düzenlenir), **❝ Kaynaklı** alıntı, YouTube gömme ve HTML kaynak düzenleme.
 - **Podcast:** bölümler (özet, MP3, gömülü oynatıcı, bölüm metni, kaynaklar, kapak kaynağı) ve **⚙ Program Ayarları** (kapak, ad, açıklama, platform bağlantıları).
 - **Remixler:** remixler (orijinal parça, özet, MP3, gömülü oynatıcı, remixin hikâyesi, notlar ve kaynaklar, süre, tür, BPM, kapak kaynağı, sayfa tonu) ve **⚙ Sayfa Ayarları** (kapak, ad, üst etiket, açıklama, SoundCloud / Mixcloud / Spotify / YouTube bağlantıları, ışık rengi).
-- **Özel Sayfalar, Menü Yönetimi** (sürükle-bırak sıralama), **Öne Çıkan (Hero)** (manuel / otomatik / özel manşet, canlı önizleme, üst gradyan ayarı), **Hakkında** (fotoğraf üstü yazılar, vurgulu başlık, kısa tanım, vurgu rengi), **Ayarlar & Tema** (site kimliği, renk, sosyal bağlantılar, şifre).
+- **Özel Sayfalar, Menü Yönetimi** (sürükle-bırak sıralama), **Öne Çıkan (Hero)** (manuel / otomatik / özel manşet, canlı önizleme, üst gradyan ayarı), **Hakkında** (fotoğraf üstü yazılar, vurgulu başlık, kısa tanım, vurgu rengi), **Ayarlar & Tema** (site kimliği, renk, sosyal bağlantılar ve her birinin görünürlük anahtarı, üst menüde gösterme, şifre).
 - **Yayın & SEO:** GitHub bağlantısı, her kaydetmede otomatik yayın, yayın durumu, site adresi, varsayılan paylaşım görseli, Google / Bing doğrulama kodları, yapay zekâ eğitimi izni, yayın öncesi kontrol listesi ve site dışında yapılacaklar.
 - Her yazı, video, bölüm, remix ve sayfada **Arama & paylaşım** kartı (SEO başlığı, SEO açıklaması, paylaşım görseli) ve kapak görseli için **alt metin** alanı. Podcast bölümleri ve remixler de okunur adresle açılır (`/podcast/bolum-adi/`).
 - **Yedekleme:** `.json` olarak dışa/içe aktarma, **Örnek İçerikleri Ekle**, fabrika ayarlarına dönüş.
@@ -104,7 +108,7 @@ Derleme aracı veya sunucu gerekmez; saf **HTML5, CSS3 ve JavaScript**.
 
 1. `index.html` dosyasını tarayıcıda açın.
 2. Kontrol paneli için `admin.html` dosyasını açın — **varsayılan şifre:** `admin`.
-3. İçerik ekleyin, menüyü düzenleyin, temayı kişiselleştirin. Değişiklikler açık olan sitede anında görünür.
+3. İçerik ekleyin, menüyü düzenleyin, temayı kişiselleştirin. Değişiklikler panelin **Önizleme** ekranında ve açık olan sitede anında görünür.
 
 > Dosyalar güncellendikten sonra tarayıcının eski sürümü göstermemesi için sayfayı bir kez **Ctrl+F5** ile yenileyin.
 

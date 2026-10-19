@@ -766,6 +766,7 @@
     closeSide();
     delete view.dataset.form;
     $$('#sideNav a').forEach((x) => x.classList.toggle('on', x.dataset.v === (v || 'dashboard')));
+    view.classList.toggle('view-full', v === 'onizleme');
     $('#topActions').innerHTML = '';
     view.style.animation = 'none'; void view.offsetWidth; view.style.animation = '';
     window.scrollTo(0, 0);
@@ -782,6 +783,7 @@
       return listView(v);
     }
     switch (v) {
+      case 'onizleme': return previewView();
       case 'featured': return featuredView();
       case 'menu': return menuView();
       case 'about': return aboutView();
@@ -883,6 +885,58 @@
       btnText: feat.customButtonText || 'İncele'
     };
   }
+
+  /* ======================================================================
+     Önizleme: site panelin içinde, örnek içerikler dahil.
+     index.html aynı tarayıcı depolamasını okuduğu için her kayıt anında görünür;
+     ↻ Yenile site kodunu da yeniden yükler.
+     ====================================================================== */
+  const LAST_SAVE = 'akcan.sonKayit';
+  const PREVIEW_W = [['desktop', 'Masaüstü', ''], ['tablet', 'Tablet', '768px'], ['mobile', 'Mobil', '390px']];
+  let previewW = 'desktop';
+
+  function paintLastSave() {
+    const el = $('#pvSaved');
+    if (!el) return;
+    let t = 0;
+    try { t = Number(localStorage.getItem(LAST_SAVE)) || 0; } catch (e) { /* yok say */ }
+    el.textContent = t ? 'Son kayıt: ' + fmtTime(t) : '';
+  }
+
+  function previewView() {
+    crumbs(['Önizleme']);
+    const url = siteAddress();
+    view.innerHTML = `
+      <div class="vh"><div><h1>Önizleme</h1><p>Sitenin bu bilgisayardaki hâli: kaydettiğiniz her şey, örnek içerikler dahil, burada anında görünür. Örnekler ve taslaklar yayına gitmez.</p></div>
+        <div class="vh-actions"><a class="btn btn-ghost" id="pvOpen" href="index.html" target="_blank">Yeni sekmede aç ↗</a>${url ? `<a class="btn btn-ghost" href="${esc(url)}" target="_blank" rel="noopener">Yayındaki site ↗</a>` : ''}</div></div>
+      <div class="pv-bar">
+        <div class="seg" role="group" aria-label="Ekran genişliği">${PREVIEW_W.map(([k, l]) => `<button type="button" data-w="${k}" class="${k === previewW ? 'on' : ''}">${l}</button>`).join('')}</div>
+        <span class="pv-saved" id="pvSaved"></span>
+        <button type="button" class="btn btn-sm" id="pvReload" title="Sayfayı ve site kodunu yeniden yükler">↻ Yenile</button>
+      </div>
+      <div class="pv-stage" id="pvStage"><iframe class="pv-frame" id="pvFrame" src="index.html" title="Site önizlemesi"></iframe></div>`;
+
+    const frame = $('#pvFrame'), stage = $('#pvStage');
+    const setW = (k) => {
+      previewW = k;
+      const w = PREVIEW_W.find((x) => x[0] === k)[2];
+      frame.style.width = w || '';
+      stage.classList.toggle('dev', !!w);
+      $$('[data-w]', view).forEach((b) => b.classList.toggle('on', b.dataset.w === k));
+    };
+    $$('[data-w]', view).forEach((b) => b.addEventListener('click', () => setW(b.dataset.w)));
+    setW(previewW);
+    // Önizlemedeki sayfa yerinde yenilenir (dosyadan açılınca çerçevenin adresi okunamaz; site kendisi yeniler)
+    $('#pvReload').addEventListener('click', () => frame.contentWindow.postMessage({ akcan: 'yenile' }, '*'));
+    paintLastSave();
+  }
+
+  // Önizlemedeki site, açık olan sayfanın adresini bildirir: "Yeni sekmede aç" aynı sayfayı açsın
+  window.addEventListener('message', (e) => {
+    const frame = $('#pvFrame');
+    if (!frame || e.source !== frame.contentWindow || !e.data || e.data.akcan !== 'onizleme') return;
+    $('#pvOpen').href = 'index.html' + (/^#\//.test(e.data.hash || '') ? e.data.hash : '');
+  });
 
   /* ======================================================================
      Gösterge paneli
@@ -1952,7 +2006,7 @@
     ['#C9F03A', 'Asit yeşili (varsayılan)'], ['#FF6B35', 'Turuncu'], ['#3AE0F0', 'Camgöbeği'], ['#FF4FA3', 'Pembe'],
     ['#F0C93A', 'Altın'], ['#9B7BFF', 'Lavanta'], ['#5BF08A', 'Nane'], ['#F4ECD8', 'Krem']
   ];
-  const SOCIALS = [['youtube', 'YouTube'], ['instagram', 'Instagram'], ['x', 'X (Twitter)'], ['spotify', 'Spotify'], ['soundcloud', 'SoundCloud'], ['email', 'E-posta']];
+  const SOCIALS = [['youtube', 'YouTube'], ['instagram', 'Instagram'], ['tiktok', 'TikTok'], ['x', 'X (Twitter)'], ['linkedin', 'LinkedIn'], ['spotify', 'Spotify'], ['soundcloud', 'SoundCloud'], ['email', 'E-posta']];
 
   function settingsView() {
     resetViewHandlers();
@@ -1990,7 +2044,10 @@
               <div class="range-labels"><span>Şeffaf (%10)</span><span>Belirgin / Koyu (%100)</span></div>
             </div>
           </div>
-          <div class="card"><h3>Sosyal medya</h3><div class="row2">${SOCIALS.map(([k, l]) => `<label class="fld"><span>${l}</span><input type="${k === 'email' ? 'email' : 'url'}" data-so="${k}" value="${esc((st.social || {})[k] || '')}" placeholder="${k === 'email' ? 'ornek@mail.com' : 'https://...'}"></label>`).join('')}</div><small class="help" style="margin-top:-6px">Boş bırakılan bağlantılar sitede gösterilmez.</small></div>
+          <div class="card"><h3>Sosyal medya</h3>
+            <label class="sw so-nav"><span class="swl">Üst menüde göster<small>Görünür hesaplar menünün sağında simge olarak durur; telefonda menü çekmecesinin altında.</small></span><input type="checkbox" id="stNavSocial" ${st.navSocial !== false ? 'checked' : ''}><span class="tg"></span></label>
+            <div class="so-list">${SOCIALS.map(([k, l]) => `<div class="so-row"><label class="fld"><span>${l}</span><input type="${k === 'email' ? 'email' : 'url'}" data-so="${k}" value="${esc((st.social || {})[k] || '')}" placeholder="${k === 'email' ? 'ornek@mail.com' : 'https://...'}"></label><label class="sw" title="${l} sitede görünsün"><span class="swl">Görünür</span><input type="checkbox" data-so-on="${k}" ${(st.socialOff || []).includes(k) ? '' : 'checked'}><span class="tg"></span></label></div>`).join('')}</div>
+            <small class="help">Boş bırakılan ya da kapatılan hesaplar sitede (üst menü, alt bilgi) gösterilmez. Kapatılan hesabın adresi burada saklı kalır.</small></div>
         </div>
         <div class="form-side">
           <div class="card"><h3>Renk teması</h3>
@@ -2046,6 +2103,8 @@
       Object.assign(D.settings, v, { accent });
       D.settings.social = D.settings.social || {};
       $$('[data-so]').forEach((i) => { D.settings.social[i.dataset.so] = i.value.trim(); });
+      D.settings.socialOff = $$('[data-so-on]').filter((i) => !i.checked).map((i) => i.dataset.soOn);
+      D.settings.navSocial = $('#stNavSocial').checked;
       D.settings.featured = D.settings.featured || {};
       if (stTg) D.settings.featured.topGradient = stTg.checked;
       if (stOp) D.settings.featured.topGradientOpacity = Number(stOp.value);
@@ -2121,7 +2180,7 @@
     const nSamples = ['posts', 'podcasts', 'remixes', 'pages'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
     const noDesc = ['posts', 'podcasts', 'remixes'].flatMap(live).filter((x) => !(x.seoDesc || x.excerpt));
     const noAlt = [...live('posts').filter((p) => S.postKind(p) === 'yazi'), ...live('podcasts'), ...live('remixes'), ...live('pages')].filter((x) => x.cover && !x.coverAlt);
-    const badSocial = SOCIALS.filter(([k]) => k !== 'email' && so[k] && !S.isProfile(so[k])).map(([, l]) => l);
+    const badSocial = SOCIALS.filter(([k]) => k !== 'email' && so[k] && !S.isProfile(so[k]) && !(st.socialOff || []).includes(k)).map(([, l]) => l);
     const sampleAbout = !!(O.about && a.bio && a.bio === O.about.bio);
     const ownRole = a.role && !(O.about && a.role === O.about.role);
     const picsum = /picsum\.photos/.test(JSON.stringify(Yayin.publicData(D)));
@@ -2168,7 +2227,7 @@
               <li><b>Google Search Console</b> — <a href="https://search.google.com/search-console" target="_blank" rel="noopener">search.google.com/search-console</a>: siteyi ekleyin, doğrulayın ve <code>${esc(url || 'site-adresiniz/')}sitemap.xml</code> adresini gönderin.</li>
               <li><b>Bing Webmaster Tools</b> — <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener">bing.com/webmasters</a>: “Google Search Console’dan içe aktar” ile tek tıkla. ChatGPT’nin web araması büyük ölçüde Bing’den beslenir.</li>
               <li><b>YouTube</b> — her videonun açıklamasına sitedeki yazının bağlantısını, kanalın “Hakkında” bölümüne site adresini ekleyin.</li>
-              <li><b>Profiller</b> — Instagram, Spotify, SoundCloud ve X profillerinize site adresini yazın; her yerde aynı isim, aynı kısa biyografi, aynı fotoğraf.</li>
+              <li><b>Profiller</b> — Instagram, TikTok, Spotify, SoundCloud, X ve LinkedIn profillerinize site adresini yazın; her yerde aynı isim, aynı kısa biyografi, aynı fotoğraf.</li>
               <li><b>Video ve bölüm metinleri</b> — her videonun yazıya dökülmüş metnini yazının içeriğine, her bölümün metnini “Bölüm metni”ne ekleyin. Yapay zekâ videoyu izleyemez, metni okur.</li>
               <li><b>Bahsedilmek</b> — konuk olduğunuz podcast’ler, röportajlar, forumlar… Başka sitelerde adınızın ve site adresinizin geçmesi sıralamayı en çok etkileyen şeydir.</li>
             </ol>
@@ -2331,10 +2390,13 @@
   const _route = route;
   route = function () { view._save = null; resetViewHandlers(); _route(); }; // eslint-disable-line no-func-assign
 
-  // Başka sekmede değişiklik olursa veriyi tazele (form açık değilse)
+  // Başka sekmede değişiklik olursa veriyi tazele (form açık değilse).
+  // Önizleme ekranı yeniden çizilmez: içindeki site değişikliği kendisi alır
   window.addEventListener('storage', (e) => {
+    if (e.key === LAST_SAVE) { paintLastSave(); return; }
     if (e.key !== S.KEY) return;
     D = S.get();
+    if (location.hash.split('/')[0] === '#onizleme') return;
     if (!dirty && isAuthed()) route();
   });
 
@@ -2343,6 +2405,8 @@
      ====================================================================== */
   // Her kayıttan sonra yayındaki site otomatik güncellenir (GitHub bağlantısı kuruluysa)
   S.onSave(() => Yayin.schedule());
+  // Önizlemedeki "Son kayıt" bilgisi (panel başka sekmede açıksa oraya da gider)
+  S.onSave(() => { try { localStorage.setItem(LAST_SAVE, String(Date.now())); } catch (e) { /* yok say */ } paintLastSave(); });
   Yayin.onChange((s) => {
     paintPubPill(s);
     const el = $('#pubState');

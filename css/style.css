@@ -72,9 +72,20 @@ button { font: inherit; }
 .menu-icon::before { top: -5px; }
 .menu-icon::after { top: 5px; }
 
+/* Sosyal medya simgeleri: menünün sağında, telefonda çekmecenin altında */
+.menu-social { display: flex; align-items: center; gap: 2px; margin-left: 26px; padding-left: 16px; border-left: 1px solid var(--rule); }
+.menu-social:empty, .nav-drawer-social:empty, .nav-tight .menu-social { display: none; }
+.menu-social a, .nav-drawer-social a { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; color: var(--fg-2); transition: color .2s var(--ease), border-color .2s var(--ease); }
+.menu-social a:hover, .nav-drawer-social a:hover { color: var(--acid); }
+.menu-social svg { width: 16px; height: 16px; }
+.nav-drawer-social { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 28px; }
+.nav-drawer-social a { width: 44px; height: 44px; border: 1px solid var(--rule); border-radius: 50%; }
+.nav-drawer-social a:hover { border-color: var(--acid); }
+.nav-drawer-social svg { width: 18px; height: 18px; }
+
 @media (max-width: 820px) {
   .brand { font-size: 22px; }
-  .menu-links { display: none; }
+  .menu-links, .menu-social { display: none; }
   .menu-btn { display: inline-flex; margin-left: 10px; }
   .search-btn { margin-left: 0; }
   /* Dokunmatik hedefler en az 40px */

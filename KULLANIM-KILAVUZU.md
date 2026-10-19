@@ -6,7 +6,7 @@ Bu kılavuz, sitenin ve kontrol panelinin her özelliğini adım adım anlatır.
 |---|---|
 | **Yayındaki site** | https://akcanx.github.io/ |
 | **Kontrol paneli** | Bu klasördeki `admin.html` (yalnızca bilgisayarınızda çalışır) |
-| **Bilgisayarınızdaki önizleme** | Bu klasördeki `index.html` |
+| **Bilgisayarınızdaki önizleme** | Paneldeki **Önizleme** ekranı (bu klasördeki `index.html`) |
 | **GitHub deposu** | https://github.com/akcanx/akcanx.github.io |
 | **İlk panel şifresi** | `admin` (hemen değiştirin, bkz. [Ayarlar & Tema](#16-ayarlar--tema)) |
 
@@ -49,7 +49,7 @@ Sitenin dört parçası vardır:
 | Parça | Ne işe yarar | Nerede |
 |---|---|---|
 | **Kontrol paneli** | İçerik ekler, düzenler, siler; ayarları yaparsınız. | `admin.html` — yalnızca bu bilgisayarda, internette değil. |
-| **Önizleme** | Paneldeki her şeyi (örnek içerikler dahil) yayına göndermeden görürsünüz. | `index.html` |
+| **Önizleme** | Paneldeki her şeyi (örnek içerikler dahil) yayına göndermeden görürsünüz. | Panelde **Önizleme** (`index.html`) |
 | **Yayındaki site** | Ziyaretçilerin, Google'ın ve yapay zekâ asistanlarının gördüğü site. | https://akcanx.github.io/ |
 | **GitHub** | Panelden gönderilen içeriği alır, siteyi derler ve yayınlar. | github.com/akcanx/akcanx.github.io |
 
@@ -98,14 +98,14 @@ Kendi içeriğinizin dışındaki hiçbir şey yayına gitmez: **taslaklar, örn
 
 | Grup | Bölümler |
 |---|---|
-| **Genel** | Gösterge Paneli |
+| **Genel** | Gösterge Paneli, Önizleme |
 | **İçerik** | Videolar, Yazılar, Podcast, Remixler, Özel Sayfalar |
 | **Site** | Öne Çıkan (Hero), Menü Yönetimi, Hakkında, Ayarlar & Tema, Yayın & SEO, Yedekleme |
 
 Kenar çubuğunun altında:
 
 - **Yayın durumu rozeti** (bkz. [Yayın durumu](#yayın-durumu)). Tıklayınca Yayın & SEO açılır.
-- **Siteyi Görüntüle ↗**: önizlemeyi yeni sekmede açar.
+- **Siteyi Görüntüle**: panelin [Önizleme](#önizleme) ekranını açar.
 - **Çıkış Yap**.
 
 Mobilde kenar çubuğu, sol üstteki **☰** düğmesiyle açılır.
@@ -133,6 +133,19 @@ Panele girince açılan ilk ekran.
 - **Son içerikler**: en yeni 8 içerik (tür, başlık, taslaksa "Taslak", tarih). Başlığa tıklayınca düzenleme açılır.
 - **Hızlı işlemler**: Yeni video, Yeni yazı, Yeni bölüm, Yeni remix, Yeni sayfa, Öne çıkanı seç.
 - **Depolama**: tarayıcıdaki kullanılan alan (yaklaşık 5 MB sınır) ve doluluk çubuğu. Bkz. [Görseller ve depolama alanı](#22-görseller-ve-depolama-alanı).
+
+### Önizleme
+
+Kenar çubuğunda **Genel → Önizleme** (ya da sol alttaki **Siteyi Görüntüle**). Site panelin içinde açılır ve sitenin bu bilgisayardaki son hâlini gösterir: kaydettiğiniz her şey, **örnek içerikler dahil**. Örnekler ve taslaklar burada görünür ama yayına gitmez.
+
+- **Kendiliğinden güncellenir:** panelde (başka bir sekmede bile) **Kaydet**'e bastığınızda önizleme sayfayı yenilemeden değişir.
+- **Masaüstü / Tablet / Mobil**: siteyi o ekran genişliğinde gösterir. Mobilde ☰ menü çekmecesini de deneyebilirsiniz.
+- **↻ Yenile**: açık sayfayı yerinde yeniden yükler. Site kodu güncellendiyse (yeni bir özellik eklendiyse) yenisi de gelir.
+- **Son kayıt**: panelde en son ne zaman kaydettiğiniz.
+- **Yeni sekmede aç ↗**: önizlemede açık olan sayfayı tam ekran açar.
+- **Yayındaki site ↗**: ziyaretçilerin gördüğü site (GitHub bağlantısı kuruluysa). Yayındaki site kaydettikten yaklaşık 1 dakika sonra güncellenir ve örnek içerikleri hiç göstermez.
+
+> `index.html` dosyasının kendisi hiç değişmez; o yalnızca bir iskelettir. İçerik tarayıcının depolama alanındadır, panel oraya yazar, önizleme oradan okur.
 
 ---
 
@@ -556,11 +569,14 @@ Sosyal medya bağlantıları burada değil, **Ayarlar & Tema**'dadır.
 
 ### Sosyal medya
 
-YouTube, Instagram, X, Spotify, SoundCloud ve E-posta.
+YouTube, Instagram, TikTok, X, LinkedIn, Spotify, SoundCloud ve E-posta.
 
-- Alt bilgideki **Takip Et** listesinde görünür. Arama motorlarına da "aynı kişinin profilleri" olarak bildirilir.
+- **Üst menüde göster** (kartın en üstündeki anahtar): açıksa görünür hesaplar sitenin üst menüsünde, arama düğmesinin solunda simge olarak durur; telefonda menü çekmecesinin altında bir sıra olur. Kapatırsanız simgeler üst menüden kalkar, alt bilgide durmaya devam eder.
+- **Görünür** (her hesabın yanındaki anahtar): kapattığınız hesap sitede hiçbir yerde görünmez (üst menü, alt bilgi, arama motorlarına bildirilen profiller). Adresi panelde saklı kalır, istediğiniz zaman yeniden açarsınız. Kapalı hesabın adres kutusu soluk görünür.
+- Görünür hesaplar alt bilgideki **Takip Et** listesinde de yer alır. Arama motorlarına "aynı kişinin profilleri" olarak bildirilir.
 - Profilinizin **tam adresini** yazın (ör. `https://www.youtube.com/@kanaliniz`). `https://www.youtube.com/` gibi profil olmayan adresler sitede gösterilmez.
 - Boş bırakılanlar görünmez.
+- Menüde çok bağlantı varsa ve simgeler aynı satıra sığmıyorsa (küçük dizüstü ekranları), simgeler üst menüde kendiliğinden gizlenir.
 
 ### Renk teması
 
@@ -723,6 +739,10 @@ Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu
 
 Bilgisayarınızdaki önizlemede (`index.html`) aynı sayfalar `#/yazilar/yazi-adi` biçiminde açılır. Sitenin eski sürümündeki `#/…` bağlantıları ve yanlış sekmedeki adresler (ör. `/yazilar/video-adi/`) doğru adrese kendiliğinden yönlenir.
 
+### Üst menü
+
+Solda site adı; sağda menü bağlantıları, sosyal medya simgeleri ve **🔍** arama düğmesi. Simgeler **Ayarlar & Tema → Sosyal medya**'dan yönetilir (bkz. [Sosyal medya](#sosyal-medya)); üzerine gelince vurgu rengine döner, yeni sekmede açılır.
+
 ### Ana sayfa
 
 1. **Manşet**: Öne Çıkan bölümünde seçtiğiniz içerik; videoysa **İzle**, yazıysa **Oku**, bölüm/remixse **Dinle** düğmesiyle.
@@ -769,7 +789,7 @@ Bir bölüm ya da remix çalınca sayfanın altında sabit oynatıcı açılır.
 
 Bütün sayfalar 360 piksel genişliğindeki telefonlardan geniş ekranlara kadar taşmadan çalışır.
 
-- Menü, sağ üstteki **☰** ile açılan çekmecededir.
+- Menü, sağ üstteki **☰** ile açılan çekmecededir; sosyal medya simgeleri çekmecenin altındadır.
 - Liste satırlarında tarih ve bazı bilgiler gizlenir.
 - Video, kaydırınca menünün hemen altında tam genişlikte sabit kalır.
 
@@ -862,6 +882,13 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 | GitHub'a ulaşılamadı | İnternet bağlantınızı kontrol edip **Şimdi Yayınla**'ya basın. |
 
 **Panel güncellendikten sonra eski görünüyor ya da bir düğme yok.** `admin.html`'i **Ctrl+F5** ile yenileyin.
+
+**Önizlemede değişiklik görünmüyor / `index.html` dosyası değişmiyor.**
+
+- `index.html` dosyasının kendisi hiç değişmez; içerik tarayıcıda durur. Değişiklikleri panelin **Önizleme** ekranında görün.
+- Kod güncellendiyse Önizleme'de **↻ Yenile**'ye basın.
+- Paneli ve önizlemeyi **bu klasörden** (`akcanakdag.com`) açın. Masaüstündeki eski kopyalarda (ör. `Akcan Web Site`) eski kod durur.
+- Başka bir tarayıcıda ya da profilde açılan önizleme o tarayıcının (başka) içeriğini gösterir.
 
 **Video başlığı otomatik gelmedi.** Başlığı elle yazın. Otomatik başlık, YouTube bağlantısı yapıştırıldığında ve başlık alanı boşken gelir; internet bağlantısı gerektirir.
 

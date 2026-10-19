@@ -73,6 +73,7 @@ const st = D.settings;
 const siteUrl = String(st.seo.siteUrl || arg('site-url', '') || 'http://localhost:8080/').replace(/\/*$/, '/');
 const base = new URL(siteUrl).pathname;
 const R = Render.create(D, { mode: 'site', siteUrl });
+const social = R.socialIcons();
 
 /* ---------- Sayfa şablonu (index.html) ---------- */
 const ASSETS = ['css/fonts.css', 'css/style.css', 'js/store.js', 'js/render.js', 'js/app.js'];
@@ -96,6 +97,8 @@ function renderPage(route, pg, extra) {
   h = swap(h, '<a class="brand" href="#/" id="brand">Akcan</a>', `<a class="brand" href="${base}" id="brand">${S.esc(st.siteName)}</a>`);
   h = swap(h, '<span class="menu-links" id="menuLinks"></span>', `<span class="menu-links" id="menuLinks">${nav}</span>`);
   h = swap(h, '<nav class="nav-drawer-links" id="drawerLinks"></nav>', `<nav class="nav-drawer-links" id="drawerLinks">${nav}</nav>`);
+  h = swap(h, '<span class="menu-social" id="menuSocial"></span>', `<span class="menu-social" id="menuSocial">${social}</span>`);
+  h = swap(h, '<div class="nav-drawer-social" id="drawerSocial"></div>', `<div class="nav-drawer-social" id="drawerSocial">${social}</div>`);
   if (c) {
     h = swap(h, '<div class="crail" id="crail" hidden>', '<div class="crail" id="crail">');
     h = swap(h, '<nav class="crail-crumb" id="crailCrumb" aria-label="Konum"></nav>', `<nav class="crail-crumb" id="crailCrumb" aria-label="Konum">${c.crumb}</nav>`);
@@ -179,7 +182,7 @@ const a = D.about || {};
 const all = R.items();
 const section = (title, list) => (list.length ? `\n## ${title}\n\n${list.map((l) => `- [${l.title}](${l.url})${l.desc ? ': ' + l.desc : ''}`).join('\n')}\n` : '');
 const entry = (it) => ({ title: it.title, url: R.abs(it.href), desc: summary(it, 200) });
-const profiles = Object.values(st.social || {}).filter(S.isProfile);
+const profiles = R.socials().map(([, u]) => u).filter(S.isProfile);
 // Alt kategoriler ve yayınlandıkları diğer kanallar
 const subs = R.catPages().map((x) => ({
   title: `${x.tabName} › ${x.cat.name}`, url: R.abs(R.href(x.route)),

@@ -60,11 +60,15 @@
       social: {
         youtube: 'https://www.youtube.com/',
         instagram: 'https://www.instagram.com/',
+        tiktok: '',
         x: '',
+        linkedin: '',
         spotify: '',
         soundcloud: 'https://soundcloud.com/',
         email: 'merhaba@ornek.com'
       },
+      socialOff: [],    // panelde gizlenen hesaplar (adresleri saklı kalır, sitede görünmez)
+      navSocial: true,  // görünür hesaplar üst menüde simge olarak da durur
       // Videolar liste sayfası
       videosPage: {
         title: 'Videolar',

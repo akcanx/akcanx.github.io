@@ -22,7 +22,20 @@
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
     wave: '<svg class="wave" viewBox="0 0 16 12" aria-hidden="true"><rect x="0" y="4" width="2" height="4"/><rect x="3.5" y="2" width="2" height="8"/><rect x="7" y="0" width="2" height="12"/><rect x="10.5" y="2" width="2" height="8"/><rect x="14" y="4" width="2" height="4"/></svg>'
   };
-  const SOCIAL_LABEL = { youtube: 'YouTube', instagram: 'Instagram', x: 'X', spotify: 'Spotify', soundcloud: 'SoundCloud', email: 'E-posta' };
+  const SOCIAL_LABEL = { youtube: 'YouTube', instagram: 'Instagram', tiktok: 'TikTok', x: 'X', linkedin: 'LinkedIn', spotify: 'Spotify', soundcloud: 'SoundCloud', email: 'E-posta' };
+  // Üst menüdeki tek renk simgeler (renk: currentColor)
+  const svgFill = (d) => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${d}"/></svg>`;
+  const svgLine = (inner) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+  const SOCIAL_ICON = {
+    youtube: svgFill('M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z'),
+    instagram: svgLine('<rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.2"/><line x1="17.6" y1="6.4" x2="17.61" y2="6.4"/>'),
+    tiktok: svgFill('M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z'),
+    x: svgFill('M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41z'),
+    linkedin: svgFill('M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z'),
+    spotify: svgFill('M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.36.18.54.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3z'),
+    soundcloud: svgFill('M.25 14h1.5v4H.25zM3 12h1.5v6H3zm2.75-1.5h1.5V18h-1.5zM8.5 9H10v9H8.5zm3-1.4a7 7 0 0 1 9.4 5.3 2.6 2.6 0 0 1 .5 5.1h-9.9z'),
+    email: svgLine('<rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6.5 9 7 9-7"/>')
+  };
   const PAGE_SIZE = 12;
 
   /* ---------- Genel yardımcılar ---------- */
@@ -216,12 +229,24 @@
       }).join('');
     }
 
+    /** Sitede görünen sosyal hesaplar: adresi geçerli ve panelde gizlenmemiş olanlar, [ağ, bağlantı] */
+    function socials() {
+      const so = st.social || {}, off = st.socialOff || [];
+      return Object.keys(SOCIAL_LABEL)
+        .filter((k) => !off.includes(k) && (k === 'email' ? /@/.test(so[k] || '') : isProfile(so[k])))
+        .map((k) => [k, k === 'email' ? 'mailto:' + so[k] : so[k]]);
+    }
+    const socialAttrs = (k) => (k === 'email' ? '' : ' target="_blank" rel="noopener me"');
+    /** Üst menüdeki simgeler (panelde "Üst menüde göster" kapalıysa boş) */
+    function socialIcons() {
+      if (st.navSocial === false) return '';
+      return socials().map(([k, u]) => `<a href="${esc(u)}" aria-label="${SOCIAL_LABEL[k]}" title="${SOCIAL_LABEL[k]}"${socialAttrs(k)}>${SOCIAL_ICON[k]}</a>`).join('');
+    }
+
     function footerHTML() {
       const menu = visibleMenu()
         .map((m) => `<li><a href="${esc(menuHref(m))}"${m.type === 'url' && m.newTab ? ' target="_blank" rel="noopener"' : ''}>${esc(m.label)}</a></li>`).join('');
-      const so = st.social || {};
-      const soc = Object.keys(SOCIAL_LABEL).filter((k) => (k === 'email' ? /@/.test(so[k] || '') : isProfile(so[k])))
-        .map((k) => `<li><a href="${esc(k === 'email' ? 'mailto:' + so[k] : so[k])}"${k === 'email' ? '' : ' target="_blank" rel="noopener me"'}>${SOCIAL_LABEL[k]}</a></li>`).join('');
+      const soc = socials().map(([k, u]) => `<li><a href="${esc(u)}"${socialAttrs(k)}>${SOCIAL_LABEL[k]}</a></li>`).join('');
       const ft = (st.footerText || '').replace('{yil}', new Date().getFullYear());
       return `
       <div class="glow"></div>
@@ -275,11 +300,10 @@
     const pageUrl = (route) => abs(href(route));
     function personNode() {
       const a = D.about || {};
-      const so = st.social || {};
       return {
         '@type': 'Person', '@id': personId(), name: a.name || st.siteName, url: pageUrl('hakkinda'),
         image: abs(asset(a.photo)), jobTitle: a.role, description: clip(S.strip((a.lead || '') + ' ' + (a.bio || '')), 300),
-        sameAs: ['youtube', 'instagram', 'x', 'spotify', 'soundcloud'].map((k) => so[k]).filter(isProfile)
+        sameAs: socials().map(([, u]) => u).filter(isProfile)
       };
     }
     const crumbs = (list) => list.map(([name, route]) => ({ name, route }));
@@ -994,8 +1018,8 @@
       const image = abs(pg.image) || abs(asset(seo.ogImage)) || abs(asset(st.heroImage));
       const imageAlt = pg.image ? (pg.imageAlt || pg.name || '') : st.siteName;
       const name = pg.name || pg.title;
-      const so = st.social || {};
-      const xHandle = isProfile(so.x) ? '@' + new URL(so.x).pathname.split('/').filter(Boolean)[0] : '';
+      const xUrl = (socials().find(([k]) => k === 'x') || [])[1];
+      const xHandle = xUrl ? '@' + new URL(xUrl).pathname.split('/').filter(Boolean)[0] : '';
       const m = (k, v, attr = 'property') => (v ? `<meta ${attr}="${k}" content="${esc(v)}">` : '');
       const t = [
         `<title>${esc(pg.title)}</title>`,
@@ -1036,7 +1060,7 @@
       return t.filter(Boolean).join('\n  ');
     }
 
-    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, footerHTML, crail, feedHTML, routes, isActive, pub, catPages };
+    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages };
   }
 
   global.Render = { create, ICON, PAGE_SIZE, clip };

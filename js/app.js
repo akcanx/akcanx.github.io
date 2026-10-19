@@ -35,6 +35,17 @@
     const links = R.navLinks();
     $('#menuLinks').innerHTML = links;
     $('#drawerLinks').innerHTML = links;
+    const social = R.socialIcons();
+    $('#menuSocial').innerHTML = social;
+    $('#drawerSocial').innerHTML = social;
+    fitNav();
+  }
+
+  // Sosyal simgeler menüye sığmıyorsa üst bantta gizlenir (alt bilgide ve telefonda çekmecede durur)
+  function fitNav() {
+    const wrap = $('#nav > .wrap');
+    document.body.classList.remove('nav-tight');
+    if (wrap.scrollWidth > wrap.clientWidth) document.body.classList.add('nav-tight');
   }
 
   function setActive(route) {
@@ -541,7 +552,8 @@
   const nav = $('#nav');
   function onScroll() { nav.classList.toggle('solid', window.scrollY > 40); updateReadbar(); }
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', () => { setNavH(); updateReadbar(); });
+  window.addEventListener('resize', () => { fitNav(); setNavH(); updateReadbar(); });
+  if (document.fonts) document.fonts.ready.then(fitNav);
 
   /* ---------- Başlat ---------- */
   if (!SITE) {
@@ -557,9 +569,17 @@
     renderFooter();
     window.addEventListener('hashchange', router);
     router();
+    // Panelin Önizleme ekranında: açık sayfanın adresini bildir, "↻ Yenile" ile kodu yeniden yükle
+    if (window.parent !== window) {
+      const tell = () => window.parent.postMessage({ akcan: 'onizleme', hash: location.hash }, '*');
+      window.addEventListener('hashchange', tell);
+      tell();
+      window.addEventListener('message', (e) => { if (e.source === window.parent && e.data && e.data.akcan === 'yenile') location.reload(); });
+    }
   } else {
     // Yayındaki site: sayfa (konum satırı, okuma çubuğu dahil) hazır geldi; veri yüklenince
     // geçişler sayfa yenilenmeden yapılır
+    fitNav();
     setNavH();
     setupPip();
     setupDock();
