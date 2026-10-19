@@ -277,11 +277,14 @@
       changed = true;
     }
     // 5: Kitaplar sekmesi. Sürüm 4 kaydında kitap yoktur (birleştirmede varsayılanlardan gelen örnekler atılır);
-    // menüye gizli "Kitaplar" öğesi bir kez eklenir (sonradan silinirse geri gelmez)
+    // menüye gizli "Kitaplar" öğesi bir kez, Remixler'in ardına eklenir (sonradan silinirse geri gelmez)
     if (!(data.version >= 5)) {
       data.books = [];
       data.menu = data.menu || [];
-      if (!data.menu.some((m) => m.type === 'books')) data.menu.push({ id: uid(), label: 'Kitaplar', type: 'books', target: '', visible: false, newTab: false });
+      if (!data.menu.some((m) => m.type === 'books')) {
+        const at = data.menu.findIndex((m) => m.type === 'remixes');
+        data.menu.splice(at < 0 ? data.menu.length : at + 1, 0, { id: uid(), label: 'Kitaplar', type: 'books', target: '', visible: false, newTab: false });
+      }
       data.version = 5;
       changed = true;
     }

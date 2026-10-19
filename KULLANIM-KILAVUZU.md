@@ -738,7 +738,7 @@ Bu site için bağlantı kuruldu. Değerler şöyle:
 
 | Alan | Açıklama |
 |---|---|
-| **Site adresi** | Kendi alan adınızı bağladıysanız yazın (bkz. [bölüm 23](#25-kendi-alan-adınızı-bağlamak)). Boşsa GitHub Pages adresi kullanılır. |
+| **Site adresi** | Kendi alan adınızı bağladıysanız yazın (bkz. [bölüm 25](#25-kendi-alan-adınızı-bağlamak)). Boşsa GitHub Pages adresi kullanılır. |
 | **Varsayılan paylaşım görseli** | Kendi görseli olmayan sayfalar paylaşıldığında görünür. 1200×630 önerilir. |
 | **Google Search Console doğrulama kodu** | HTML etiketinin `content="…"` değeri; etiketin tamamını da yapıştırabilirsiniz. |
 | **Bing Webmaster Tools doğrulama kodu** | Bing'de "Google Search Console'dan içe aktar" seçerseniz gerekmez. |

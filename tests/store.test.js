@@ -140,6 +140,14 @@ test('kitap-menu-bir-kez', () => { // sürüm 4 kaydına gizli öğe bir kez ekl
   assert.equal(S.normalize(JSON.parse(JSON.stringify(once))).menu.filter((x) => x.type === 'books').length, 0);
 });
 
+test('kitap-menu-konumu', () => { // gizli öğe Remixler'in hemen ardına girer (İletişim'in sonuna değil); Remixler yoksa sona
+  const m = (type) => ({ id: type, label: type, type, visible: true });
+  const a = S.normalize({ version: 4, menu: [m('home'), m('videos'), m('remixes'), m('about'), m('link')] });
+  assert.deepEqual(a.menu.map((x) => x.type), ['home', 'videos', 'remixes', 'books', 'about', 'link']);
+  const b = S.normalize({ version: 4, menu: [m('home'), m('about')] });
+  assert.deepEqual(b.menu.map((x) => x.type), ['home', 'about', 'books']);
+});
+
 test('kitap-ornek-surum-6', () => { // panelde kayıtlı eski veriye örnek kitaplar bir kez eklenir; örnekleri silmişe eklenmez
   mem.clear();
   mem.set(S.KEY, JSON.stringify({ ...v3(), sampleVersion: 5, version: 4, series: [] }));

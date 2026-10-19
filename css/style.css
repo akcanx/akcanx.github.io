@@ -453,7 +453,7 @@ button { font: inherit; }
 .afoot:empty { display: none; }
 .afoot .blk + .blk, .afoot .blk + .sources, .afoot .sources + .blk { margin-top: 40px; }
 .afoot .sources { margin-top: 40px; }
-.afoot h4 { margin: 0 0 16px; font-family: var(--mono); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); }
+.afoot h4, .bmore h4 { margin: 0 0 16px; font-family: var(--mono); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { padding: 4px 13px; border: 1px solid var(--rule-2); border-radius: 4px; background: transparent; color: var(--fg); font-family: var(--disp); font-size: 17px; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; transition: border-color .2s var(--ease), color .2s var(--ease); }
 .chip:hover { border-color: var(--acid); color: var(--acid); }

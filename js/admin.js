@@ -266,7 +266,7 @@
         { k: 'edition', t: 'text', l: 'Baskı', ph: '1. baskı', side: 'Künye' },
         { k: 'language', t: 'text', l: 'Dil', ph: 'Türkçe', side: 'Künye' },
         { k: 'format', t: 'select', l: 'Biçim', side: 'Künye', options: Object.entries(S.BOOK_FORMAT) },
-        { k: 'cover', t: 'image', l: 'Kapak (dikey, 2:3)', side: 'Kapak', help: 'Ön kapağın görseli, ör. 800×1200.' },
+        { k: 'cover', t: 'image', l: 'Kapak (dikey, 2:3)', tall: true, side: 'Kapak', help: 'Ön kapağın görseli, ör. 800×1200.' },
         { k: 'coverAlt', t: 'text', l: 'Kapak açıklaması (alt metin)', ph: 'Görselde ne var?', side: 'Kapak', help: ALT_HELP },
         ...S.BOOK_SHOPS.map(([k, n], i) => ({ k, t: 'url', l: n, ph: 'Kitabın ' + n + ' sayfası', side: 'Satış platformları', help: i ? '' : 'Kitabın o platformdaki sayfasının tam adresi. Boş bıraktığınız ya da yalnızca platformun ana adresini yazdığınız platform sitede görünmez.' })),
         { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Kitap sayfasının üst kısmındaki yumuşak renkli ışık.' },
@@ -436,7 +436,7 @@
         return `<label class="sw"><span class="swl">${f.l}${f.help ? `<small>${f.help}</small>` : ''}</span><input type="checkbox" data-k="${f.k}" ${val ? 'checked' : ''}><span class="tg"></span></label>`;
       case 'image':
         return `<div class="fld imgf"><span class="fld-l">${f.l}</span>
-          <div class="prev ${f.sq ? 'sq' : ''} ${val ? 'has' : ''}" style="${val ? `background-image:url('${esc(val)}')` : ''}">Görsel yüklemek için tıklayın<button type="button" class="x" title="Kaldır">×</button></div>
+          <div class="prev ${f.sq ? 'sq' : f.tall ? 'tall' : ''} ${val ? 'has' : ''}" style="${val ? `background-image:url('${esc(val)}')` : ''}">Görsel yüklemek için tıklayın<button type="button" class="x" title="Kaldır">×</button></div>
           <div class="ctl"><input type="url" data-k="${f.k}" value="${esc(val || '')}" placeholder="https://... veya dosya yükleyin"><button type="button" class="btn btn-sm" data-upload>Yükle</button></div>
           ${help(f)}</div>`;
       case 'tags':
@@ -1402,7 +1402,7 @@
       <div class="vh"><div><h1>${C.title}</h1><p>${C.desc}</p></div>
         <div class="vh-actions">
           <a class="btn btn-ghost" href="#${type}">← ${T.title}</a>
-          <a class="btn btn-ghost" href="index.html${{ videos: '#/videolar', posts: '#/yazilar', podcasts: '#/podcast', remixes: '#/remixler' }[type]}" target="_blank">Görüntüle ↗</a>
+          <a class="btn btn-ghost" href="index.html${{ videos: '#/videolar', posts: '#/yazilar', podcasts: '#/podcast', remixes: '#/remixler', books: '#/kitaplar' }[type]}" target="_blank">Görüntüle ↗</a>
           <button class="btn btn-acid" data-save>Kaydet</button>
         </div></div>
       <form class="form-grid" id="frm" novalidate>
@@ -2006,7 +2006,7 @@
     ['home', 'Ana Sayfa'], ['videos', 'Videolar'], ['blog', 'Yazılar'], ['podcast', 'Podcast'],
     ['remixes', 'Remixler'], ['books', 'Kitaplar'], ['about', 'Hakkında'], ['page', 'Özel Sayfa'], ['url', 'Dış Bağlantı (URL)']
   ];
-  const AUTO_PATH = { home: '#/', videos: '#/videolar', blog: '#/yazilar', podcast: '#/podcast', remixes: '#/remixler', about: '#/hakkinda' };
+  const AUTO_PATH = { home: '#/', videos: '#/videolar', blog: '#/yazilar', podcast: '#/podcast', remixes: '#/remixler', books: '#/kitaplar', about: '#/hakkinda' };
 
   function menuView() {
     view.onclick = null;
