@@ -1,6 +1,6 @@
 {
- "version": 1,
- "sampleVersion": 3,
+ "version": 3,
+ "sampleVersion": 4,
  "settings": {
   "siteName": "Akcan Akdağ",
   "tagline": "Müzik, hikâyeler ve sesler",
@@ -17,10 +17,61 @@
    "soundcloud": "https://soundcloud.com/",
    "email": "merhaba@ornek.com"
   },
+  "videosPage": {
+   "title": "Videolar",
+   "intro": "Her hafta YouTube’a yeni bir video yüklüyorum. Burada videolarımı, yazıya dökülmüş notları ve kaynaklarıyla birlikte bulacaksınız.",
+   "tint": "#7A1E2E",
+   "cats": [
+    {
+     "id": "muzik",
+     "name": "Müzik",
+     "slug": "muzik",
+     "desc": "Prodüksiyon, remix, canlı performans ve sesin hikâyeleri üzerine videolar.",
+     "link": ""
+    },
+    {
+     "id": "gida",
+     "name": "Gıda",
+     "slug": "gida",
+     "desc": "Yemek hikâyeleri: mutfaklardan, sofralardan ve tariflerin arkasındaki insanlardan videolar.",
+     "link": ""
+    },
+    {
+     "id": "gundem",
+     "name": "Gündem",
+     "slug": "gundem",
+     "desc": "Gündemi eleştirel bir gözle ele aldığım videolar.",
+     "link": ""
+    }
+   ]
+  },
   "postsPage": {
    "title": "Yazılar",
    "intro": "Düşüncelerimi, stüdyo notlarımı ve hikâyelerimi burada yazıyorum. Bazı yazıların videoya dönüşmüş hallerini de yazının içinde bulacaksınız.",
-   "tint": "#7A4E1E"
+   "tint": "#7A4E1E",
+   "cats": [
+    {
+     "id": "muzik",
+     "name": "Müzik",
+     "slug": "muzik",
+     "desc": "Prodüksiyon, remix, canlı performans ve sesin hikâyeleri üzerine yazılar.",
+     "link": ""
+    },
+    {
+     "id": "gida",
+     "name": "Gıda",
+     "slug": "gida",
+     "desc": "Yemek hikâyeleri: mutfaklardan, sofralardan ve tariflerin arkasındaki insanlardan yazılar.",
+     "link": ""
+    },
+    {
+     "id": "gundem",
+     "name": "Gündem",
+     "slug": "gundem",
+     "desc": "Gündemi eleştirel bir gözle ele aldığım yazılar.",
+     "link": ""
+    }
+   ]
   },
   "podcast": {
    "name": "Frekans",
@@ -32,7 +83,30 @@
    "apple": "https://podcasts.apple.com/",
    "youtube": "",
    "readText": "Oku + Dinle",
-   "tint": "#1F5A50"
+   "tint": "#1F5A50",
+   "cats": [
+    {
+     "id": "muzik",
+     "name": "Müzik",
+     "slug": "muzik",
+     "desc": "Prodüksiyon, remix, canlı performans ve sesin hikâyeleri üzerine bölümler.",
+     "link": ""
+    },
+    {
+     "id": "gida",
+     "name": "Gıda",
+     "slug": "gida",
+     "desc": "Yemek hikâyeleri: mutfaklardan, sofralardan ve tariflerin arkasındaki insanlardan bölümler.",
+     "link": ""
+    },
+    {
+     "id": "gundem",
+     "name": "Gündem",
+     "slug": "gundem",
+     "desc": "Gündemi eleştirel bir gözle ele aldığım bölümler.",
+     "link": ""
+    }
+   ]
   },
   "remixPage": {
    "name": "Remixler",
@@ -101,14 +175,6 @@
    "type": "remixes",
    "target": "",
    "visible": true,
-   "newTab": false
-  },
-  {
-   "id": "mv8mzh9pjfy3u",
-   "label": "Ekipmanlar",
-   "type": "page",
-   "target": "ekipmanlar",
-   "visible": false,
    "newTab": false
   },
   {
