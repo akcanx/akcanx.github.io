@@ -1063,5 +1063,5 @@
     return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages };
   }
 
-  global.Render = { create, ICON, PAGE_SIZE, clip };
+  global.Render = { create, ICON, SOCIAL_ICON, PAGE_SIZE, clip };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -8,7 +8,7 @@ Bu kılavuz, sitenin ve kontrol panelinin her özelliğini adım adım anlatır.
 | **Kontrol paneli** | Bu klasördeki `admin.html` (yalnızca bilgisayarınızda çalışır) |
 | **Bilgisayarınızdaki önizleme** | Paneldeki **Önizleme** ekranı (bu klasördeki `index.html`) |
 | **GitHub deposu** | https://github.com/akcanx/akcanx.github.io |
-| **İlk panel şifresi** | `admin` (hemen değiştirin, bkz. [Ayarlar & Tema](#16-ayarlar--tema)) |
+| **İlk panel şifresi** | `admin` (hemen değiştirin, bkz. [Ayarlar & Tema](#17-ayarlar--tema)) |
 
 ---
 
@@ -29,16 +29,17 @@ Bu kılavuz, sitenin ve kontrol panelinin her özelliğini adım adım anlatır.
 13. [Öne Çıkan (Hero)](#13-öne-çıkan-hero)
 14. [Menü Yönetimi](#14-menü-yönetimi)
 15. [Hakkında](#15-hakkında)
-16. [Ayarlar & Tema](#16-ayarlar--tema)
-17. [Yayın & SEO](#17-yayın--seo)
-18. [Yedekleme](#18-yedekleme)
-19. [Örnek içerikler](#19-örnek-içerikler)
-20. [Ziyaretçinin gördüğü site](#20-ziyaretçinin-gördüğü-site)
-21. [Arama motorları ve yapay zekâ: otomatik yapılanlar](#21-arama-motorları-ve-yapay-zekâ-otomatik-yapılanlar)
-22. [Görseller ve depolama alanı](#22-görseller-ve-depolama-alanı)
-23. [Kendi alan adınızı bağlamak](#23-kendi-alan-adınızı-bağlamak)
-24. [Sorun giderme](#24-sorun-giderme)
-25. [Teknik ek](#25-teknik-ek)
+16. [Sosyal Medya](#16-sosyal-medya)
+17. [Ayarlar & Tema](#17-ayarlar--tema)
+18. [Yayın & SEO](#18-yayın--seo)
+19. [Yedekleme](#19-yedekleme)
+20. [Örnek içerikler](#20-örnek-içerikler)
+21. [Ziyaretçinin gördüğü site](#21-ziyaretçinin-gördüğü-site)
+22. [Arama motorları ve yapay zekâ: otomatik yapılanlar](#22-arama-motorları-ve-yapay-zekâ-otomatik-yapılanlar)
+23. [Görseller ve depolama alanı](#23-görseller-ve-depolama-alanı)
+24. [Kendi alan adınızı bağlamak](#24-kendi-alan-adınızı-bağlamak)
+25. [Sorun giderme](#25-sorun-giderme)
+26. [Teknik ek](#26-teknik-ek)
 
 ---
 
@@ -55,7 +56,7 @@ Sitenin dört parçası vardır:
 
 **İçeriğiniz nerede durur?**
 
-- Panelde girdiğiniz her şey **bu tarayıcının depolama alanında** saklanır. Tarayıcı verilerini temizlerseniz panel içeriği silinir. Bu yüzden düzenli [yedek](#18-yedekleme) alın.
+- Panelde girdiğiniz her şey **bu tarayıcının depolama alanında** saklanır. Tarayıcı verilerini temizlerseniz panel içeriği silinir. Bu yüzden düzenli [yedek](#19-yedekleme) alın.
 - Yayında olan içeriğin bir kopyası GitHub'da da durur. **Taslaklar ve örnek içerikler** yalnızca panelde ve yedek dosyasındadır.
 
 **Bir içerik nasıl yayına çıkar?**
@@ -72,7 +73,8 @@ Kendi içeriğinizin dışındaki hiçbir şey yayına gitmez: **taslaklar, örn
 
 - [ ] Paneli açın (`admin.html`), `admin` şifresiyle girin.
 - [ ] **Ayarlar & Tema → Panel şifresi** bölümünden şifrenizi değiştirin.
-- [ ] **Ayarlar & Tema**: site adı, slogan, site açıklaması, sosyal medya profilleriniz ve e-posta adresiniz.
+- [ ] **Ayarlar & Tema**: site adı, slogan ve site açıklaması.
+- [ ] **Sosyal Medya**: profil adresleriniz ve e-posta adresiniz; göstermek istemediklerinizi **Pasif** yapın.
 - [ ] **Hakkında**: kendi fotoğrafınız, biyografiniz ve "Kısa tanım".
 - [ ] **Podcast → ⚙ Program Ayarları** ve **Remixler → ⚙ Sayfa Ayarları**: kendi kapaklarınız, açıklamalarınız ve platform profil adresleriniz.
 - [ ] **Videolar / Yazılar / Podcast → ▦ Alt Kategoriler**: alt kategorileri kendi kanallarınıza göre düzenleyin ve kanal bağlantılarını yazın (bkz. [Alt kategoriler](#10-alt-kategoriler)).
@@ -100,7 +102,7 @@ Kendi içeriğinizin dışındaki hiçbir şey yayına gitmez: **taslaklar, örn
 |---|---|
 | **Genel** | Gösterge Paneli, Önizleme |
 | **İçerik** | Videolar, Yazılar, Podcast, Remixler, Özel Sayfalar |
-| **Site** | Öne Çıkan (Hero), Menü Yönetimi, Hakkında, Ayarlar & Tema, Yayın & SEO, Yedekleme |
+| **Site** | Öne Çıkan (Hero), Menü Yönetimi, Hakkında, Sosyal Medya, Ayarlar & Tema, Yayın & SEO, Yedekleme |
 
 Kenar çubuğunun altında:
 
@@ -132,7 +134,7 @@ Panele girince açılan ilk ekran.
 - **Ana Sayfa Öne Çıkan Manşet** kartı: şu anki manşet ve **Öne Çıkanı Değiştir →**.
 - **Son içerikler**: en yeni 8 içerik (tür, başlık, taslaksa "Taslak", tarih). Başlığa tıklayınca düzenleme açılır.
 - **Hızlı işlemler**: Yeni video, Yeni yazı, Yeni bölüm, Yeni remix, Yeni sayfa, Öne çıkanı seç.
-- **Depolama**: tarayıcıdaki kullanılan alan (yaklaşık 5 MB sınır) ve doluluk çubuğu. Bkz. [Görseller ve depolama alanı](#22-görseller-ve-depolama-alanı).
+- **Depolama**: tarayıcıdaki kullanılan alan (yaklaşık 5 MB sınır) ve doluluk çubuğu. Bkz. [Görseller ve depolama alanı](#23-görseller-ve-depolama-alanı).
 
 ### Önizleme
 
@@ -175,7 +177,7 @@ Videolar, Yazılar, Podcast, Remixler ve Özel Sayfalar aynı liste düzenini ku
 | **Durum** | **Yayında** / **Taslak**. Rozete tıklamak durumu anında değiştirir. |
 | **İşlemler** | **Düzenle** · **↗** önizlemede aç · **⧉ Çoğalt** · **Sil** |
 
-- **⧉ Çoğalt**: içeriğin kopyasını "(kopya)" ekiyle ve **taslak** olarak oluşturur. Bağlantısının sonuna `-kopya` eklenir. Bir örnek içeriği kendi içeriğinize dönüştürmenin yolu budur (bkz. [Örnek içerikler](#19-örnek-içerikler)).
+- **⧉ Çoğalt**: içeriğin kopyasını "(kopya)" ekiyle ve **taslak** olarak oluşturur. Bağlantısının sonuna `-kopya` eklenir. Bir örnek içeriği kendi içeriğinize dönüştürmenin yolu budur (bkz. [Örnek içerikler](#20-örnek-içerikler)).
 - **Sil** onay ister ve geri alınamaz. Silinen bir özel sayfanın menü öğesi de kalkar.
 
 ---
@@ -212,7 +214,7 @@ Sayfanın adresidir. Örneğin `/yazilar/bir-remix-nasil-dogar/`.
 - Kutuya tıklayın ya da **Yükle**'ye basıp bilgisayarınızdan görsel seçin.
 - Ya da alttaki kutuya bir görsel **bağlantısı** (`https://…`) yapıştırın.
 - **×** görseli kaldırır.
-- Yüklenen görseller otomatik olarak küçültülür ve sıkıştırılır. Bkz. [Görseller ve depolama alanı](#22-görseller-ve-depolama-alanı).
+- Yüklenen görseller otomatik olarak küçültülür ve sıkıştırılır. Bkz. [Görseller ve depolama alanı](#23-görseller-ve-depolama-alanı).
 
 ### Kapak açıklaması (alt metin)
 
@@ -546,11 +548,42 @@ Sitenin Hakkında sayfası (`/hakkinda/`): tam ekran fotoğraf, üzerinde iki ya
 | **Kapak fotoğrafı** | Yatay, yüksek çözünürlüklü bir portre; yüzünüz üst-orta bölgede kalmalı. |
 | **Vurgu rengi** | Vurgulu başlığın ve bağlantıların rengi (sitenin genel vurgu renginden bağımsız). |
 
-Sosyal medya bağlantıları burada değil, **Ayarlar & Tema**'dadır.
+Sosyal medya bağlantıları burada değil, kendi bölümündedir: [Sosyal Medya](#16-sosyal-medya).
 
 ---
 
-## 16. Ayarlar & Tema
+## 16. Sosyal Medya
+
+Kenar çubuğunda **Site → Sosyal Medya**. Hesaplarınızın adreslerini girdiğiniz ve her birini sitede **aktif** ya da **pasif** yaptığınız yer. Hesaplar: YouTube, Instagram, TikTok, X, LinkedIn, Spotify, SoundCloud ve E-posta.
+
+### Üst menüde göster
+
+En üstteki anahtar. Açıksa aktif hesaplar sitenin üst menüsünde, arama düğmesinin solunda simge olarak durur; telefonda menü çekmecesinin altında bir sıra olur. Kapatırsanız simgelerin hepsi üst menüden kalkar, alt bilgideki **Takip Et** listesinde durmaya devam eder.
+
+### Hesaplar
+
+Her hesabın bir satırı var: solda sitedeki simgesi, ortada adres kutusu, sağda **Aktif / Pasif** anahtarı.
+
+| | Ne olur |
+|---|---|
+| **Aktif** | Hesap üst menüde simge, alt bilgide bağlantı olarak görünür ve arama motorlarına "aynı kişinin profilleri" olarak bildirilir. |
+| **Pasif** | Hesap sitede hiçbir yerde görünmez. Adresi panelde saklı kalır; yeniden aktif yaptığınızda geri gelir. Satır soluk görünür. |
+
+**Adresi değiştirmek:** kutudaki adresi silip yenisini yazın, **Kaydet**'e basın (ya da **Ctrl+S**). Değişiklik **Önizleme**'de hemen, yayındaki sitede yaklaşık 1 dakika sonra görünür.
+
+- Profilinizin **tam adresini** yazın (ör. `https://www.instagram.com/kullaniciadiniz`). Başına `https://` yazmayı unutursanız kaydederken eklenir.
+- Her satırın altındaki not, hesabın sitede görünüp görünmeyeceğini yazarken söyler:
+  - **✓ Sitede görünür.**
+  - **Pasif: sitede görünmez.**
+  - **Adres boş: sitede görünmez.**
+  - **Profil adresi değil:** `https://www.youtube.com/` gibi yalnızca sitenin ana adresi yazılmış; aktif olsa da görünmez.
+  - **Örnek adres:** `merhaba@ornek.com` gibi örnek e-posta; kendi adresinizi yazın ya da pasif yapın.
+- Menüde çok bağlantı varsa ve simgeler aynı satıra sığmıyorsa (küçük dizüstü ekranları), simgeler üst menüde kendiliğinden gizlenir.
+- **Önizlemede Gör** düğmesi sonucu panelin Önizleme ekranında gösterir.
+
+---
+
+## 17. Ayarlar & Tema
 
 ### Site kimliği
 
@@ -567,16 +600,7 @@ Sosyal medya bağlantıları burada değil, **Ayarlar & Tema**'dadır.
 
 Öne Çıkan bölümündeki karartma ayarının aynısı (açma/kapama ve opaklık).
 
-### Sosyal medya
-
-YouTube, Instagram, TikTok, X, LinkedIn, Spotify, SoundCloud ve E-posta.
-
-- **Üst menüde göster** (kartın en üstündeki anahtar): açıksa görünür hesaplar sitenin üst menüsünde, arama düğmesinin solunda simge olarak durur; telefonda menü çekmecesinin altında bir sıra olur. Kapatırsanız simgeler üst menüden kalkar, alt bilgide durmaya devam eder.
-- **Görünür** (her hesabın yanındaki anahtar): kapattığınız hesap sitede hiçbir yerde görünmez (üst menü, alt bilgi, arama motorlarına bildirilen profiller). Adresi panelde saklı kalır, istediğiniz zaman yeniden açarsınız. Kapalı hesabın adres kutusu soluk görünür.
-- Görünür hesaplar alt bilgideki **Takip Et** listesinde de yer alır. Arama motorlarına "aynı kişinin profilleri" olarak bildirilir.
-- Profilinizin **tam adresini** yazın (ör. `https://www.youtube.com/@kanaliniz`). `https://www.youtube.com/` gibi profil olmayan adresler sitede gösterilmez.
-- Boş bırakılanlar görünmez.
-- Menüde çok bağlantı varsa ve simgeler aynı satıra sığmıyorsa (küçük dizüstü ekranları), simgeler üst menüde kendiliğinden gizlenir.
+Sosyal medya hesapları ayrı bölümdedir: [Sosyal Medya](#16-sosyal-medya).
 
 ### Renk teması
 
@@ -592,7 +616,7 @@ En alttaki **Ayarları Kaydet**, şifre dışındaki her şeyi kaydeder.
 
 ---
 
-## 17. Yayın & SEO
+## 18. Yayın & SEO
 
 ### Yayın durumu
 
@@ -604,7 +628,7 @@ Sayfanın en üstündeki kart ve kenar çubuğundaki rozet şu durumlardan birin
 | **Değişiklikler birkaç saniye içinde gönderilecek… / Yayınlanıyor…** | Gönderim sürüyor. Bu sırada paneli kapatmaya çalışırsanız tarayıcı uyarır. |
 | **✓ Gönderildi / Yayında · saat** | Gönderim başarılı. GitHub siteyi yaklaşık 1 dakikada günceller. |
 | **✓ Yayındaki site güncel** | Değişen bir şey yoktu, gönderim yapılmadı. |
-| **✕ Gönderilemedi / Yayın hatası** | Sebebi kartta yazar (bkz. [Sorun giderme](#24-sorun-giderme)). |
+| **✕ Gönderilemedi / Yayın hatası** | Sebebi kartta yazar (bkz. [Sorun giderme](#25-sorun-giderme)). |
 | **Otomatik yayın kapalı** | Bağlantı kurulu ama "Her kaydetmede otomatik yayınla" kapalı. |
 
 Kartın altındaki bağlantılar:
@@ -638,7 +662,7 @@ Bu site için bağlantı kuruldu. Değerler şöyle:
 
 | Alan | Açıklama |
 |---|---|
-| **Site adresi** | Kendi alan adınızı bağladıysanız yazın (bkz. [bölüm 23](#23-kendi-alan-adınızı-bağlamak)). Boşsa GitHub Pages adresi kullanılır. |
+| **Site adresi** | Kendi alan adınızı bağladıysanız yazın (bkz. [bölüm 23](#24-kendi-alan-adınızı-bağlamak)). Boşsa GitHub Pages adresi kullanılır. |
 | **Varsayılan paylaşım görseli** | Kendi görseli olmayan sayfalar paylaşıldığında görünür. 1200×630 önerilir. |
 | **Google Search Console doğrulama kodu** | HTML etiketinin `content="…"` değeri; etiketin tamamını da yapıştırabilirsiniz. |
 | **Bing Webmaster Tools doğrulama kodu** | Bing'de "Google Search Console'dan içe aktar" seçerseniz gerekmez. |
@@ -681,7 +705,7 @@ Kodla yapılamayan ama sıralamayı en çok etkileyen işler:
 
 ---
 
-## 18. Yedekleme
+## 19. Yedekleme
 
 | Kart | İşlev |
 |---|---|
@@ -703,7 +727,7 @@ Kodla yapılamayan ama sıralamayı en çok etkileyen işler:
 
 ---
 
-## 19. Örnek içerikler
+## 20. Örnek içerikler
 
 Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu, 7 blog yazısı, 6 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
 
@@ -721,7 +745,7 @@ Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu
 
 ---
 
-## 20. Ziyaretçinin gördüğü site
+## 21. Ziyaretçinin gördüğü site
 
 ### Sayfalar ve adresleri
 
@@ -741,7 +765,7 @@ Bilgisayarınızdaki önizlemede (`index.html`) aynı sayfalar `#/yazilar/yazi-a
 
 ### Üst menü
 
-Solda site adı; sağda menü bağlantıları, sosyal medya simgeleri ve **🔍** arama düğmesi. Simgeler **Ayarlar & Tema → Sosyal medya**'dan yönetilir (bkz. [Sosyal medya](#sosyal-medya)); üzerine gelince vurgu rengine döner, yeni sekmede açılır.
+Solda site adı; sağda menü bağlantıları, sosyal medya simgeleri ve **🔍** arama düğmesi. Simgeler panelin **Sosyal Medya** bölümünden yönetilir (bkz. [Sosyal Medya](#16-sosyal-medya)); üzerine gelince vurgu rengine döner, yeni sekmede açılır.
 
 ### Ana sayfa
 
@@ -795,7 +819,7 @@ Bütün sayfalar 360 piksel genişliğindeki telefonlardan geniş ekranlara kada
 
 ---
 
-## 21. Arama motorları ve yapay zekâ: otomatik yapılanlar
+## 22. Arama motorları ve yapay zekâ: otomatik yapılanlar
 
 Bunların hiçbiri için bir şey yapmanız gerekmez; site her yayında bunları kendisi üretir.
 
@@ -827,7 +851,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 22. Görseller ve depolama alanı
+## 23. Görseller ve depolama alanı
 
 - Panelden yüklenen görseller en uzun kenarı **1600 piksel** olacak şekilde küçültülür ve **WebP** biçiminde sıkıştırılır.
 - Panel içeriği tarayıcıda yaklaşık **5 MB**'lık bir alanda tutulur. Gösterge Paneli'ndeki **Depolama** çubuğundan doluluğu izleyin.
@@ -849,7 +873,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 23. Kendi alan adınızı bağlamak
+## 24. Kendi alan adınızı bağlamak
 
 Şu an site `https://akcanx.github.io/` adresinde. Kendi alan adınızı (ör. `akcan.com`) bağlamak arama sonuçlarında daha güçlüdür.
 
@@ -862,7 +886,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 24. Sorun giderme
+## 25. Sorun giderme
 
 **Panelde kaydettim ama site değişmedi.**
 
@@ -921,7 +945,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 25. Teknik ek
+## 26. Teknik ek
 
 ### Klasör yapısı
 

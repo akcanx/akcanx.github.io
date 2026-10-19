@@ -787,6 +787,7 @@
       case 'featured': return featuredView();
       case 'menu': return menuView();
       case 'about': return aboutView();
+      case 'sosyal': return socialView();
       case 'settings': return settingsView();
       case 'yayin': return publishView();
       case 'backup': return backupView();
@@ -2023,7 +2024,7 @@
       { k: 'showStats', t: 'switch', l: 'İstatistik bandını göster', help: 'Ana sayfada “… yazı, … video …” cümlesi.' }
     ];
     view.innerHTML = `
-      <div class="vh"><div><h1>Ayarlar & Tema</h1><p>Site kimliği, renk teması, sosyal medya bağlantıları ve panel şifresi.</p></div>
+      <div class="vh"><div><h1>Ayarlar & Tema</h1><p>Site kimliği, renk teması ve panel şifresi. Sosyal medya hesapları kendi bölümünde: <a href="#sosyal" style="text-decoration:underline">Sosyal Medya</a>.</p></div>
         <div class="vh-actions"><button class="btn btn-acid" data-save>Ayarları Kaydet</button></div></div>
       <div class="form-grid">
         <div>
@@ -2044,10 +2045,6 @@
               <div class="range-labels"><span>Şeffaf (%10)</span><span>Belirgin / Koyu (%100)</span></div>
             </div>
           </div>
-          <div class="card"><h3>Sosyal medya</h3>
-            <label class="sw so-nav"><span class="swl">Üst menüde göster<small>Görünür hesaplar menünün sağında simge olarak durur; telefonda menü çekmecesinin altında.</small></span><input type="checkbox" id="stNavSocial" ${st.navSocial !== false ? 'checked' : ''}><span class="tg"></span></label>
-            <div class="so-list">${SOCIALS.map(([k, l]) => `<div class="so-row"><label class="fld"><span>${l}</span><input type="${k === 'email' ? 'email' : 'url'}" data-so="${k}" value="${esc((st.social || {})[k] || '')}" placeholder="${k === 'email' ? 'ornek@mail.com' : 'https://...'}"></label><label class="sw" title="${l} sitede görünsün"><span class="swl">Görünür</span><input type="checkbox" data-so-on="${k}" ${(st.socialOff || []).includes(k) ? '' : 'checked'}><span class="tg"></span></label></div>`).join('')}</div>
-            <small class="help">Boş bırakılan ya da kapatılan hesaplar sitede (üst menü, alt bilgi) gösterilmez. Kapatılan hesabın adresi burada saklı kalır.</small></div>
         </div>
         <div class="form-side">
           <div class="card"><h3>Renk teması</h3>
@@ -2101,10 +2098,6 @@
       const v = collect(frm, F);
       if (!v.siteName) { toast('Site adı zorunludur', true); return; }
       Object.assign(D.settings, v, { accent });
-      D.settings.social = D.settings.social || {};
-      $$('[data-so]').forEach((i) => { D.settings.social[i.dataset.so] = i.value.trim(); });
-      D.settings.socialOff = $$('[data-so-on]').filter((i) => !i.checked).map((i) => i.dataset.soOn);
-      D.settings.navSocial = $('#stNavSocial').checked;
       D.settings.featured = D.settings.featured || {};
       if (stTg) D.settings.featured.topGradient = stTg.checked;
       if (stOp) D.settings.featured.topGradientOpacity = Number(stOp.value);
@@ -2128,6 +2121,71 @@
         e.target.reset();
       }
     });
+  }
+
+  /* ======================================================================
+     Sosyal medya: adresler ve her hesabın sitede görünüp görünmeyeceği
+     ====================================================================== */
+  // Yazılan adresi tamamlar: "instagram.com/akcan" → https://..., "mailto:a@b.com" → a@b.com
+  const normSocial = (k, v) => {
+    v = String(v || '').trim();
+    if (!v) return '';
+    if (k === 'email') return v.replace(/^mailto:/i, '');
+    return /^https?:\/\//i.test(v) ? v : 'https://' + v;
+  };
+  const socialOk = (k, v) => (k === 'email' ? /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) : S.isProfile(v));
+
+  function socialView() {
+    crumbs(['Sosyal Medya']);
+    view.dataset.form = '1';
+    const st = D.settings, so = st.social || {}, off = st.socialOff || [];
+    const ICONS = window.Render.SOCIAL_ICON;
+    view.innerHTML = `
+      <div class="vh"><div><h1>Sosyal Medya</h1><p>Hesaplarınızın adresleri ve sitede görünüp görünmeyecekleri. Aktif hesaplar üst menüde simge, alt bilgide bağlantı olarak görünür ve arama motorlarına “aynı kişinin profilleri” olarak bildirilir.</p></div>
+        <div class="vh-actions"><a class="btn btn-ghost" href="#onizleme">Önizlemede Gör</a><button class="btn btn-acid" data-save>Kaydet</button></div></div>
+      <div class="card">
+        <label class="sw" style="padding:0"><span class="swl">Üst menüde göster<small>Aktif hesaplar menünün sağında, arama düğmesinin solunda simge olarak durur; telefonda menü çekmecesinin altında. Kapatırsanız simgeler yalnızca üst menüden kalkar, alt bilgide durur.</small></span><input type="checkbox" id="soNav" ${st.navSocial !== false ? 'checked' : ''}><span class="tg"></span></label>
+      </div>
+      <div class="card"><h3>Hesaplar</h3>
+        <div class="so-list">${SOCIALS.map(([k, l]) => `
+          <div class="so-row" data-net="${k}">
+            <span class="so-ic" aria-hidden="true">${ICONS[k] || ''}</span>
+            <label class="fld"><span>${l}</span><input type="${k === 'email' ? 'email' : 'url'}" data-so="${k}" value="${esc(so[k] || '')}" placeholder="${k === 'email' ? 'ornek@mail.com' : 'https://...'}" spellcheck="false"><small class="so-hint"></small></label>
+            <label class="sw" title="${l} sitede görünsün mü?"><span class="swl so-st"></span><input type="checkbox" data-so-on="${k}" ${off.includes(k) ? '' : 'checked'}><span class="tg"></span></label>
+          </div>`).join('')}</div>
+        <small class="help">Pasif yaptığınız hesabın adresi burada saklı kalır; yeniden aktif yaptığınızda sitede görünür. Boş bırakılan ya da profil adresi olmayan (ör. <code>https://www.youtube.com/</code>) hesaplar aktif olsa da görünmez.</small>
+      </div>`;
+
+    // Her satırın durumu: Aktif / Pasif ve adresin sitede görünüp görünmeyeceği
+    const paint = (row) => {
+      const k = row.dataset.net, on = $('[data-so-on]', row).checked, v = normSocial(k, $('[data-so]', row).value);
+      const ok = socialOk(k, v);
+      const [cls, txt] = !on ? ['', 'Pasif: sitede görünmez.']
+        : !v ? ['', 'Adres boş: sitede görünmez.']
+        : !ok ? ['warn', k === 'email' ? 'Geçerli bir e-posta adresi değil; sitede görünmez.' : 'Profil adresi değil (ör. kullanıcı adınızla tam adres); sitede görünmez.']
+        : k === 'email' && /ornek\.com$/i.test(v) ? ['warn', 'Örnek adres sitede görünür: kendi adresinizi yazın ya da pasif yapın.']
+        : ['ok', '✓ Sitede görünür.'];
+      row.classList.toggle('off', !on);
+      $('.so-st', row).textContent = on ? 'Aktif' : 'Pasif';
+      const h = $('.so-hint', row);
+      h.className = 'so-hint ' + cls;
+      h.textContent = txt;
+    };
+    $$('.so-row', view).forEach((row) => {
+      paint(row);
+      row.addEventListener('input', () => paint(row));
+      row.addEventListener('change', () => paint(row));
+    });
+
+    const save = () => {
+      D.settings.social = D.settings.social || {};
+      $$('[data-so]', view).forEach((i) => { i.value = D.settings.social[i.dataset.so] = normSocial(i.dataset.so, i.value); });
+      D.settings.socialOff = $$('[data-so-on]', view).filter((i) => !i.checked).map((i) => i.dataset.soOn);
+      D.settings.navSocial = $('#soNav').checked;
+      if (persist('Sosyal medya kaydedildi')) { dirty = false; $$('.so-row', view).forEach(paint); }
+    };
+    $$('[data-save]', view).forEach((b) => b.addEventListener('click', save));
+    view._save = save;
   }
 
   /* ======================================================================
@@ -2181,6 +2239,7 @@
     const noDesc = ['posts', 'podcasts', 'remixes'].flatMap(live).filter((x) => !(x.seoDesc || x.excerpt));
     const noAlt = [...live('posts').filter((p) => S.postKind(p) === 'yazi'), ...live('podcasts'), ...live('remixes'), ...live('pages')].filter((x) => x.cover && !x.coverAlt);
     const badSocial = SOCIALS.filter(([k]) => k !== 'email' && so[k] && !S.isProfile(so[k]) && !(st.socialOff || []).includes(k)).map(([, l]) => l);
+    const sampleMail = /ornek\.com$/i.test(so.email || '') && !(st.socialOff || []).includes('email');
     const sampleAbout = !!(O.about && a.bio && a.bio === O.about.bio);
     const ownRole = a.role && !(O.about && a.role === O.about.role);
     const picsum = /picsum\.photos/.test(JSON.stringify(Yayin.publicData(D)));
@@ -2192,8 +2251,8 @@
       [nSamples ? 'info' : 'ok', 'Örnek içerikler', nSamples ? `${nSamples} örnek içerik panelde duruyor; yayına gönderilmez. İsterseniz hepsini tek tıkla silebilirsiniz.` : 'Panelde örnek içerik yok.', nSamples ? 'del-samples' : ''],
       [sampleAbout || !a.bio ? 'warn' : 'ok', 'Hakkında sayfası', sampleAbout ? 'Hakkında sayfasında örnek metin duruyor. Kendi biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.' : a.bio ? 'Biyografiniz yazılmış.' : 'Biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.', '#about'],
       [ownRole ? 'ok' : 'warn', 'Kısa tanım', ownRole ? `“${esc(a.role)}”` : 'Hakkında’ya kim olduğunuzu anlatan tek cümlelik kendi tanımınızı yazın (ör. “Müzik prodüktörü ve DJ”).', '#about'],
-      [badSocial.length ? 'warn' : 'ok', 'Sosyal medya profilleri', badSocial.length ? `${badSocial.join(', ')} bağlantısı bir profil adresi değil (ör. https://www.youtube.com/@kanaliniz); sitede gösterilmez.` : 'Profil bağlantılarınız arama motorlarına “aynı kişi” olarak bildirilir.', '#settings'],
-      [/ornek\.com$/i.test(so.email || '') ? 'warn' : 'ok', 'E-posta adresi', /ornek\.com$/i.test(so.email || '') ? `“${esc(so.email)}” örnek bir adres; kendi adresinizi yazın ya da silin.` : 'Örnek adres kullanılmıyor.', '#settings'],
+      [badSocial.length ? 'warn' : 'ok', 'Sosyal medya profilleri', badSocial.length ? `${badSocial.join(', ')} bağlantısı bir profil adresi değil (ör. https://www.youtube.com/@kanaliniz); sitede gösterilmez.` : 'Profil bağlantılarınız arama motorlarına “aynı kişi” olarak bildirilir.', '#sosyal'],
+      [sampleMail ? 'warn' : 'ok', 'E-posta adresi', sampleMail ? `“${esc(so.email)}” örnek bir adres; kendi adresinizi yazın, silin ya da pasif yapın.` : 'Örnek adres kullanılmıyor.', '#sosyal'],
       [picsum ? 'warn' : 'ok', 'Örnek görseller', picsum ? 'Yayına giden ayarlarda ya da içeriklerde örnek görsel (picsum.photos) var: manşet görseli, podcast kapağı, Hakkında fotoğrafı… Kendi görsellerinizi yükleyin.' : 'Örnek görsel kullanılmıyor.', '#settings'],
       [noDesc.length ? 'warn' : 'ok', 'Özetler', noDesc.length ? `${noDesc.length} içeriğin özeti yok; arama sonucunda metnin başı gösterilir.` : 'Tüm içeriklerin özeti var.', ''],
       [noAlt.length ? 'info' : 'ok', 'Kapak açıklamaları', noAlt.length ? `${noAlt.length} kapak görselinin açıklaması (alt metin) yok; başlık kullanılacak.` : 'Kapak görsellerinin açıklaması var.', ''],
