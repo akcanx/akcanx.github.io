@@ -191,8 +191,8 @@
     },
     podcasts: {
       title: 'Podcast Bölümleri', one: 'Bölüm', icon: '◉',
-      desc: 'MP3 bağlantısı ekleyerek sitedeki oynatıcıda dinletin veya Spotify / SoundCloud bağlantısı gömün.',
-      view: (x) => '#/podcast/' + x.slug,
+      desc: 'Her bölüm bir seriye bağlıdır. MP3 bağlantısı ekleyerek sitedeki oynatıcıda dinletin veya Spotify / SoundCloud bağlantısı gömün. Seri kapakları ve tanıtımları ◫ Seriler’de.',
+      view: (x) => '#/podcast/' + ((S.seriesOf(D, x) || {}).slug || '') + '/' + x.slug,
       thumb: (x) => x.cover, sq: true,
       sub: (x) => [x.number ? 'Bölüm ' + x.number : '', x.duration, x.featured ? '★ Öne çıkan' : ''].filter(Boolean).join(' · '),
       fields: [
@@ -207,13 +207,38 @@
         { k: 'date', t: 'date', l: 'Tarih', side: 'Yayın' },
         { k: 'number', t: 'number', l: 'Bölüm no', side: 'Yayın' },
         { k: 'duration', t: 'text', l: 'Süre', ph: '32 dk', side: 'Yayın' },
-        { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: 'Bölümün adresi: /podcast/<b>baglanti</b>/. Boş bırakılırsa başlıktan oluşturulur.' },
-        { k: 'cat', t: 'cat', l: 'Alt kategori', tab: 'podcast', side: 'Alt kategori' },
+        { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: 'Bölümün adresi: /podcast/seri/<b>baglanti</b>/. Boş bırakılırsa başlıktan oluşturulur.' },
+        { k: 'series', t: 'series', l: 'Seri', side: 'Seri' },
         { k: 'cover', t: 'image', l: 'Kapak (kare)', sq: true, side: 'Kapak' },
         { k: 'coverAlt', t: 'text', l: 'Kapak açıklaması (alt metin)', ph: 'Görselde ne var?', side: 'Kapak', help: ALT_HELP },
         { k: 'coverCredit', t: 'text', l: 'Kapak görseli kaynağı', ph: 'Fotoğraf: …, lisans', side: 'Kapak' },
         { k: 'tint', t: 'color', l: 'Sayfa tonu', side: 'Görünüm', help: 'Boş bırakılırsa kapaktan otomatik seçilir.' },
         { k: 'tags', t: 'tags', l: 'Etiketler', side: 'Etiketler' },
+        ...SEO_FIELDS
+      ]
+    },
+    // Podcast serileri: Podcast sekmesindeki vitrin (listedeki sıra = vitrindeki sıra); ekranı #series
+    series: {
+      title: 'Podcast Serileri', one: 'Seri', icon: '◫',
+      desc: 'Podcast sekmesinde kapakları yan yana duran serileriniz. Vitrindeki sıra bu listedeki sıradır: ↑ ↓ ile değiştirin.',
+      view: (x) => '#/podcast/' + x.slug,
+      thumb: (x) => x.cover, sq: true,
+      sub: (x) => [S.SERIES_STATUS[x.status], x.frequency].filter(Boolean).join(' · '),
+      fields: [
+        { k: 'title', t: 'title', l: 'Seri adı', req: true },
+        { k: 'tagline', t: 'text', l: 'Kısa tanım', ph: 'Müziğin, sesin ve hafızanın izinde', help: 'Vitrindeki kartta adın altında tek satır olarak görünür.' },
+        { k: 'description', t: 'textarea', l: 'Tanıtım metni', rows: 6, help: 'Seri sayfasında adın altında görünür: seri neyi anlatıyor, kimler için?' },
+        { k: 'trailer', t: 'url', l: 'Fragman (isteğe bağlı)', ph: 'MP3 bağlantısı ya da YouTube / Spotify / SoundCloud bağlantısı', help: 'Ses dosyası seri sayfasında “▶ Fragmanı dinle” düğmesiyle çalar; diğer bağlantılar gömülü oynatıcı olur.' },
+        { k: 'published', t: 'switch', l: 'Yayında', side: 'Yayın', help: 'Kapalıysa seri ve bölümleri sitede görünmez.' },
+        { k: 'status', t: 'select', l: 'Durum', side: 'Yayın', options: Object.entries(S.SERIES_STATUS), help: '“Yakında” ve “Tamamlandı” vitrindeki kapağın köşesinde görünür.' },
+        { k: 'frequency', t: 'text', l: 'Yayın sıklığı', ph: 'Her Pazartesi', side: 'Yayın' },
+        { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: 'Serinin adresi: /podcast/<b>baglanti</b>/. Boş bırakılırsa addan oluşturulur.' },
+        { k: 'cover', t: 'image', l: 'Kapak (kare)', sq: true, side: 'Kapak' },
+        { k: 'coverAlt', t: 'text', l: 'Kapak açıklaması (alt metin)', ph: 'Görselde ne var?', side: 'Kapak', help: ALT_HELP },
+        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Seri sayfasının üst kısmındaki yumuşak renkli ışık.' },
+        { k: 'spotify', t: 'url', l: 'Spotify', ph: 'https://open.spotify.com/show/...', side: 'Dinleme platformları' },
+        { k: 'apple', t: 'url', l: 'Apple Podcasts', ph: 'https://podcasts.apple.com/...', side: 'Dinleme platformları' },
+        { k: 'youtube', t: 'url', l: 'YouTube', ph: 'https://www.youtube.com/playlist?list=...', side: 'Dinleme platformları' },
         ...SEO_FIELDS
       ]
     },
@@ -273,8 +298,8 @@
   const postType = (x) => (S.postKind(x) === 'video' ? 'videos' : 'posts');
 
   /* Alt kategorisi olan bölümler: panel bölümü → sekme (store.js CAT_KEYS) ve sitedeki adresi */
-  const CAT_TABS = { videos: 'video', posts: 'yazi', podcasts: 'podcast' };
-  const TAB_TYPE = { video: 'videos', yazi: 'posts', podcast: 'podcasts' };
+  const CAT_TABS = { videos: 'video', posts: 'yazi' };
+  const TAB_TYPE = { video: 'videos', yazi: 'posts' };
   const SITE_ROUTE = { videos: 'videolar', posts: 'yazilar', podcasts: 'podcast', remixes: 'remixler' };
   const catsOf = (type) => (CAT_TABS[type] ? S.cats(D, CAT_TABS[type]) : []);
   const catOf = (type, x) => catsOf(type).find((c) => c.id === x.cat);
@@ -302,19 +327,13 @@
       ]
     },
     podcasts: {
-      key: 'podcast', title: 'Podcast Programı', btn: 'Program Ayarları',
-      desc: 'Podcast sayfasının üstünde görünen program kapağı, adı, açıklaması ve dinleme platformları.',
+      key: 'podcast', title: 'Podcast Sayfası', btn: 'Sayfa Ayarları',
+      desc: 'Podcast sekmesinin (seri vitrini) başlığı, üst etiketi, tanıtım metni ve ışık rengi. Serilerin kapakları, tanıtımları ve platform bağlantıları ◫ Seriler’de.',
       fields: [
-        { k: 'name', t: 'title', l: 'Program adı' },
-        { k: 'eyebrow', t: 'text', l: 'Üst etiket', ph: 'Podcast · Her Pazartesi', help: 'Adın üstünde küçük büyük harflerle görünür.' },
-        { k: 'description', t: 'textarea', l: 'Açıklama', rows: 4 },
-        { k: 'note', t: 'textarea', l: 'Alt not', rows: 2, help: 'Açıklamanın altında küçük yazıyla görünür.' },
-        { k: 'readText', t: 'text', l: 'Buton metni', ph: 'Oku + Dinle', help: 'En son bölüme götürür.' },
-        { k: 'cover', t: 'image', l: 'Program kapağı (kare)', sq: true, side: 'Kapak' },
-        { k: 'spotify', t: 'url', l: 'Spotify', ph: 'https://open.spotify.com/show/...', side: 'Dinleme platformları' },
-        { k: 'apple', t: 'url', l: 'Apple Podcasts', ph: 'https://podcasts.apple.com/...', side: 'Dinleme platformları' },
-        { k: 'youtube', t: 'url', l: 'YouTube', ph: 'https://www.youtube.com/...', side: 'Dinleme platformları' },
-        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm' }
+        { k: 'name', t: 'title', l: 'Sayfa başlığı' },
+        { k: 'eyebrow', t: 'text', l: 'Üst etiket', ph: 'Podcast · Sesin hikâyeleri', help: 'Başlığın üstünde küçük büyük harflerle görünür.' },
+        { k: 'description', t: 'textarea', l: 'Tanıtım metni', rows: 4, help: 'Başlığın altında, seri kapaklarının üstünde görünür.' },
+        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Sayfanın üst kısmındaki yumuşak renkli ışık.' }
       ]
     },
     remixes: {
@@ -336,15 +355,17 @@
     }
   };
 
-  // cat: alt kategorinin listesinden "+ Yeni" ile açıldıysa o alt kategori seçili gelir
+  // cat: alt kategorinin listesinden "+ Yeni" ile açıldıysa o alt kategori seçili gelir;
+  // podcast bölümünde aynı yerden seri gelir (#podcasts/new/seri-kimligi), yoksa ilk seri
   function newItem(type, kind, cat) {
+    if (type === 'series') return { published: true, status: 'devam' };
     const base = { published: true, date: today(), tags: [] };
-    if (cat) base.cat = cat;
-    if (type === 'posts') base.kind = kind === 'yazi' ? 'yazi' : 'video';
     if (type === 'podcasts') {
-      const max = Math.max(0, ...(D.podcasts || []).map((p) => Number(p.number) || 0));
+      base.series = cat || ((D.series || [])[0] || {}).id;
+      const max = Math.max(0, ...(D.podcasts || []).filter((p) => p.series === base.series).map((p) => Number(p.number) || 0));
       base.number = max + 1;
-    }
+    } else if (cat) base.cat = cat;
+    if (type === 'posts') base.kind = kind === 'yazi' ? 'yazi' : 'video';
     if (type === 'pages') base.inMenu = true;
     return base;
   }
@@ -388,6 +409,12 @@
         const list = S.cats(D, f.tab);
         return `<div class="fld"><span class="fld-l">${lbl(f)}</span><select data-k="${f.k}"><option value="">— Yok —</option>${list.map((c) => `<option value="${esc(c.id)}" ${c.id === val ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>
           <small>${list.length ? 'Sitede sekmenin üstündeki filtrede ve alt kategorinin kendi sayfasında listelenir.' : 'Bu sekmede henüz alt kategori yok.'} <a href="#${TAB_TYPE[f.tab]}/cats" style="color:var(--acid)">Alt kategorileri düzenle →</a></small></div>`;
+      }
+      case 'series': {
+        // Podcast bölümünün serisi (zorunlu); seçenekler güncel seri listesinden
+        const list = D.series || [];
+        return `<div class="fld"><span class="fld-l">${lbl(f)}</span><select data-k="${f.k}">${list.map((s) => `<option value="${esc(s.id)}" ${s.id === val ? 'selected' : ''}>${esc(s.title)}${S.isSample(s) ? ' (Örnek)' : ''}${s.published === false ? ' (Taslak)' : ''}</option>`).join('')}</select>
+          <small>Bölüm sitede bu serinin sayfasında listelenir: /podcast/seri/bolum/. <a href="#series" style="color:var(--acid)">Serileri düzenle →</a></small></div>`;
       }
       case 'color': {
         // Değer metin kutusunda tutulur; boş = otomatik
@@ -765,7 +792,9 @@
     lastHash = location.hash;
     closeSide();
     delete view.dataset.form;
-    $$('#sideNav a').forEach((x) => x.classList.toggle('on', x.dataset.v === (v || 'dashboard')));
+    // Seriler ekranı Podcast bölümünün parçası: kenar çubuğunda Podcast seçili görünür
+    const nav = v === 'series' ? 'podcasts' : v || 'dashboard';
+    $$('#sideNav a').forEach((x) => x.classList.toggle('on', x.dataset.v === nav));
     view.classList.toggle('view-full', v === 'onizleme');
     $('#topActions').innerHTML = '';
     view.style.animation = 'none'; void view.offsetWidth; view.style.animation = '';
@@ -778,6 +807,9 @@
       // Alt kategoriler: #posts/cats düzenleme ekranı, #posts/cat/kimlik süzülmüş liste, #posts/new/kimlik o alt kategoride yeni içerik
       if (a === 'cats' && CAT_TABS[v]) return catsView(v);
       if (a === 'cat' && CAT_TABS[v]) return listView(v, id);
+      // Podcast: bölümler seriye göre süzülür; #series serilerin kendi ekranı
+      if (a === 'seri' && v === 'podcasts') return listView(v, id);
+      if (v === 'series' && a !== 'new' && a !== 'edit') return seriesView();
       if (a === 'new') return formView(v, null, id);
       if (a === 'edit') return formView(v, id);
       return listView(v);
@@ -817,7 +849,7 @@
 
     const colls = [
       { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => (S.postKind(x) === 'video' ? '#/videolar/' : '#/yazilar/') + x.slug, thumb: (x) => (S.postKind(x) === 'video' ? S.ytThumb(x.video, 'maxresdefault') : x.cover), excerpt: (x) => x.excerpt },
-      { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => '#/podcast/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => (x.description || '').replace(/<[^>]+>/g, '') },
+      { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => '#/podcast/' + ((S.seriesOf(data, x) || {}).slug || '') + '/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => (x.description || '').replace(/<[^>]+>/g, '') },
       { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => '#/remixler/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt || x.original || (x.description || '').replace(/<[^>]+>/g, '') },
       { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => '#/sayfa/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt }
     ];
@@ -1023,28 +1055,34 @@
     const T = TYPES[type];
     const C = collOf(type);
     const arr = (D[C] || []).filter((x) => inType(type, x)).sort(byDate);
-    const cats = catsOf(type);
-    const catKey = (x) => (catOf(type, x) ? x.cat : '-');
+    // Süzme: Videolar ve Yazılar'da alt kategori, Podcast'te seri (adreste #podcasts/seri/kimlik)
+    const grp = type === 'podcasts'
+      ? { key: 'series', list: (D.series || []).map((s) => ({ id: s.id, name: s.title })), route: 'seri', all: 'Tüm seriler', title: 'Seri' }
+      : CAT_TABS[type] ? { key: 'cat', list: catsOf(type), route: 'cat', all: 'Tüm alt kategoriler', none: 'Alt kategorisiz', title: 'Alt kategori' } : null;
+    const cats = grp ? grp.list : [];
+    const grpOf = (x) => (grp ? cats.find((c) => c.id === x[grp.key]) : undefined);
+    const catKey = (x) => (grpOf(x) ? x[grp.key] : '-');
     const cur = cats.find((c) => c.id === catId);
     if (catId !== '-' && !cur) catId = '';
-    crumbs(catId ? [`<a href="#${type}">${T.title}</a>`, cur ? esc(cur.name) : 'Alt kategorisiz'] : [T.title]);
+    crumbs(catId ? [`<a href="#${type}">${T.title}</a>`, cur ? esc(cur.name) : grp.none] : [T.title]);
     const newBtns = `<a class="btn btn-acid" href="#${type}/new${cur ? '/' + cur.id : ''}">+ Yeni ${T.one}</a>`;
     const nCat = (k) => arr.filter((x) => catKey(x) === k).length;
+    const grpBtn = type === 'podcasts' ? '<a class="btn btn-ghost" href="#series">◫ Seriler</a>' : CAT_TABS[type] ? `<a class="btn btn-ghost" href="#${type}/cats">▦ Alt Kategoriler</a>` : '';
 
     view.innerHTML = `
       <div class="vh"><div><h1>${T.title}</h1><p>${T.desc}</p></div>
-        <div class="vh-actions">${CAT_TABS[type] ? `<a class="btn btn-ghost" href="#${type}/cats">▦ Alt Kategoriler</a>` : ''}${SECTIONS[type] ? `<a class="btn btn-ghost" href="#${type}/settings">⚙ ${SECTIONS[type].btn}</a>` : ''}${newBtns}</div></div>
+        <div class="vh-actions">${grpBtn}${SECTIONS[type] ? `<a class="btn btn-ghost" href="#${type}/settings">⚙ ${SECTIONS[type].btn}</a>` : ''}${newBtns}</div></div>
       ${arr.length ? `
       <div class="toolbar">
         <label class="search"><input type="search" id="q" placeholder="${T.title} içinde ara..."></label>
         <select id="st" style="width:auto"><option value="">Tümü (${arr.length})</option><option value="1">Yayında (${arr.filter((x) => x.published !== false).length})</option><option value="0">Taslak (${arr.filter((x) => x.published === false).length})</option></select>
-        ${CAT_TABS[type] ? `<select id="ct" style="width:auto" title="Alt kategori"><option value="">Tüm alt kategoriler</option>${cats.map((c) => `<option value="${esc(c.id)}" ${c.id === catId ? 'selected' : ''}>${esc(c.name)} (${nCat(c.id)})</option>`).join('')}<option value="-" ${catId === '-' ? 'selected' : ''}>Alt kategorisiz (${nCat('-')})</option></select>` : ''}
+        ${grp ? `<select id="ct" style="width:auto" title="${grp.title}"><option value="">${grp.all}</option>${cats.map((c) => `<option value="${esc(c.id)}" ${c.id === catId ? 'selected' : ''}>${esc(c.name)} (${nCat(c.id)})</option>`).join('')}${grp.none ? `<option value="-" ${catId === '-' ? 'selected' : ''}>${grp.none} (${nCat('-')})</option>` : ''}</select>` : ''}
       </div>
       <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>Başlık</th><th>Tarih</th><th>Durum</th><th style="text-align:right">İşlemler</th></tr></thead>
         <tbody>${arr.map((x) => {
           const th = T.thumb(x);
-          const cn = catOf(type, x);
+          const cn = grpOf(x);
           const sub = [cn ? `<b class="ccat">${esc(cn.name)}</b>` : '', esc(T.sub(x) || '')].filter(Boolean).join(' · ');
           return `<tr data-id="${x.id}" data-s="${esc((x.title + ' ' + (cn ? cn.name + ' ' : '') + (T.sub(x) || '')).toLocaleLowerCase('tr'))}" data-p="${x.published === false ? 0 : 1}" data-c="${esc(catKey(x))}">
             <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}</div><div class="ts">${sub}</div></div></div></td>
@@ -1068,8 +1106,8 @@
     if (arr.length) {
       $('#q').addEventListener('input', filter);
       $('#st').addEventListener('change', filter);
-      // Alt kategori seçimi adrese yazılır (#posts/cat/kimlik): "+ Yeni" o alt kategoride açılır, geri tuşu çalışır
-      if ($('#ct')) $('#ct').addEventListener('change', (e) => { location.hash = e.target.value ? `#${type}/cat/${e.target.value}` : '#' + type; });
+      // Alt kategori / seri seçimi adrese yazılır (#posts/cat/kimlik, #podcasts/seri/kimlik): "+ Yeni" orada açılır, geri tuşu çalışır
+      if ($('#ct')) $('#ct').addEventListener('change', (e) => { location.hash = e.target.value ? `#${type}/${grp.route}/${e.target.value}` : '#' + type; });
       if (catId) filter();
     }
 
@@ -1114,7 +1152,9 @@
     const T = TYPES[type];
     const C = collOf(type);
     const isNew = !id;
-    if (preCat && !catsOf(type).some((c) => c.id === preCat)) preCat = '';
+    // Ön seçim: Videolar / Yazılar'da alt kategori, Podcast'te seri
+    const preOk = type === 'podcasts' ? (D.series || []).some((s) => s.id === preCat) : catsOf(type).some((c) => c.id === preCat);
+    if (preCat && !preOk) preCat = '';
     let item = isNew ? newItem(C, T.kind, preCat) : (D[C] || []).find((x) => x.id === id);
     if (!item) { toast('İçerik bulunamadı', true); go('#' + type); return; }
     // Video Yazılar'dan (ya da yazı Videolar'dan) açıldıysa kendi bölümüne geç
@@ -1152,6 +1192,7 @@
       if (!v.title) { toast('Başlık zorunludur', true); $('[data-k="title"]', frm).focus(); return; }
       if (T.kind === 'video' && !S.ytId(v.video)) { toast('Video için geçerli bir YouTube bağlantısı girin', true); $('[data-k="video"]', frm).focus(); return; }
       if (T.kind === 'yazi' && !v.cover) { toast('Yazı için bir kapak görseli ekleyin', true); $('[data-k="cover"]', frm).focus(); return; }
+      if (type === 'podcasts' && !v.series) { toast('Bölüm için bir seri seçin (önce ◫ Seriler’den bir seri ekleyin)', true); return; }
       if ('slug' in v) v.slug = uniqueSlug(C, S.slugify(v.slug || v.title), item.id, catSlugs(type));
 
       const inMenu = v.inMenu;
@@ -1198,7 +1239,8 @@
     $$('[data-save]', view).forEach((b) => b.addEventListener('click', save));
     frm.addEventListener('submit', (e) => { e.preventDefault(); save(); });
     const del = $('[data-del]', view);
-    if (del) del.addEventListener('click', () => {
+    if (del && type === 'series') del.addEventListener('click', () => deleteSeries(item).then((ok) => { if (ok) go('#series'); }));
+    else if (del) del.addEventListener('click', () => {
       if (!confirm(`“${item.title}” silinsin mi? Bu işlem geri alınamaz.`)) return;
       D[C] = D[C].filter((x) => x.id !== item.id);
       if (type === 'pages') D.menu = D.menu.filter((m) => !(m.type === 'page' && m.target === item.slug));
@@ -1209,7 +1251,60 @@
   }
 
   /* ======================================================================
-     Liste sayfası ayarları (Videolar, Yazılar, Podcast programı, Remixler)
+     Podcast serileri (#series): vitrindeki sıra, ekle / düzenle / sil
+     ====================================================================== */
+  function seriesView() {
+    view.onclick = null;
+    const T = TYPES.series;
+    crumbs(['<a href="#podcasts">Podcast Bölümleri</a>', T.title]);
+    const list = D.series || [];
+    const nEp = (s) => (D.podcasts || []).filter((x) => x.series === s.id).length;
+    view.innerHTML = `
+      <div class="vh"><div><h1>${T.title}</h1><p>${T.desc}</p></div>
+        <div class="vh-actions"><a class="btn btn-ghost" href="#podcasts">← Bölümler</a><a class="btn btn-ghost" href="#podcasts/settings">⚙ Sayfa Ayarları</a><a class="btn btn-acid" href="#series/new">+ Yeni Seri</a></div></div>
+      ${list.length ? `<div class="slist">${list.map((s, i) => `
+        <div class="srow" data-id="${esc(s.id)}">
+          <span class="th sq" style="${s.cover ? `background-image:url('${esc(s.cover)}')` : ''}"></span>
+          <div class="sinfo"><div class="tn" data-edit>${esc(s.title || '(adsız)')}${S.isSample(s) ? '<span class="smp" title="Örnek seri: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}</div>
+            <div class="ts">${esc([S.SERIES_STATUS[s.status], s.frequency, nEp(s) + ' bölüm'].filter(Boolean).join(' · '))}</div></div>
+          <button class="pill ${s.published === false ? '' : 'on'}" data-toggle title="Durumu değiştir">${s.published === false ? 'Taslak' : 'Yayında'}</button>
+          <div class="acts">
+            <button class="btn btn-sm btn-ghost" data-up title="Vitrinde bir öne al" ${i === 0 ? 'disabled' : ''}>↑</button>
+            <button class="btn btn-sm btn-ghost" data-down title="Vitrinde bir geri al" ${i === list.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="btn btn-sm" data-edit>Düzenle</button>
+            <a class="btn btn-sm btn-ghost" href="index.html#/podcast/${esc(s.slug)}" target="_blank" title="Önizlemede aç">↗</a>
+            <button class="btn btn-sm btn-danger" data-del>Sil</button>
+          </div>
+        </div>`).join('')}</div>` : `
+      <div class="tbl-wrap"><div class="empty"><b>Henüz seri yok</b>İlk serinizi ekleyin; bölümler bir seriye bağlanır.<br><br><div class="empty-acts"><a class="btn btn-acid" href="#series/new">+ Yeni Seri</a></div></div></div>`}`;
+
+    view.onclick = (e) => {
+      const row = e.target.closest('.srow');
+      if (!row) return;
+      const i = list.findIndex((s) => s.id === row.dataset.id);
+      const s = list[i];
+      const swap = (j) => { [list[i], list[j]] = [list[j], list[i]]; persist('Vitrin sırası güncellendi'); seriesView(); };
+      if (e.target.closest('[data-edit]')) location.hash = '#series/edit/' + s.id;
+      else if (e.target.closest('[data-toggle]')) { s.published = s.published === false; persist(s.published ? 'Seri yayına alındı' : 'Seri taslağa alındı'); seriesView(); }
+      else if (e.target.closest('[data-up]') && i > 0) swap(i - 1);
+      else if (e.target.closest('[data-down]') && i < list.length - 1) swap(i + 1);
+      else if (e.target.closest('[data-del]')) deleteSeries(s).then((ok) => { if (ok) seriesView(); });
+    };
+  }
+
+  /** Seri silme: bölümleri varsa hangi seriye taşınacakları sorulur; bölümü olan tek seri silinmez */
+  function deleteSeries(s) {
+    const eps = (D.podcasts || []).filter((x) => x.series === s.id);
+    const others = (D.series || []).filter((x) => x.id !== s.id);
+    const remove = () => { D.series = others; return persist('Seri silindi'); };
+    if (!eps.length) return Promise.resolve(confirm(`“${s.title}” serisi silinsin mi? Bu işlem geri alınamaz.`) && remove());
+    if (!others.length) { toast('Bölümü olan tek seri silinemez. Seriyi gizlemek için Yayında anahtarını kapatabilirsiniz.', true); return Promise.resolve(false); }
+    return dialog({ title: `“${s.title}” serisini sil`, submit: 'Taşı ve sil', fields: [{ k: 'to', t: 'select', l: `${eps.length} bölüm hangi seriye taşınsın?`, options: others.map((o) => [o.id, o.title]) }] })
+      .then((v) => { if (!v || !v.to) return false; eps.forEach((x) => { x.series = v.to; }); return remove(); });
+  }
+
+  /* ======================================================================
+     Liste sayfası ayarları (Videolar, Yazılar, Podcast sayfası, Remixler)
      ====================================================================== */
   function sectionView(type) {
     view.onclick = null;
@@ -2235,14 +2330,19 @@
     const O = window.AKCAN_ORNEK || {};
     const live = (c) => (D[c] || []).filter((x) => x.published !== false && !S.isSample(x));
     const own = ['posts', 'podcasts', 'remixes', 'pages'].reduce((n, c) => n + live(c).length, 0);
-    const nSamples = ['posts', 'podcasts', 'remixes', 'pages'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
+    const nSamples = ['posts', 'podcasts', 'remixes', 'pages', 'series'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
     const noDesc = ['posts', 'podcasts', 'remixes'].flatMap(live).filter((x) => !(x.seoDesc || x.excerpt));
     const noAlt = [...live('posts').filter((p) => S.postKind(p) === 'yazi'), ...live('podcasts'), ...live('remixes'), ...live('pages')].filter((x) => x.cover && !x.coverAlt);
     const badSocial = SOCIALS.filter(([k]) => k !== 'email' && so[k] && !S.isProfile(so[k]) && !(st.socialOff || []).includes(k)).map(([, l]) => l);
     const sampleMail = /ornek\.com$/i.test(so.email || '') && !(st.socialOff || []).includes('email');
-    const pc = st.podcast || {}, rc = st.remixPage || {};
-    const badPlatforms = [['Podcast → Spotify', pc.spotify], ['Podcast → Apple Podcasts', pc.apple], ['Podcast → YouTube', pc.youtube], ['Remixler → SoundCloud', rc.soundcloud], ['Remixler → Mixcloud', rc.mixcloud], ['Remixler → Spotify', rc.spotify], ['Remixler → YouTube', rc.youtube]]
-      .filter(([, u]) => u && !S.isProfile(u)).map(([l]) => l);
+    // Yayına giden kendi serileriniz; örnek ya da yayında olmayan seriye bağlı bölümler yayına gitmez
+    const ownSeries = live('series');
+    const ownSerIds = new Set(ownSeries.map((s) => s.id));
+    const strayEps = live('podcasts').filter((x) => !ownSerIds.has(x.series));
+    const rc = st.remixPage || {};
+    const badSeries = ownSeries.flatMap((s) => [['Spotify', s.spotify], ['Apple Podcasts', s.apple], ['YouTube', s.youtube]].filter(([, u]) => u && !S.isProfile(u)).map(([l]) => `${s.title} → ${l}`));
+    const badPlatforms = [...badSeries, ...[['Remixler → SoundCloud', rc.soundcloud], ['Remixler → Mixcloud', rc.mixcloud], ['Remixler → Spotify', rc.spotify], ['Remixler → YouTube', rc.youtube]]
+      .filter(([, u]) => u && !S.isProfile(u)).map(([l]) => l)];
     const sampleAbout = !!(O.about && a.bio && a.bio === O.about.bio);
     const ownRole = a.role && !(O.about && a.role === O.about.role);
     const picsum = /picsum\.photos/.test(JSON.stringify(Yayin.publicData(D)));
@@ -2255,7 +2355,8 @@
       [sampleAbout || !a.bio ? 'warn' : 'ok', 'Hakkında sayfası', sampleAbout ? 'Hakkında sayfasında örnek metin duruyor. Kendi biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.' : a.bio ? 'Biyografiniz yazılmış.' : 'Biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.', '#about'],
       [ownRole ? 'ok' : 'warn', 'Kısa tanım', ownRole ? `“${esc(a.role)}”` : 'Hakkında’ya kim olduğunuzu anlatan tek cümlelik kendi tanımınızı yazın (ör. “Müzik prodüktörü ve DJ”).', '#about'],
       [badSocial.length ? 'warn' : 'ok', 'Sosyal medya profilleri', badSocial.length ? `${badSocial.join(', ')} bağlantısı bir profil adresi değil (ör. https://www.youtube.com/@kanaliniz); sitede gösterilmez.` : 'Profil bağlantılarınız arama motorlarına “aynı kişi” olarak bildirilir.', '#sosyal'],
-      [badPlatforms.length ? 'warn' : 'ok', 'Podcast ve remix platformları', badPlatforms.length ? `${badPlatforms.join(', ')}: profil adresi değil, sitede gösterilmez. ⚙ Program / Sayfa Ayarları’na programınızın ya da profilinizin tam adresini yazın.` : 'Platform bağlantıları profil adresi.', badPlatforms.some((l) => l.startsWith('Podcast')) ? '#podcasts/settings' : '#remixes/settings'],
+      [badPlatforms.length ? 'warn' : 'ok', 'Podcast ve remix platformları', badPlatforms.length ? `${badPlatforms.join(', ')}: profil adresi değil, sitede gösterilmez. ⚙ Program / Sayfa Ayarları’na programınızın ya da profilinizin tam adresini yazın.` : 'Platform bağlantıları profil adresi.', badSeries.length ? '#series' : '#remixes/settings'],
+      [strayEps.length ? 'warn' : ownSeries.length ? 'ok' : 'info', 'Podcast serileri', strayEps.length ? `${strayEps.length} bölüm yayında olmayan ya da örnek bir seriye bağlı; yayına gitmez. Bölümü kendi serinize taşıyın ya da seriyi yayına alın.` : ownSeries.length ? `${ownSeries.length} seri yayında.` : 'Yayında seri yok: Podcast sayfası boş görünür. ◫ Seriler’den kendi serinizi ekleyin.', '#series'],
       [sampleMail ? 'warn' : 'ok', 'E-posta adresi', sampleMail ? `“${esc(so.email)}” örnek bir adres; kendi adresinizi yazın, silin ya da pasif yapın.` : 'Örnek adres kullanılmıyor.', '#sosyal'],
       [picsum ? 'warn' : 'ok', 'Örnek görseller', picsum ? 'Yayına giden ayarlarda ya da içeriklerde örnek görsel (picsum.photos) var: manşet görseli, podcast kapağı, Hakkında fotoğrafı… Kendi görsellerinizi yükleyin.' : 'Örnek görsel kullanılmıyor.', '#settings'],
       [noDesc.length ? 'warn' : 'ok', 'Özetler', noDesc.length ? `${noDesc.length} içeriğin özeti yok; arama sonucunda metnin başı gösterilir.` : 'Tüm içeriklerin özeti var.', ''],
@@ -2357,15 +2458,19 @@
     });
     const del = $('#delSamples');
     if (del) del.addEventListener('click', () => {
-      if (!confirm('Panel’deki bütün örnek içerikler (videolar, yazılar, bölümler, remixler, sayfalar) silinsin mi? Kendi içerikleriniz değişmez.')) return;
+      if (!confirm('Panel’deki bütün örnek içerikler (videolar, yazılar, podcast serileri ve bölümleri, remixler, sayfalar) silinsin mi? Kendi içerikleriniz değişmez.')) return;
       const ids = new Set(['posts', 'podcasts', 'remixes', 'pages'].flatMap((k) => (D[k] || []).filter(S.isSample).map((x) => x.id)));
       const slugs = new Set((D.pages || []).filter((p) => ids.has(p.id)).map((p) => p.slug));
       ['posts', 'podcasts', 'remixes', 'pages'].forEach((k) => { D[k] = (D[k] || []).filter((x) => !ids.has(x.id)); });
+      // Örnek seriler de silinir; kendi bölümünüzün bağlı olduğu örnek seri kalır
+      const used = new Set((D.podcasts || []).map((x) => x.series));
+      D.series = (D.series || []).filter((s) => !S.isSample(s) || used.has(s.id));
+      const keptSeries = D.series.filter(S.isSample).length;
       // Silinen örnek sayfalara giden menü öğeleri de kalkar (aynı adreste kendi sayfanız varsa kalır)
       const left = new Set((D.pages || []).map((p) => p.slug));
       D.menu = (D.menu || []).filter((m) => !(m.type === 'page' && slugs.has(m.target) && !left.has(m.target)));
       if (D.settings.featured && ids.has(D.settings.featured.id)) D.settings.featured.id = '';
-      if (persist('Örnek içerikler silindi')) publishView();
+      if (persist(keptSeries ? `Örnek içerikler silindi (${keptSeries} örnek seri, kendi bölümleriniz bağlı olduğu için kaldı)` : 'Örnek içerikler silindi')) publishView();
     });
   }
 
