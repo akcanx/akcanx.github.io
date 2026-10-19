@@ -76,8 +76,9 @@ Kendi içeriğinizin dışındaki hiçbir şey yayına gitmez: **taslaklar, örn
 - [ ] **Ayarlar & Tema**: site adı, slogan ve site açıklaması.
 - [ ] **Sosyal Medya**: profil adresleriniz ve e-posta adresiniz; göstermek istemediklerinizi **Pasif** yapın.
 - [ ] **Hakkında**: kendi fotoğrafınız, biyografiniz ve "Kısa tanım".
-- [ ] **Podcast → ⚙ Program Ayarları** ve **Remixler → ⚙ Sayfa Ayarları**: kendi kapaklarınız, açıklamalarınız ve platform profil adresleriniz.
-- [ ] **Videolar / Yazılar / Podcast → ▦ Alt Kategoriler**: alt kategorileri kendi kanallarınıza göre düzenleyin ve kanal bağlantılarını yazın (bkz. [Alt kategoriler](#10-alt-kategoriler)).
+- [ ] **Podcast → ◫ Seriler**: kendi serilerinizi ekleyin (kapak, kısa tanım, tanıtım, platform adresleri); örnek serileri silin ya da taslağa alın.
+- [ ] **Remixler → ⚙ Sayfa Ayarları**: kendi kapağınız, açıklamanız ve platform profil adresleriniz.
+- [ ] **Videolar / Yazılar → ▦ Alt Kategoriler**: alt kategorileri kendi kanallarınıza göre düzenleyin ve kanal bağlantılarını yazın (bkz. [Alt kategoriler](#10-alt-kategoriler)).
 - [ ] İlk içeriğinizi ekleyin (bir video, yazı, podcast bölümü ya da remix).
 - [ ] **Yayın & SEO → Yayın öncesi kontrol listesi**'ndeki uyarıları tek tek giderin.
 - [ ] İsterseniz **Yayın & SEO → Örnek içerikleri sil** ile örnekleri temizleyin.
@@ -158,15 +159,16 @@ Videolar, Yazılar, Podcast, Remixler ve Özel Sayfalar aynı liste düzenini ku
 **Üst kısım**
 
 - Bölümün adı ve açıklaması.
-- **▦ Alt Kategoriler** (Videolar, Yazılar ve Podcast'te): alt kategorileri ekleme, silme ve sıralama ekranı (bkz. [Alt kategoriler](#10-alt-kategoriler)).
-- **⚙ Sayfa / Program Ayarları** (Videolar, Yazılar, Podcast ve Remixler'de): sitedeki liste sayfasının üst bölümü.
+- **▦ Alt Kategoriler** (Videolar ve Yazılar'da): alt kategorileri ekleme, silme ve sıralama ekranı (bkz. [Alt kategoriler](#10-alt-kategoriler)).
+- **◫ Seriler** (Podcast'te): podcast serilerinin ekranı (bkz. [Podcast](#9-podcast)).
+- **⚙ Sayfa Ayarları** (Videolar, Yazılar, Podcast ve Remixler'de): sitedeki liste sayfasının üst bölümü.
 - **+ Yeni …** düğmesi (ör. **+ Yeni Video**, **+ Yeni Yazı**). Liste bir alt kategoriye süzülmüşse yeni içerik o alt kategoride açılır.
 
 **Araç çubuğu**
 
 - **Arama kutusu**: başlıkta, alt kategori adında ve alt bilgide arar.
 - **Durum filtresi**: Tümü / Yayında / Taslak (yanlarında sayılarıyla).
-- **Alt kategori filtresi** (Videolar, Yazılar, Podcast): Tüm alt kategoriler / bir alt kategori / Alt kategorisiz.
+- **Alt kategori filtresi** (Videolar, Yazılar): Tüm alt kategoriler / bir alt kategori / Alt kategorisiz. Podcast'te aynı yerde **seri filtresi** vardır.
 
 **Tablo**
 
@@ -184,7 +186,7 @@ Videolar, Yazılar, Podcast, Remixler ve Özel Sayfalar aynı liste düzenini ku
 
 ## 6. Formlardaki ortak alanlar
 
-Form iki sütundan oluşur: solda içeriğin kendisi, sağda kartlar halinde **Yayın**, **Alt kategori** (videolar, yazılar ve podcast bölümlerinde), **Kapak**, **Görünüm**, **Etiketler**, **Arama & paylaşım** ayarları.
+Form iki sütundan oluşur: solda içeriğin kendisi, sağda kartlar halinde **Yayın**, **Alt kategori** (videolarda ve yazılarda), **Seri** (podcast bölümlerinde), **Kapak**, **Görünüm**, **Etiketler**, **Arama & paylaşım** ayarları.
 
 Formun üstünde **← Listeye dön**, **Görüntüle ↗** (kayıtlı içerikte) ve **Kaydet**; sağ sütunun altında **Kaydet** ve **Bu içeriği sil** vardır.
 
@@ -348,6 +350,36 @@ Her iki bölümün kendi ayarı vardır:
 
 ## 9. Podcast
 
+Podcast sekmesi **serilerden** oluşur. Her serinin kendi kimliği vardır: adı, kısa tanımı, tanıtım metni, kare kapağı, durumu ve platform bağlantıları. Her bölüm bir seriye bağlıdır. Menüden **Podcast**'e tıklayan ziyaretçi bütün serilerin kapaklarını bir vitrinde yan yana görür.
+
+### ◫ Seriler
+
+Panelde **Podcast** listesinin üstündeki **◫ Seriler** düğmesi (adres `#series`).
+
+- Seriler, vitrinde göründükleri sırayla listelenir. Her satırda kapak, ad (örnekse **Örnek** etiketi), durum, yayın sıklığı ve bölüm sayısı bulunur.
+- **↑ ↓**: serinin vitrindeki yerini değiştirir.
+- **Yayında / Taslak**: taslak seri ve bölümleri sitede görünmez.
+- **Düzenle** · **↗** önizlemede aç · **Sil**.
+- **+ Yeni Seri**: yeni bir seri ekler.
+
+**Seri silmek:** Bölümü olmayan seri onaydan sonra silinir. Bölümü varsa panel bölümleri hangi seriye taşıyacağınızı sorar (**Taşı ve sil**). Bölümü olan tek seri silinemez; gizlemek için **Yayında** anahtarını kapatın.
+
+### Seri alanları
+
+| Alan | Açıklama |
+|---|---|
+| **Seri adı** | Zorunlu. Vitrindeki kartta ve seri sayfasında. |
+| **Kısa tanım** | Vitrindeki kartta adın altında tek satır (ör. "Tariflerin arkasındaki insanlar"). |
+| **Tanıtım metni** | Seri sayfasında adın altında: seri neyi anlatıyor, kimler için? |
+| **Fragman** | İsteğe bağlı. MP3 bağlantısıysa seri sayfasında **▶ Fragmanı dinle** düğmesi alttaki oynatıcıda çalar; YouTube, Spotify, SoundCloud ya da Mixcloud bağlantısı gömülü oynatıcı olur. Henüz bölümü olmayan "Yakında" serileri tanıtmak için idealdir. |
+| **Yayın** kartı | **Yayında**, **Durum** (Devam ediyor · Tamamlandı · Yakında), **Yayın sıklığı** (ör. "Her Pazartesi"), **Bağlantı** (`/podcast/baglanti/`). |
+| **Kapak** kartı | Kare kapak ve açıklaması (alt metin). |
+| **Görünüm** | Işık rengi: seri sayfasının üstündeki yumuşak renk. |
+| **Dinleme platformları** | Spotify, Apple Podcasts, YouTube. Programınızın tam adresini yazın (ör. `https://open.spotify.com/show/…`); yalnızca platformun ana adresi (`https://open.spotify.com/`) sitede gösterilmez. |
+| Arama & paylaşım | Ortak alanlar. |
+
+**Durum etiketleri:** "Yakında" ve "Tamamlandı" vitrindeki kapağın köşesinde görünür; "Devam ediyor" etiketsizdir. Durum ve yayın sıklığı seri sayfasının üst etiketinde de yazar (ör. "Podcast · Her Pazartesi · Tamamlandı").
+
 ### Bölüm alanları
 
 | Alan | Açıklama |
@@ -360,29 +392,32 @@ Her iki bölümün kendi ayarı vardır:
 | **Kaynaklar** | Her satıra `Başlık \| Bağlantı`. |
 | **Yayın** kartı | Yayında, Öne çıkar, Tarih, **Bölüm no** (yeni bölümde bir sonraki numara otomatik gelir), **Süre** ("32 dk", "1 sa 5 dk" ya da "45:30"), Bağlantı. |
 | **Kapak** kartı | Kare kapak, alt metin, **kapak görseli kaynağı** (kapağın altında küçük yazıyla görünür). |
-| **Alt kategori** kartı | Bölümün alt kategorisi. Bkz. [Alt kategoriler](#10-alt-kategoriler). |
+| **Seri** kartı | Zorunlu: bölümün bağlı olduğu seri. Yeni bölümde, listede süzdüğünüz seri (yoksa ilk seri) seçili gelir; **Bölüm no** o serinin bir sonraki numarasıdır. Seriyi değiştirirseniz bölümün adresi de değişir. |
 | Görünüm, Etiketler, Arama & paylaşım | Ortak alanlar. |
 
-### ⚙ Program Ayarları (Podcast sayfasının üstü)
+**Bölüm listesi:** üstteki seçim kutusuyla seriye göre süzülür (**Tüm seriler** / bir seri); süzülmüşken **+ Yeni Bölüm** o seride açılır. Satırın alt bilgisinde serinin adı yeşil yazıyla görünür.
 
-Program adı, üst etiket (ör. "Podcast · Her Pazartesi"), açıklama, alt not, buton metni (varsayılan "Oku + Dinle"; en son bölüme götürür), kare program kapağı, **Spotify / Apple Podcasts / YouTube** bağlantıları ve ışık rengi.
+### ⚙ Sayfa Ayarları (vitrinin üstü)
 
-> Platform alanlarına programınızın tam adresini yazın (ör. `https://open.spotify.com/show/…`). Boş bıraktığınız ya da yalnızca platformun ana adresini (`https://open.spotify.com/`) yazdığınız platform sitede görünmez.
+Podcast sekmesinin başlığı (varsayılan "Podcast"), üst etiketi, tanıtım metni ve ışık rengi. Serilerin kapakları, tanıtımları ve platform bağlantıları **◫ Seriler**'dedir.
 
 ### Sitede
 
-- **Podcast sayfası**: kare kapak, üst etiket, program adı, açıklama, "Dinle: Spotify · Apple Podcasts · YouTube", alt not, "→ Oku + Dinle". Altında **Bölümler** listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, alt kategori, tarih ve süre. Oynat düğmesi bölümü sayfadan ayrılmadan çalar. "Bölümler" yazısının yanında alt kategori düğmeleri (**Hepsi · Müzik · …**) durur; bkz. [Alt kategoriler](#10-alt-kategoriler).
-- **Bölüm sayfası**: tonlu üst bölüm, çerçeveli kapak ve kaynağı, başlık, italik özet, tarih · süre · kelime sayısı. Başlığın üstünde program adı ve alt kategori bağlantısı. Altında **ses çubuğu**: kaydırınca menünün altına yapışır. Sonra gömülü oynatıcı, bölüm metni, etiketler, kaynaklar, ilgili içerik, önceki/sonraki.
+- **Vitrin** (`/podcast/`): üst etiket, büyük başlık, tanıtım metni ve "3 seri · 24 bölüm" bilgisi. Altında serilerin kare kapakları yan yana: masaüstünde ve tablette üç, telefonda iki sütun. Her kartta ad, kısa tanım ve yeşil "12 bölüm · Her Pazartesi" satırı; kapağın köşesinde "Yakında" / "Tamamlandı". Karta tıklanınca seri sayfası açılır. En altta **Son bölümler**: bütün serilerden en yeni 6 bölüm, sayfadan ayrılmadan dinlenir. Yayında seri yoksa "Henüz yayınlanmış seri yok." yazar.
+- **Seri sayfası** (`/podcast/seri/`): solda kare kapak; sağda üst etiket, ad, tanıtım metni, "Dinle: Spotify · Apple Podcasts · YouTube", fragman ve "→ Son bölümü dinle". Altında serinin **Bölümler** listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, tarih ve süre.
+- **Bölüm sayfası** (`/podcast/seri/bolum/`): tonlu üst bölüm, çerçeveli kapak ve kaynağı, başlık, italik özet, tarih · süre · kelime sayısı. Başlığın üstünde "Podcast · Seri adı · Bölüm 6" bağlantıları. Altında **ses çubuğu**: kaydırınca menünün altına yapışır. Sonra gömülü oynatıcı, bölüm metni, etiketler, kaynaklar, ilgili içerik ve aynı serinin içinde önceki/sonraki.
+
+> Sitenin eski adresleri (`/podcast/bolum-adi/`, eski alt kategori sayfaları) kendiliğinden yeni adrese ya da vitrine yönlenir.
 
 ---
 
 ## 10. Alt kategoriler
 
-Farklı kanallarda ürettiğiniz içerikleri (ör. bir **yemek hikâyeleri** kanalı, **gündemi eleştirdiğiniz** ayrı bir kanal) aynı sekmede ama kendi bölümünde paylaşmak için. **Videolar**, **Yazılar** ve **Podcast** sekmelerinin her birinin kendi alt kategori listesi vardır. Başlangıçta üçünde de **Müzik · Gıda · Gündem** hazır gelir; adlarını değiştirebilir, silebilir, yenilerini ekleyebilirsiniz.
+Farklı kanallarda ürettiğiniz içerikleri (ör. bir **yemek hikâyeleri** kanalı, **gündemi eleştirdiğiniz** ayrı bir kanal) aynı sekmede ama kendi bölümünde paylaşmak için. **Videolar** ve **Yazılar** sekmelerinin her birinin kendi alt kategori listesi vardır. Başlangıçta ikisinde de **Müzik · Gıda · Gündem** hazır gelir; adlarını değiştirebilir, silebilir, yenilerini ekleyebilirsiniz.
 
 ### Panelde: ▦ Alt Kategoriler
 
-**Videolar**, **Yazılar** ya da **Podcast** listesinin üstündeki **▦ Alt Kategoriler** düğmesine basın. (Aynı ekrana sekmenin **⚙ Sayfa / Program Ayarları**'ndaki "Alt kategoriler" kartından da gidilir.)
+**Videolar** ya da **Yazılar** listesinin üstündeki **▦ Alt Kategoriler** düğmesine basın. (Aynı ekrana sekmenin **⚙ Sayfa Ayarları**'ndaki "Alt kategoriler" kartından da gidilir.)
 
 | İşlem | Nasıl |
 |---|---|
@@ -406,13 +441,13 @@ Ekranın üstündeki **Sitede görünüşü** kartı düğmelerin sitedeki sıra
 
 ### İçeriği bir alt kategoriye koymak
 
-- Her video, yazı ve podcast bölümü formunun sağ sütununda **Alt kategori** kartı vardır: **— Yok —** ya da sekmenin alt kategorilerinden biri. Bir içerik tek bir alt kategoride olur; etiketler ayrıca kullanılmaya devam eder.
+- Her video ve yazı formunun sağ sütununda **Alt kategori** kartı vardır: **— Yok —** ya da sekmenin alt kategorilerinden biri. Bir içerik tek bir alt kategoride olur; etiketler ayrıca kullanılmaya devam eder.
 - Liste süzülmüşken (ör. Gıda) basılan **+ Yeni Yazı**, yeni yazıyı doğrudan o alt kategoride açar.
 - Listelerdeki **Tüm alt kategoriler** kutusu tabloyu bir alt kategoriye ya da **Alt kategorisiz** içeriklere süzer; alt kategorinin adı başlığın altında yeşil yazılır.
 
 ### Sitede
 
-- **Düğmeler**: Videolar ve Yazılar'da başlığın altında, Podcast'te **Bölümler** yazısının yanında **Hepsi · Müzik · Gıda · Gündem** (yanlarında içerik sayıları). Mobilde tek satırdır, yana kaydırılır.
+- **Düğmeler**: Videolar ve Yazılar'da başlığın altında **Hepsi · Müzik · Gıda · Gündem** (yanlarında içerik sayıları). Mobilde tek satırdır, yana kaydırılır.
 - **Alt kategori sayfası** (ör. `/yazilar/gida/`): üstte sekmeye dönüş bağlantısı (**← Yazılar**), büyük başlık, açıklama ve kanal bağlantısı; altında yalnızca o alt kategorinin içerikleri. Etkin düğme vurgulanır.
 - **Liste satırlarında** ve ana sayfa akışında alt kategorinin adı etiketlerin önünde, vurgu renginde görünür.
 - **İçerik sayfasında** konum satırı: **Yazılar › Gıda › etiketler**; alt kategoriye tıklanınca o sayfa açılır.
@@ -682,7 +717,8 @@ Panel sitenizi tarar ve her maddeyi ✓ (tamam), ! (uyarı) ya da i (bilgi) olar
 - Hakkında sayfası: örnek metin duruyor mu?
 - Kısa tanım.
 - Sosyal medya profilleri: aktif hesaplarda profil olmayan adresler var mı?
-- Podcast ve remix platformları: Program / Sayfa Ayarları'nda yalnızca platformun ana adresi (ör. `https://open.spotify.com/`) yazılı mı? Bunlar sitede gösterilmez.
+- Podcast ve remix platformları: serilerde ya da Remixler → Sayfa Ayarları'nda yalnızca platformun ana adresi (ör. `https://open.spotify.com/`) yazılı mı? Bunlar sitede gösterilmez.
+- Podcast serileri: yayında kendi seriniz var mı? Örnek ya da yayında olmayan bir seriye bağlı bölümleriniz yayına gitmez.
 - E-posta adresi: örnek adres (`@ornek.com`) aktif mi?
 - Örnek görseller: yayına giden ayarlarda ya da içeriklerde picsum.photos görseli var mı (manşet görseli, podcast/remix kapağı, Hakkında fotoğrafı…)?
 - Özetler: özeti olmayan içerik sayısı.
@@ -732,7 +768,7 @@ Kodla yapılamayan ama sıralamayı en çok etkileyen işler:
 
 ## 20. Örnek içerikler
 
-Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu, 7 blog yazısı, 6 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu, 7 blog yazısı, 3 podcast serisi (Frekans, Sofra ve "Yakında" durumundaki Satır Arası) ile 9 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
 
 - Örnek videolar, yazılar ve bölümler **Müzik** alt kategorisindedir. **Gıda** (bir yemek hikâyesi) ve **Gündem** (haber paylaşmadan önce sorulacak sorular) alt kategorilerinde birer örnek yazı vardır; rehber yazısı alt kategorisizdir.
 
@@ -757,8 +793,8 @@ Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu
 | Ana sayfa | `/` |
 | Videolar listesi / bir video | `/videolar/` · `/videolar/video-adi/` |
 | Yazılar listesi / bir yazı | `/yazilar/` · `/yazilar/yazi-adi/` |
-| Podcast / bir bölüm | `/podcast/` · `/podcast/bolum-adi/` |
-| Alt kategori sayfası | `/videolar/gundem/` · `/yazilar/gida/` · `/podcast/muzik/` |
+| Podcast vitrini / bir seri / bir bölüm | `/podcast/` · `/podcast/seri-adi/` · `/podcast/seri-adi/bolum-adi/` |
+| Alt kategori sayfası | `/videolar/gundem/` · `/yazilar/gida/` |
 | Remixler / bir remix | `/remixler/` · `/remixler/remix-adi/` |
 | Hakkında | `/hakkinda/` |
 | Özel sayfa | `/sayfa/sayfa-adi/` |
@@ -831,7 +867,7 @@ Bunların hiçbiri için bir şey yapmanız gerekmez; site her yayında bunları
 - **Her sayfaya özel** başlık, açıklama, kanonik adres ve WhatsApp / X / LinkedIn paylaşım kartı.
 - **Yapılandırılmış veri (schema.org)**:
   - kişi (sosyal profillerinizle), site, blog yazısı, video (Google video sonuçları için);
-  - podcast programı ve bölümü, müzik kaydı (remix), konum satırı, profil sayfası;
+  - podcast serisi ve bölümü (bölüm kendi serisine bağlı), müzik kaydı (remix), konum satırı, profil sayfası;
   - yazılardaki kaynaklar.
 - **`sitemap.xml`**: görsellerle birlikte site haritası (içeriği olan alt kategori sayfaları dahil).
 - **`robots.txt`**: arama motorlarına ve yapay zekâ arama botlarına izin; "Yapay zekâ eğitimine izin ver" kapalıysa eğitim botlarına yasak.

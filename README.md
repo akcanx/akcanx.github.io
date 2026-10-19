@@ -40,16 +40,17 @@
   - Menünün altında konum satırı (Videolar ya da Yazılar › Alt kategori › Etiket …) ile aynı sekmedeki önceki / sonraki bağlantıları, üstte okuma ilerleme çubuğu.
   - Sayfa tonu: kapak görselinden ya da videodan otomatik seçilir veya panelden belirlenir.
 
-### Alt kategoriler (Videolar, Yazılar, Podcast)
+### Alt kategoriler (Videolar, Yazılar)
 - Her sekmenin kendi alt kategori listesi var; başlangıçta **Müzik · Gıda · Gündem**. Farklı kanallarda üretilen içerikler (yemek hikâyeleri, gündem…) aynı sekmede kendi bölümünde toplanır.
-- Sekmenin üstünde **Hepsi · Müzik · Gıda · Gündem** düğmeleri (Podcast'te "Bölümler" satırında); mobilde tek satır, yana kaydırılır.
-- Her alt kategorinin kendi sayfası: `/yazilar/gida/`, `/videolar/gundem/`, `/podcast/muzik/` — ad, açıklama, **kanal bağlantısı** ("YouTube kanalına git ↗") ve yalnızca o alt kategorinin içerikleri.
+- Sekmenin üstünde **Hepsi · Müzik · Gıda · Gündem** düğmeleri; mobilde tek satır, yana kaydırılır.
+- Her alt kategorinin kendi sayfası: `/yazilar/gida/`, `/videolar/gundem/` — ad, açıklama, **kanal bağlantısı** ("YouTube kanalına git ↗") ve yalnızca o alt kategorinin içerikleri.
 - Liste satırlarında ve ana sayfa akışında alt kategori adı vurgulu; içerik sayfasının konum satırında bağlantılı.
 - Yayında içeriği olmayan alt kategoriler gizlenir. Alt kategori sayfaları site haritasına, aramaya, `llms.txt`'ye ve yapılandırılmış veriye (konum satırı, kanal bağlantısı) girer.
 
 ### Podcast
-- barisozcan.com/podcast düzeni: kare program kapağı, program adı, açıklama, Spotify / Apple Podcasts / YouTube bağlantıları ve "Oku + Dinle".
-- Bölüm listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, alt kategori, tarih ve süre.
+- **Seri vitrini** (`/podcast/`, barisozcan.com/sesli-kitaplar düzeni): tanıtım, "3 seri · 24 bölüm" bilgisi ve serilerin kare kapakları yan yana (masaüstünde 3, telefonda 2 sütun); kapakta "Yakında" / "Tamamlandı" etiketi; altında bütün serilerden son bölümler.
+- **Seri sayfası** (`/podcast/seri-adi/`, barisozcan.com/podcast düzeni): kare kapak, üst etiket (sıklık · durum), ad, tanıtım metni, Spotify / Apple Podcasts / YouTube bağlantıları, fragman (MP3 ya da gömülü) ve serinin bölümleri.
+- Bölüm listesi: yuvarlak oynat düğmesi, bölüm numarası, başlık, seri, tarih ve süre.
 - **Bölüm sayfası:** çerçeveli kapak ve kaynağı, büyük başlık, italik özet. Ses çubuğu sayfa kaydırılınca menünün altına yapışır. Bölüm metni görseller ve alıntılarla zenginleştirilebilir.
 - Sitenin altında sabit ses oynatıcı: 10 sn geri/ileri, hız (`1x`–`2x`), ses seviyesi, sürüklenebilir zaman çubuğu, klavye kısayolları (Boşluk, ← →).
 
@@ -76,13 +77,13 @@
   - **+ Yeni Video**: YouTube bağlantısı zorunlu (başlık otomatik gelir). **+ Yeni Yazı**: kapak görseli zorunlu.
   - Her bölümün kendi **⚙ Sayfa Ayarları**: sitedeki sekmenin başlığı, açıklaması ve ışık rengi.
   - İkisi de aynı veride (`posts`) durur; içeriğin türü hangi sekmede görüneceğini belirler.
-- **▦ Alt Kategoriler** (Videolar, Yazılar, Podcast): alt kategori ekleme, silme (içerikler silinmez, alt kategorisiz kalır), ↑↓ sıralama; ad, bağlantı, açıklama ve kanal bağlantısı. Formlarda **Alt kategori** seçimi, listelerde alt kategori filtresi; süzülmüş listede **+ Yeni** o alt kategoride açılır. Alt kategori bağlantıları aynı sekmedeki içeriklerle çakışamaz.
+- **▦ Alt Kategoriler** (Videolar, Yazılar): alt kategori ekleme, silme (içerikler silinmez, alt kategorisiz kalır), ↑↓ sıralama; ad, bağlantı, açıklama ve kanal bağlantısı. Formlarda **Alt kategori** seçimi, listelerde alt kategori filtresi; süzülmüş listede **+ Yeni** o alt kategoride açılır. Alt kategori bağlantıları aynı sekmedeki içeriklerle çakışamaz.
 - **Zengin metin editörü:** başlıklar, kalın/italik, listeler, bağlantılar, **▣ Görsel** (yerleşim seçmeli pencere; eklenen görsele tıklayınca düzenlenir), **❝ Kaynaklı** alıntı, YouTube gömme ve HTML kaynak düzenleme.
-- **Podcast:** bölümler (özet, MP3, gömülü oynatıcı, bölüm metni, kaynaklar, kapak kaynağı) ve **⚙ Program Ayarları** (kapak, ad, açıklama, platform bağlantıları).
+- **Podcast:** **◫ Seriler** ekranı (vitrindeki sıra ↑↓, Yayında/Taslak, bölümleri başka seriye taşıyarak silme) ve seri formu (ad, kısa tanım, tanıtım metni, kare kapak, ışık rengi, yayın sıklığı, durum: Devam ediyor / Tamamlandı / Yakında, fragman, Spotify / Apple Podcasts / YouTube); bölümler (seri seçimi, özet, MP3, gömülü oynatıcı, bölüm metni, kaynaklar, kapak kaynağı), seriye göre süzme; **⚙ Sayfa Ayarları** (vitrinin başlığı, üst etiketi, tanıtım metni).
 - **Remixler:** remixler (orijinal parça, özet, MP3, gömülü oynatıcı, remixin hikâyesi, notlar ve kaynaklar, süre, tür, BPM, kapak kaynağı, sayfa tonu) ve **⚙ Sayfa Ayarları** (kapak, ad, üst etiket, açıklama, SoundCloud / Mixcloud / Spotify / YouTube bağlantıları, ışık rengi).
 - **Özel Sayfalar, Menü Yönetimi** (sürükle-bırak sıralama), **Öne Çıkan (Hero)** (manuel / otomatik / özel manşet, canlı önizleme, üst gradyan ayarı), **Hakkında** (fotoğraf üstü yazılar, vurgulu başlık, kısa tanım, vurgu rengi), **Sosyal Medya** (her hesabın simgesi, adresi ve Aktif / Pasif anahtarı, anlık "sitede görünür mü?" notu, üst menüde gösterme), **Ayarlar & Tema** (site kimliği, renk, şifre).
 - **Yayın & SEO:** GitHub bağlantısı, her kaydetmede otomatik yayın, yayın durumu, site adresi, varsayılan paylaşım görseli, Google / Bing doğrulama kodları, yapay zekâ eğitimi izni, yayın öncesi kontrol listesi ve site dışında yapılacaklar.
-- Her yazı, video, bölüm, remix ve sayfada **Arama & paylaşım** kartı (SEO başlığı, SEO açıklaması, paylaşım görseli) ve kapak görseli için **alt metin** alanı. Podcast bölümleri ve remixler de okunur adresle açılır (`/podcast/bolum-adi/`).
+- Her yazı, video, bölüm, remix ve sayfada **Arama & paylaşım** kartı (SEO başlığı, SEO açıklaması, paylaşım görseli) ve kapak görseli için **alt metin** alanı. Podcast bölümleri ve remixler de okunur adresle açılır (`/podcast/seri-adi/bolum-adi/`).
 - **Yedekleme:** `.json` olarak dışa/içe aktarma, **Örnek İçerikleri Ekle**, fabrika ayarlarına dönüş.
 - Mobilde tam uyumlu: açılır yan menü, kart görünümlü listeler, alttan açılan pencereler.
 
@@ -92,7 +93,7 @@
 
 Site ilk açıldığında kullanımı öğrenmek için örnek içeriklerle gelir:
 
-- 12 YouTube videosu, 7 blog yazısı, 6 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+- 12 YouTube videosu, 7 blog yazısı, 3 podcast serisi (biri "Yakında", fragmanlı) ve 9 podcast bölümü, 6 remix, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
 - Örneklerin çoğu **Müzik** alt kategorisinde; **Gıda** ve **Gündem** alt kategorilerinde birer örnek yazı var.
 - **"Bu Site Nasıl Kullanılır?"** rehber yazısı, her özelliğin panelde nasıl yapıldığını anlatırken o özelliği kendi üzerinde gösterir.
 - **Örnek içerikler hiçbir zaman yayına gönderilmez**; yalnızca panelde (başlığın yanında **Örnek** etiketiyle) ve bilgisayarınızdaki önizlemede görünür. Sitenin ilk sürümünden kalan örnekler de başlıklarından tanınır ve yayına gönderilmez.
@@ -118,7 +119,7 @@ Derleme aracı veya sunucu gerekmez; saf **HTML5, CSS3 ve JavaScript**.
 
 - Panelde girdiğiniz içerik tarayıcının `localStorage` alanında tutulur; tarayıcı verileri temizlenirse panel içeriği silinir — **düzenli olarak yedek alın** (Panel → Yedekleme).
 - Yayındaki içeriğin bir kopyası GitHub deposundaki `icerik` dalında da durur (`veri/site.json` + `veri/gorsel/`). Taslaklar oraya gönderilmez; yalnızca panelde ve yedek dosyasında bulunur.
-- Eski sürümden gelen veriler otomatik dönüştürülür: ayrı tutulan videolar Yazılar'a taşınır, podcast bölümlerine ve remixlere okunur adres verilir; eski `#/yazi/…`, `#/bolum/…`, `#/remix/…`, `#/video/…` bağlantıları yeni adreslere yönlenir.
+- Eski sürümden gelen veriler otomatik dönüştürülür: ayrı tutulan videolar Yazılar'a taşınır, podcast bölümlerine ve remixlere okunur adres verilir, tek podcast programı ilk seriye dönüşür; eski `#/yazi/…`, `#/bolum/…`, `#/remix/…`, `#/video/…` bağlantıları yeni adreslere yönlenir.
 
 ---
 
@@ -154,7 +155,7 @@ akcanakdag.com/
 
 Yayındaki site, Google'ın ve ChatGPT, Claude, Perplexity gibi yapay zekâ asistanlarının okuyabileceği şekilde hazırlanır:
 
-- **Her içeriğin kendi adresi var:** `/videolar/video-adi/`, `/yazilar/yazi-adi/`, `/podcast/bolum-adi/`, `/remixler/remix-adi/`, `/hakkinda/`, `/sayfa/iletisim/`.
+- **Her içeriğin kendi adresi var:** `/videolar/video-adi/`, `/yazilar/yazi-adi/`, `/podcast/` (seri vitrini), `/podcast/seri-adi/`, `/podcast/seri-adi/bolum-adi/`, `/remixler/remix-adi/`, `/hakkinda/`, `/sayfa/iletisim/`.
 - **Her sayfa hazır HTML olarak gelir:** içerik JavaScript çalışmadan da okunur (yapay zekâ tarayıcıları JavaScript çalıştırmaz). Ziyaretçi için site yine tek sayfa gibi akar; sayfa değişince ses oynatıcı susmaz.
 - **Her sayfaya özel** başlık, açıklama, kanonik adres, Open Graph / X paylaşım kartı (WhatsApp, X, LinkedIn önizlemesi).
 - **Yapılandırılmış veri (schema.org):** `Person` (sosyal profillerinizle), `WebSite`, `BlogPosting`, `VideoObject` (Google video sonuçları), `PodcastSeries` / `PodcastEpisode`, `MusicRecording`, `BreadcrumbList`, `ProfilePage`; yazılardaki kaynaklar `citation` olarak.
