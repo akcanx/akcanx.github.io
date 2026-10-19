@@ -53,6 +53,18 @@
     return cut.slice(0, Math.max(cut.lastIndexOf(' '), Math.floor(n * 0.6))).replace(/[\s,.;:–-]+$/, '') + '…';
   }
 
+  /** Arama sonucu açıklaması: 120–160 karakter arasındaki son cümle sonunda biter; yoksa kelime sınırında (clip) */
+  function snippet(s) {
+    s = String(s || '').replace(/\s+/g, ' ').trim();
+    if (s.length <= 160) return s;
+    const ends = [...s.slice(0, 160).matchAll(/[.!?…](?=\s)/g)].map((m) => m.index).filter((i) => i >= 120);
+    return ends.length ? s.slice(0, ends[ends.length - 1] + 1) : clip(s, 160);
+  }
+
+  /** Ara başlığın metninden çapa: etiketler atılır, HTML varlıkları çözülür ("<b>Ses</b> &amp; Hafıza" → "ses-hafiza") */
+  const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", nbsp: ' ' };
+  const anchorOf = (inner) => S.slugify(String(inner).replace(/<[^>]*>/g, '').replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (m, k) => ENT[k]));
+
   const isProfile = S.isProfile;
 
   /* ---------- Görsel boyutları (sayfa kayması, CLS) ---------- */
@@ -185,7 +197,16 @@
     /** Zengin metin içeriği: site içi bağlantılar ve görsel yolları düzeltilir, görseller tembel yüklenir */
     function fixHtml(html) {
       if (!html) return '';
+      // Ara başlıklara kalıcı çapa (Google "şuraya atla", yapay zekâ alıntıları doğrudan bölüme gider); var olan id korunur
+      const seen = {};
       return String(html)
+        .replace(/<h([23])(\s[^>]*)?>([\s\S]*?)<\/h\1>/g, (m, n, attrs, inner) => {
+          if (/\sid=/.test(attrs || '')) return m;
+          const a = anchorOf(inner);
+          if (!a) return m;
+          seen[a] = (seen[a] || 0) + 1;
+          return `<h${n} id="${seen[a] > 1 ? a + '-' + seen[a] : a}"${attrs || ''}>${inner}</h${n}>`;
+        })
         .replace(/(\shref=")(#\/[^"]*)"/g, (m, a, u) => a + link(u) + '"')
         .replace(/(\s(?:src|href)=")(veri\/[^"]*)"/g, (m, a, u) => a + asset(u) + '"')
         .replace(/<img(?![^>]*\sloading=)/g, '<img loading="lazy" decoding="async"');
@@ -684,9 +705,7 @@
         : p.cover ? `<figure class="phero-cover rise d1"><img src="${esc(asset(p.cover))}" alt="${esc(alt)}" fetchpriority="high"></figure>` : '';
 
       const url = pageUrl(route);
-      const desc = p.seoDesc || p.excerpt || S.strip(p.content);
-      // Paylaşım görseli: panel 1280×720 karenin varlığını doğruladıysa (ytMax) o, yoksa her videoda bulunan kare
-      const image = asset(p.ogImage) || (yt ? S.ytThumb(p.video, p.ytMax ? 'maxresdefault' : 'hqdefault') : asset(p.cover));
+      const sb = seoBase('posts', p), desc = sb.desc, image = sb.image;
       const schema = [{
         '@type': 'BlogPosting', '@id': url + '#yazi', mainEntityOfPage: url, url, headline: clip(p.title, 110), description: clip(desc, 300),
         image: abs(image), datePublished: isoDate(p.date), dateModified: isoDate(p.updated || p.date), inLanguage: 'tr-TR',
@@ -702,7 +721,7 @@
       }
 
       return {
-        title: p.seoTitle || `${p.title} — ${st.siteName}`, name: p.title, desc, image, imageAlt: alt, ogType: 'article',
+        title: sb.title, name: p.title, desc, image, imageAlt: alt, ogType: 'article',
         published: p.date, modified: p.updated || p.date, tags: p.tags, ctx, schema,
         crumbs: crumbs([[postsTitle, tab.route], ...(c ? [[c.name, catRoute(kind, c)]] : []), [p.title, route]]),
         html: `<article class="post tinted tinted-full" style="--tint:${esc(p.tint || '#2F4A66')}">
@@ -844,8 +863,7 @@
       // Oynatıcı çalarken yalnızca .ic içindeki simgeyi değiştirir (oynat ↔ duraklat)
       const trailerBtn = trailerAudio(s) ? `<button class="readlink trailer rise d3" data-play="seri:${esc(s.id)}"><span class="ic">${ICON.play}</span>Fragmanı dinle</button>` : '';
       return {
-        title: s.seoTitle || `${s.title} — ${name} — ${st.siteName}`, name: s.title, desc: s.seoDesc || [s.tagline, s.description].filter(Boolean).join(' — '),
-        image: asset(s.ogImage) || asset(s.cover), imageAlt: s.coverAlt || s.title, ogType: 'website',
+        ...seoFields('series', s), name: s.title, imageAlt: s.coverAlt || s.title, ogType: 'website',
         modified: list[0] && list[0].date, noindex: !list.length, crumbs: crumbs([[name, 'podcast'], [s.title, route]]),
         ctx: { crail: [{ label: name, href: href('podcast') }, { label: s.title, href: href(route) }] },
         schema: [seriesNode(s)],
@@ -879,10 +897,9 @@
         tint: x.tint, tintSrc: cover, readbar: true
       };
       const url = pageUrl(route);
-      const desc = x.seoDesc || x.excerpt || S.strip(x.description);
-      const image = asset(x.ogImage) || cover || asset(s.cover);
+      const sb = seoBase('podcasts', x), desc = sb.desc, image = sb.image;
       return {
-        title: x.seoTitle || `${x.title} — ${s.title}`, name: x.title, desc, image, imageAlt: alt, ogType: 'article',
+        title: sb.title, name: x.title, desc, image, imageAlt: alt, ogType: 'article',
         published: x.date, modified: x.updated || x.date, tags: x.tags, ctx,
         crumbs: crumbs([[name, 'podcast'], [s.title, sRoute], [x.title, route]]),
         schema: [{
@@ -964,9 +981,9 @@
         ? `<div class="buy rise d3">${shops.map(([n, u], i) => `<a class="buybtn${i ? '' : ' primary'}" href="${esc(u)}" target="_blank" rel="noopener">${i ? esc(n) : 'Satın al · ' + esc(n)}</a>`).join('')}</div>`
         : '<p class="pnote rise d3">Yakında satışta.</p>';
       const others = bookList().filter((x) => x.id !== b.id);
-      const desc = b.seoDesc || [b.tagline, S.strip(b.description)].filter(Boolean).join(' — ');
+      const sb = seoBase('books', b), desc = sb.desc;
       return {
-        title: b.seoTitle || `${b.title} — ${st.siteName}`, name: b.title, desc, image: asset(b.ogImage) || cover, imageAlt: b.coverAlt || b.title, ogType: 'book',
+        title: sb.title, name: b.title, desc, image: sb.image, imageAlt: b.coverAlt || b.title, ogType: 'book',
         published: b.date, modified: b.updated || b.date, tags: b.tags, isbn: b.isbn,
         ctx: { crail: [{ label: name, href: href('kitaplar') }, { label: b.title, href: href(route) }], tint: b.tint, tintSrc: cover },
         crumbs: crumbs([[name, 'kitaplar'], [b.title, route]]),
@@ -1044,12 +1061,11 @@
         tint: x.tint, tintSrc: cover, readbar: true
       };
       const url = pageUrl(route);
-      const desc = x.seoDesc || x.excerpt || [x.original, S.strip(x.description)].filter(Boolean).join(' — ');
-      const image = asset(x.ogImage) || cover || asset(rc.cover);
+      const sb = seoBase('remixes', x), desc = sb.desc, image = sb.image;
       // Özet yoksa orijinal parça başlığın altında italik görünür; varsa bilgi satırına geçer
       const lede = x.excerpt || x.original;
       return {
-        title: x.seoTitle || `${x.title} — ${st.siteName}`, name: x.title, desc, image, imageAlt: alt, ogType: 'music.song',
+        title: sb.title, name: x.title, desc, image, imageAlt: alt, ogType: 'music.song',
         published: x.date, modified: x.updated || x.date, tags: x.tags, ctx,
         crumbs: crumbs([[name, 'remixler'], [x.title, route]]),
         schema: [{
@@ -1106,8 +1122,8 @@
       const route = 'sayfa/' + p.slug;
       const cover = asset(p.cover);
       return {
-        title: p.seoTitle || `${p.title} — ${st.siteName}`, name: p.title, desc: p.seoDesc || p.excerpt || S.strip(p.content),
-        image: asset(p.ogImage) || cover, imageAlt: p.coverAlt || p.title, ogType: 'website', modified: p.updated,
+        ...seoFields('pages', p), name: p.title,
+        imageAlt: p.coverAlt || p.title, ogType: 'website', modified: p.updated,
         crumbs: crumbs([[p.title, route]]),
         schema: [{ '@type': 'WebPage', '@id': pageUrl(route), url: pageUrl(route), name: p.title, description: clip(p.seoDesc || p.excerpt || S.strip(p.content), 300), inLanguage: 'tr-TR', isPartOf: { '@id': homeUrl() + '#site' } }],
         html: `<article class="article"><div class="wrap">
@@ -1125,6 +1141,64 @@
         status: 404, title: 'Bulunamadı — ' + st.siteName, name: 'Sayfa bulunamadı', desc: 'Aradığınız sayfa burada değil.',
         html: `<section class="nf"><div class="wrap"><h1>404</h1><p>Aradığınız sayfa burada değil.</p><a class="readlink" href="${href('')}"><span class="arr">←</span> Ana sayfaya dön</a></div></section>`
       };
+    }
+
+    /* ---------- Arama sonucu: başlık, açıklama, adres, paylaşım görseli (sayfalar ve panel önizlemesi aynı kaynaktan) ---------- */
+    // Ham değerler: sayfa fonksiyonları da bunları kullanır; son biçim finishTitle / finishDesc ile verilir
+    function seoBase(col, x) {
+      const slugged = { ...x, slug: x.slug || S.slugify(x.title || '') };
+      const title = x.title || '';
+      switch (col) {
+        case 'posts': {
+          const yt = S.postKind(x) === 'video' ? S.ytId(x.video) : '';
+          return {
+            route: postRoute(slugged), title: x.seoTitle || `${title} — ${st.siteName}`, desc: x.seoDesc || x.excerpt || S.strip(x.content),
+            // Paylaşım görseli: panel 1280×720 karenin varlığını doğruladıysa (ytMax) o, yoksa her videoda bulunan kare
+            image: asset(x.ogImage) || (yt ? S.ytThumb(x.video, x.ytMax ? 'maxresdefault' : 'hqdefault') : asset(x.cover))
+          };
+        }
+        case 'series':
+          return {
+            route: seriesRoute(slugged), title: x.seoTitle || `${title} — ${podName()} — ${st.siteName}`,
+            desc: x.seoDesc || [x.tagline, x.description].filter(Boolean).join(' — '), image: asset(x.ogImage) || asset(x.cover)
+          };
+        case 'podcasts': {
+          const s = serOf(x);
+          return {
+            route: epRoute(slugged), title: x.seoTitle || `${title} — ${s ? s.title : podName()}`, desc: x.seoDesc || x.excerpt || S.strip(x.description),
+            image: asset(x.ogImage) || asset(x.cover) || (s ? asset(s.cover) : '')
+          };
+        }
+        case 'books':
+          return {
+            route: bookRoute(slugged), title: x.seoTitle || `${title} — ${st.siteName}`,
+            desc: x.seoDesc || [x.tagline, S.strip(x.description)].filter(Boolean).join(' — '), image: asset(x.ogImage) || asset(x.cover)
+          };
+        case 'remixes':
+          return {
+            route: 'remixler/' + slugged.slug, title: x.seoTitle || `${title} — ${st.siteName}`,
+            desc: x.seoDesc || x.excerpt || [x.original, S.strip(x.description)].filter(Boolean).join(' — '),
+            image: asset(x.ogImage) || asset(x.cover) || asset((st.remixPage || {}).cover)
+          };
+        case 'pages':
+          return {
+            route: 'sayfa/' + slugged.slug, title: x.seoTitle || `${title} — ${st.siteName}`,
+            desc: x.seoDesc || x.excerpt || S.strip(x.content), image: asset(x.ogImage) || asset(x.cover)
+          };
+        default: return { route: '', title, desc: '', image: '' };
+      }
+    }
+    const seoFields = (col, x) => { const b = seoBase(col, x); return { title: b.title, desc: b.desc, image: b.image }; };
+    // Google başlığı ~60 karakterden sonra keser: uzun başlıkta "— Site adı" eki yazılmaz
+    function finishTitle(t) {
+      const sfx = ' — ' + st.siteName;
+      return t && t.length > 60 && t.endsWith(sfx) ? t.slice(0, -sfx.length) : t;
+    }
+    const finishDesc = (d) => snippet(S.strip(d) || st.description || '');
+    /** Sitenin bu içerik için kullanacağı son başlık, açıklama, adres ve görsel */
+    function seoOf(col, x) {
+      const b = seoBase(col, x || {});
+      return { title: finishTitle(b.title) || '', desc: finishDesc(b.desc), url: pageUrl(b.route), image: b.image || '' };
     }
 
     /**
@@ -1167,11 +1241,9 @@
         }
       }
       pg.route = route;
-      pg.desc = clip(S.strip(pg.desc) || st.description || '');
+      pg.desc = finishDesc(pg.desc);
       if (pg.html) pg.html = sizeImgs(pg.html);
-      // Google başlığı ~60 karakterden sonra keser: uzun başlıkta "— Site adı" eki yazılmaz
-      const sfx = ' — ' + st.siteName;
-      if (pg.title && pg.title.length > 60 && pg.title.endsWith(sfx)) pg.title = pg.title.slice(0, -sfx.length);
+      pg.title = finishTitle(pg.title);
       return pg;
     }
 
@@ -1269,8 +1341,8 @@
       return t.filter(Boolean).join('\n  ');
     }
 
-    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages, seriesList, bookList };
+    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages, seriesList, bookList, seoOf };
   }
 
-  global.Render = { create, ICON, SOCIAL_ICON, PAGE_SIZE, clip };
+  global.Render = { create, ICON, SOCIAL_ICON, PAGE_SIZE, clip, snippet };
 })(typeof window !== 'undefined' ? window : globalThis);

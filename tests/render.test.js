@@ -213,3 +213,61 @@ test('kitap-adresleri', () => {
   assert.equal(R.page('kitaplar/yok').status, 404);
   assert.ok(R.searchIndex().some((i) => i.label === 'Kitap'));
 });
+
+/* ---------- Otomatik SEO: tek kaynaktan başlık/açıklama, cümle sonunda kesim, ara başlık çapaları ---------- */
+test('snippet-cumle-sonu', () => {
+  const s = 'Birinci cümle burada biter ve biraz uzun sürer, çünkü açıklamanın ilk yüz yirmi karakteri geçmesi gerekiyor ki deneyelim. İkinci cümle ise sınırın dışına taşan uzun bir devam cümlesidir ve kesilmelidir.';
+  assert.equal(Render.snippet(s), s.slice(0, s.indexOf('. ') + 1));
+  assert.equal(Render.snippet('Kısa metin.'), 'Kısa metin.');
+});
+
+test('snippet-cumle-yoksa-kelime', () => {
+  const s = ('kelime ').repeat(40).trim(); // cümle sonu yok
+  assert.equal(Render.snippet(s), Render.clip(s));
+  const d = 'Süre 3.5 saat ' + ('uzun açıklama ').repeat(15); // "3.5" cümle sonu sayılmaz
+  assert.ok(!Render.snippet(d).endsWith('3.'));
+});
+
+test('seoOf-sayfayla-ayni', () => { // panel önizlemesi = yayındaki <title>, açıklama, adres ve paylaşım görseli
+  const D = S.normalize({});
+  const RS = Render.create(D, { mode: 'site', siteUrl: 'https://ornek.test/' });
+  const post = (k) => D.posts.find((p) => S.postKind(p) === k);
+  const ep = D.podcasts.find((x) => S.seriesOf(D, x));
+  const cases = [
+    ['posts', post('video'), 'videolar/' + post('video').slug],
+    ['posts', post('yazi'), 'yazilar/' + post('yazi').slug],
+    ['series', D.series[0], 'podcast/' + D.series[0].slug],
+    ['podcasts', ep, 'podcast/' + S.seriesOf(D, ep).slug + '/' + ep.slug],
+    ['books', D.books[0], 'kitaplar/' + D.books[0].slug],
+    ['remixes', D.remixes[0], 'remixler/' + D.remixes[0].slug],
+    ['pages', D.pages[0], 'sayfa/' + D.pages[0].slug]
+  ];
+  for (const [col, item, route] of cases) {
+    const a = RS.seoOf(col, item), p = RS.page(route);
+    assert.notEqual(p.status, 404, route);
+    assert.equal(a.title, p.title, route);
+    assert.equal(a.desc, p.desc, route);
+    assert.equal(a.url, 'https://ornek.test/' + route + '/', route);
+    assert.equal(a.image, p.image, route);
+  }
+});
+
+test('seoOf-yarim-icerik', () => { // başlıksız yeni kayıt, serisi olmayan bölüm: çökmez, undefined yok
+  const RS = Render.create(S.normalize({}), { mode: 'site', siteUrl: 'https://ornek.test/' });
+  for (const col of ['posts', 'podcasts', 'series', 'books', 'remixes', 'pages']) {
+    const o = RS.seoOf(col, { id: 'x' });
+    assert.ok(!/undefined|NaN|null/.test(JSON.stringify(o)), col);
+  }
+});
+
+test('ara-baslik-capalari', () => {
+  const D = S.normalize({});
+  const p = D.posts.find((x) => S.postKind(x) === 'yazi');
+  p.content = '<h2>Ses nedir?</h2><p>a</p><h2>Ses nedir?</h2><h3 id="ozel">X</h3><h2><b>Ses</b> &amp; Hafıza</h2><h2> </h2>';
+  const html = Render.create(D, { mode: 'local' }).page('yazilar/' + p.slug).html;
+  assert.match(html, /<h2 id="ses-nedir">Ses nedir\?<\/h2>/);
+  assert.match(html, /<h2 id="ses-nedir-2">/);
+  assert.match(html, /<h3 id="ozel">X<\/h3>/);
+  assert.match(html, /<h2 id="ses-hafiza">/);
+  assert.match(html, /<h2> <\/h2>/);
+});

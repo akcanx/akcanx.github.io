@@ -741,3 +741,6 @@ body.ap-own .player { display: none; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   .reveal, .rise { opacity: 1; transform: none; }
 }
+
+/* Ara başlık çapası: sabit üst bant başlığı örtmesin */
+.prose :is(h2, h3)[id] { scroll-margin-top: 96px; }
