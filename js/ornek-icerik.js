@@ -39,10 +39,10 @@
       excerpt: `Sitedeki bütün örnek içerikler bir şey göstermek için burada. Bu yazı, her parçanın kontrol panelinde nasıl yapıldığını adım adım anlatıyor; okurken aynı zamanda her özelliğin sitede nasıl göründüğünü de görüyorsunuz.`,
       content:
         `<p>Hoş geldiniz! Bu site, <strong>Kontrol Paneli</strong> (<code>admin.html</code>, ilk şifre: <code>admin</code>) üzerinden yönetiliyor. Aşağıdaki her başlık, panelde bir işlemi ve sonucunu gösteriyor. Örnekleri inceledikten sonra panelden silebilir, kendi içeriklerinizle değiştirebilirsiniz.</p>`
-        + `<h2>1. Yazılar sekmesi: video mu, blog yazısı mı?</h2>`
-        + `<p>Sitedeki <strong>Yazılar</strong> sekmesi hem YouTube videolarınızı hem de blog yazılarınızı birlikte listeler. Panelde <em>Yazılar &amp; Videolar</em> bölümünde iki düğme var:</p>`
-        + `<ul><li><strong>+ Yeni Video:</strong> YouTube bağlantısını yapıştırırsınız; başlık ve küçük resim otomatik gelir. Yazı sayfasının üstünde video oynatıcı görünür; sayfa kaydırılınca video solda küçük pencerede sabit kalır.</li><li><strong>+ Yeni Blog Yazısı:</strong> Video yerine bir kapak görseli seçersiniz. Sayfanın düzeni aynıdır, sadece videonun yerinde kapak görseli durur — tıpkı bu yazının üstündeki gibi.</li></ul>`
-        + `<p>İkisi de aynı alanlara sahiptir: <em>Özet</em> (başlığın altındaki büyük italik giriş), <em>İçerik</em>, <em>Notlar ve kaynaklar</em>, <em>Görsel kaynakları</em> ve <em>Kavramlar</em>.</p>`
+        + `<h2>1. Videolar ve Yazılar: iki ayrı sekme</h2>`
+        + `<p>Sitede YouTube videolarınız <a href="#/videolar">Videolar</a>, blog yazılarınız <a href="#/yazilar">Yazılar</a> sekmesinde listelenir. Panelde de iki ayrı bölüm var:</p>`
+        + `<ul><li><strong>Panel → Videolar → + Yeni Video:</strong> YouTube bağlantısını yapıştırırsınız; başlık ve küçük resim otomatik gelir. Video sayfasının üstünde oynatıcı görünür; sayfa kaydırılınca video solda küçük pencerede sabit kalır. Listelerde küçük resmin ortasında oynat işareti olur.</li><li><strong>Panel → Yazılar → + Yeni Yazı:</strong> Video yerine bir kapak görseli seçersiniz. Sayfanın düzeni aynıdır, sadece videonun yerinde kapak görseli durur — tıpkı bu yazının üstündeki gibi.</li></ul>`
+        + `<p>İkisi de aynı alanlara sahiptir: <em>Özet</em> (başlığın altındaki büyük italik giriş), <em>İçerik</em>, <em>Notlar ve kaynaklar</em>, <em>Görsel kaynakları</em> ve <em>Kavramlar</em>. Ana sayfadaki akışta ise hepsi birlikte, tarih sırasıyla görünür.</p>`
         + fig('rehber-ortada', 'Ortada yerleşim: görsel metin sütununun ortasında durur.', 'Panel → İçerik → ▣ Görsel → Yerleşim: Ortada')
         + `<h2>2. Metin arasına görsel eklemek</h2>`
         + fig('rehber-saga', 'Sağa yaslı: metin görselin solundan akar.', 'Yerleşim: Sağa yaslı', 'flo flo-right', 900, 1200)
@@ -59,7 +59,7 @@
         + `<h2>5. Sayfa tonu</h2>`
         + `<p>Her yazı sayfasının arka planı hafif renklidir. Renk boş bırakılırsa kapak görselinden ya da videodan <strong>otomatik</strong> seçilir. Dilerseniz panelde sağ sütundaki <em>Görünüm → Sayfa tonu</em> ile kendiniz belirleyebilirsiniz.</p>`
         + `<h2>6. Sitenin geri kalanı</h2>`
-        + `<ul><li><strong>Podcast:</strong> Panel → Podcast → <em>⚙ Program Ayarları</em> ile program adı, kapağı ve platform bağlantıları; <em>+ Yeni Bölüm</em> ile bölümler. Bölüm sayfasında ses çubuğu kaydırınca menünün altına yapışır.</li><li><strong>Yazılar sayfasının başlığı:</strong> Panel → Yazılar &amp; Videolar → <em>⚙ Sayfa Ayarları</em>.</li><li><strong>Ana sayfa manşeti:</strong> Panel → Öne Çıkan (Hero).</li><li><strong>Menü:</strong> Panel → Menü Yönetimi; özel sayfalar (ör. <a href="#/sayfa/ekipmanlar">Ekipmanlar</a>, <a href="#/sayfa/iletisim">İletişim</a>) da menüye eklenebilir.</li><li><strong>Hakkında:</strong> Panel → Hakkında; fotoğraf üstündeki iki yazı ve vurgu rengi oradan.</li></ul>`
+        + `<ul><li><strong>Podcast:</strong> Panel → Podcast → <em>⚙ Program Ayarları</em> ile program adı, kapağı ve platform bağlantıları; <em>+ Yeni Bölüm</em> ile bölümler. Bölüm sayfasında ses çubuğu kaydırınca menünün altına yapışır.</li><li><strong>Videolar ve Yazılar sayfalarının başlığı:</strong> Panel → Videolar (ya da Yazılar) → <em>⚙ Sayfa Ayarları</em>.</li><li><strong>Ana sayfa manşeti:</strong> Panel → Öne Çıkan (Hero).</li><li><strong>Menü:</strong> Panel → Menü Yönetimi; özel sayfalar (ör. <a href="#/sayfa/ekipmanlar">Ekipmanlar</a>, <a href="#/sayfa/iletisim">İletişim</a>) da menüye eklenebilir.</li><li><strong>Hakkında:</strong> Panel → Hakkında; fotoğraf üstündeki iki yazı ve vurgu rengi oradan.</li></ul>`
         + `<p>Hepsi bu kadar. Örnekleri silmek için panelde ilgili listede <em>Sil</em> düğmesini kullanın; hepsini geri getirmek isterseniz <em>Yedekleme → Örnek içerikleri ekle</em> yeterli.</p>`,
       sources: `Kontrol paneli | admin.html | Sitenin yönetim ekranı\nYouTube video bağlantısı nasıl alınır? | https://support.google.com/youtube/answer/57741 | YouTube Yardım`,
       credits: `Kapak ve ara görseller: picsum.photos (örnek görseller)`
@@ -451,6 +451,7 @@
   ];
 
   const menu = [
+    { id: 'm2', label: 'Videolar', type: 'videos', target: '', visible: true, newTab: false },
     { id: 'm1', label: 'Yazılar', type: 'blog', target: '', visible: true, newTab: false },
     { id: 'm3', label: 'Podcast', type: 'podcast', target: '', visible: true, newTab: false },
     { id: 'm4', label: 'Remixler', type: 'remixes', target: '', visible: true, newTab: false },

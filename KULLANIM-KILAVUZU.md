@@ -21,7 +21,7 @@ Bu kılavuz, sitenin ve kontrol panelinin her özelliğini adım adım anlatır.
 5. [Liste ekranları](#5-liste-ekranları)
 6. [Formlardaki ortak alanlar](#6-formlardaki-ortak-alanlar)
 7. [Zengin metin editörü](#7-zengin-metin-editörü)
-8. [Yazılar & Videolar](#8-yazılar--videolar)
+8. [Videolar ve Yazılar](#8-videolar-ve-yazılar)
 9. [Podcast](#9-podcast)
 10. [Remixler](#10-remixler)
 11. [Özel Sayfalar](#11-özel-sayfalar)
@@ -97,7 +97,7 @@ Kendi içeriğinizin dışındaki hiçbir şey yayına gitmez: **taslaklar, örn
 | Grup | Bölümler |
 |---|---|
 | **Genel** | Gösterge Paneli |
-| **İçerik** | Yazılar & Videolar, Podcast, Remixler, Özel Sayfalar |
+| **İçerik** | Videolar, Yazılar, Podcast, Remixler, Özel Sayfalar |
 | **Site** | Öne Çıkan (Hero), Menü Yönetimi, Hakkında, Ayarlar & Tema, Yayın & SEO, Yedekleme |
 
 Kenar çubuğunun altında:
@@ -126,28 +126,27 @@ Panele girince açılan ilk ekran.
   - "Varsayılan şifreyi kullanıyorsunuz" (şifreyi değiştirene kadar).
   - "Site henüz yayına bağlı değil" (GitHub bağlantısı kurulana kadar).
   - "Örnek içerikler yüklü" ve **"Bu Site Nasıl Kullanılır?"** rehber yazısının bağlantısı (rehber yazısı silinene kadar).
-- **Sayılar**: Video, Blog Yazısı, Podcast Bölümü, Remix, Özel Sayfa, Menü Öğesi. Her kutu ilgili bölüme götürür.
+- **Sayılar**: Video, Yazı, Podcast Bölümü, Remix, Özel Sayfa, Menü Öğesi. Her kutu ilgili bölüme götürür.
 - **Ana Sayfa Öne Çıkan Manşet** kartı: şu anki manşet ve **Öne Çıkanı Değiştir →**.
 - **Son içerikler**: en yeni 8 içerik (tür, başlık, taslaksa "Taslak", tarih). Başlığa tıklayınca düzenleme açılır.
-- **Hızlı işlemler**: Yeni video, Yeni blog yazısı, Yeni bölüm, Yeni remix, Yeni sayfa, Öne çıkanı seç.
+- **Hızlı işlemler**: Yeni video, Yeni yazı, Yeni bölüm, Yeni remix, Yeni sayfa, Öne çıkanı seç.
 - **Depolama**: tarayıcıdaki kullanılan alan (yaklaşık 5 MB sınır) ve doluluk çubuğu. Bkz. [Görseller ve depolama alanı](#21-görseller-ve-depolama-alanı).
 
 ---
 
 ## 5. Liste ekranları
 
-Yazılar & Videolar, Podcast, Remixler ve Özel Sayfalar aynı liste düzenini kullanır.
+Videolar, Yazılar, Podcast, Remixler ve Özel Sayfalar aynı liste düzenini kullanır.
 
 **Üst kısım**
 
 - Bölümün adı ve açıklaması.
-- **⚙ Sayfa / Program Ayarları** (Yazılar, Podcast ve Remixler'de): sitedeki liste sayfasının üst bölümü.
-- **Yeni içerik** düğmeleri. Yazılar & Videolar'da iki tane vardır: **▶ Yeni Video** ve **✎ Yeni Blog Yazısı**.
+- **⚙ Sayfa / Program Ayarları** (Videolar, Yazılar, Podcast ve Remixler'de): sitedeki liste sayfasının üst bölümü.
+- **+ Yeni …** düğmesi (ör. **+ Yeni Video**, **+ Yeni Yazı**).
 
 **Araç çubuğu**
 
 - **Arama kutusu**: başlıkta ve alt bilgide arar.
-- **Tür filtresi** (yalnızca Yazılar & Videolar): Tüm türler / ▶ Videolar / ✎ Blog yazıları.
 - **Durum filtresi**: Tümü / Yayında / Taslak (yanlarında sayılarıyla).
 
 **Tablo**
@@ -280,34 +279,34 @@ Word, Google Docs ya da bir web sayfasından metin yapıştırdığınızda yaz�
 
 ---
 
-## 8. Yazılar & Videolar
+## 8. Videolar ve Yazılar
 
-Sitedeki **Yazılar** sekmesinde YouTube videolarınız ve blog yazılarınız aynı listede yayınlanır.
+YouTube videolarınız ve blog yazılarınız sitede **iki ayrı sekmede** yayınlanır. Panelde de iki ayrı bölümdür:
 
-### İçerik türü
+| Panel bölümü | Sitede | Adres | Zorunlu |
+|---|---|---|---|
+| **▶ Videolar** → **+ Yeni Video** | **Videolar** sekmesi. Sayfanın üstünde YouTube oynatıcı; listelerde küçük resmin ortasında **yarı saydam oynat işareti**. | `/videolar/video-adi/` | Geçerli bir YouTube bağlantısı |
+| **✎ Yazılar** → **+ Yeni Yazı** | **Yazılar** sekmesi. Sayfanın üstünde kapak görseli; listelerde işaretsiz. | `/yazilar/yazi-adi/` | Kapak görseli |
 
-Formun başında iki kart vardır:
-
-| Tür | Sitede nasıl görünür | Zorunlu |
-|---|---|---|
-| **▶ YouTube Videosu** | Sayfanın üstünde YouTube oynatıcı. Listelerde küçük resmin ortasında **yarı saydam oynat işareti**. | Geçerli bir YouTube bağlantısı |
-| **✎ Blog Yazısı** | Üstte video yerine kapak görseli. Listelerde işaretsiz. | Kapak görseli |
+Ana sayfadaki akışta ise videolar ve yazılar diğer içeriklerle birlikte, tarih sırasıyla görünür.
 
 ### Alanlar
 
 | Alan | Açıklama |
 |---|---|
-| **YouTube video bağlantısı** | `https://www.youtube.com/watch?v=…`, `youtu.be/…` ya da Shorts bağlantısı. Yapıştırınca küçük resim görünür; başlık boşsa videonun adı YouTube'dan otomatik gelir. |
-| **Kapak görseli** + **alt metin** | Blog yazısı için. |
+| **YouTube video bağlantısı** (video) | `https://www.youtube.com/watch?v=…`, `youtu.be/…` ya da Shorts bağlantısı. Yapıştırınca küçük resim görünür; başlık boşsa videonun adı YouTube'dan otomatik gelir. |
+| **Kapak görseli** + **alt metin** (yazı) | Yazının üstünde ve listelerde küçük resim olarak görünür. |
 | **Özet** | Sayfanın başında büyük italik giriş olarak, listelerde ve manşette görünür. Arama sonucunda açıklama olur. |
-| **İçerik** | Zengin metin. **Video için videonun yazıya dökülmüş metnini buraya ekleyin**: arama motorları ve yapay zekâ videoyu izleyemez, bu metni okur. |
+| **İçerik** | Zengin metin. **Videoda, videonun yazıya dökülmüş metnini buraya ekleyin**: arama motorları ve yapay zekâ videoyu izleyemez, bu metni okur. |
 | **Notlar ve kaynaklar** | Bkz. [Kaynaklar](#kaynaklar-notlar-ve-kaynaklar). |
 | **Görsel kaynakları ve lisanslar** | Her satıra bir görsel kaynağı; isteğe bağlı olarak `\| bağlantı`. Sayfanın sonunda ayrı bir açılır listede görünür. |
 | Yayın, Görünüm (sayfa tonu), Etiketler, Arama & paylaşım | Bkz. [Ortak alanlar](#6-formlardaki-ortak-alanlar). |
 
-### ⚙ Sayfa Ayarları (Yazılar sayfasının üstü)
+### ⚙ Sayfa Ayarları (Videolar ve Yazılar sayfalarının üstü)
 
-- **Sayfa başlığı**.
+Her iki bölümün kendi ayarı vardır:
+
+- **Sayfa başlığı** (varsayılan: "Videolar" / "Yazılar").
 - **Açıklama**: başlığın altında görünür.
 - **Işık rengi**: sayfanın üstündeki yumuşak renkli ışık.
 
@@ -323,7 +322,7 @@ Formun başında iki kart vardır:
 - **Sayfa tonu**: kapaktan ya da videodan otomatik seçilir; panelden de belirlenebilir.
 - **Metin**: büyük italik özet, büyük baş harfle başlayan metin, metin arası görseller ve kaynaklı alıntılar.
 - **Sayfa sonu**: Notlar ve kaynaklar, Görsel kaynakları ve lisanslar, kavram kutuları, İlgili içerik (en fazla 6), önceki / sonraki kartları.
-- **Gezinme**: menünün altında konum satırı (Yazılar › etiketler, sağda önceki/sonraki); sayfanın en üstünde okuma ilerleme çubuğu.
+- **Gezinme**: menünün altında konum satırı (Videolar ya da Yazılar › etiketler, sağda aynı sekmedeki önceki/sonraki); sayfanın en üstünde okuma ilerleme çubuğu.
 
 ---
 
@@ -454,7 +453,7 @@ Sitenin üst menüsü (ve alt bilgideki "Menü" listesi).
 - Her satırda:
   - **⋮⋮** tutamacı: sürükleyerek sıralama.
   - **Ad**: menüde görünen yazı.
-  - **Tür**: Ana Sayfa, Yazılar, Podcast, Remixler, Hakkında, Özel Sayfa, Dış Bağlantı.
+  - **Tür**: Ana Sayfa, Videolar, Yazılar, Podcast, Remixler, Hakkında, Özel Sayfa, Dış Bağlantı.
   - **Hedef**:
     - Standart sayfalarda otomatiktir (ör. `#/podcast`).
     - Özel Sayfa'da listeden sayfa seçilir.
@@ -660,14 +659,15 @@ Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu
 | Sayfa | Adres |
 |---|---|
 | Ana sayfa | `/` |
-| Yazılar listesi / bir yazı ya da video | `/yazilar/` · `/yazilar/yazi-adi/` |
+| Videolar listesi / bir video | `/videolar/` · `/videolar/video-adi/` |
+| Yazılar listesi / bir yazı | `/yazilar/` · `/yazilar/yazi-adi/` |
 | Podcast / bir bölüm | `/podcast/` · `/podcast/bolum-adi/` |
 | Remixler / bir remix | `/remixler/` · `/remixler/remix-adi/` |
 | Hakkında | `/hakkinda/` |
 | Özel sayfa | `/sayfa/sayfa-adi/` |
 | Bulunamayan adres | Gerçek "404" sayfası |
 
-Bilgisayarınızdaki önizlemede (`index.html`) aynı sayfalar `#/yazilar/yazi-adi` biçiminde açılır. Sitenin eski sürümündeki `#/…` bağlantıları da yeni adreslere yönlenir.
+Bilgisayarınızdaki önizlemede (`index.html`) aynı sayfalar `#/yazilar/yazi-adi` biçiminde açılır. Sitenin eski sürümündeki `#/…` bağlantıları ve yanlış sekmedeki adresler (ör. `/yazilar/video-adi/`) doğru adrese kendiliğinden yönlenir.
 
 ### Ana sayfa
 
@@ -813,7 +813,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 **"Video için geçerli bir YouTube bağlantısı girin" uyarısı.** Bağlantı `youtube.com/watch?v=…`, `youtu.be/…` ya da `youtube.com/shorts/…` biçiminde olmalı.
 
-**"Blog yazısı için bir kapak görseli ekleyin" uyarısı.** Blog yazısında kapak zorunludur. Video yapmak istiyorsanız formun başında **▶ YouTube Videosu**'nu seçin.
+**"Yazı için bir kapak görseli ekleyin" uyarısı.** Yazılarda kapak zorunludur. Video eklemek istiyorsanız panelde **Videolar → + Yeni Video**'yu kullanın.
 
 **Bir sayfa sitede "bulunamadı" diyor.** İçerik taslak ya da örnek olabilir. Bağlantısını değiştirdiyseniz eski adres artık çalışmaz.
 

@@ -236,17 +236,6 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .feat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
 @media (max-width: 600px) { .feat-grid { grid-template-columns: minmax(0, 1fr); } }
 
-/* İçerik türü seçimi (Video / Blog yazısı) */
-.seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.seg button { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 16px; border: 1px solid var(--rule-2); border-radius: 10px; background: var(--bg-2); color: var(--fg-2); text-align: left; cursor: pointer; transition: border-color .15s, background .15s, box-shadow .15s; }
-.seg button b { font-size: 15px; font-weight: 600; color: var(--fg); }
-.seg button small { font-size: 12px; line-height: 1.4; color: var(--fg-3); }
-.seg button:hover { border-color: var(--fg-3); }
-.seg button.on { border-color: var(--acid); background: color-mix(in srgb, var(--acid) 9%, var(--bg-2)); box-shadow: 0 0 0 1px var(--acid); }
-.seg button.on b { color: var(--acid); }
-@media (max-width: 600px) { .seg { grid-template-columns: minmax(0, 1fr); } }
-/* Türe bağlı alanlar: yalnızca seçili türünkiler görünür */
-.form-grid[data-kind="video"] [data-when="yazi"], .form-grid[data-kind="yazi"] [data-when="video"] { display: none; }
 
 .empty-acts { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
 .backup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }

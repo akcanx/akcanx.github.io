@@ -5,8 +5,8 @@
    ve yapay zekâ tarayıcılarının okuduğu hazır sayfa, sitede görünenle birebir aynıdır.
 
    İki adres biçimi:
-   - local: panelle aynı bilgisayardaki önizleme → #/yazilar/yazi-adi
-   - site:  yayınlanan site → /yazilar/yazi-adi/ (GitHub Pages'te /depo-adi/yazilar/yazi-adi/)
+   - local: panelle aynı bilgisayardaki önizleme → #/yazilar/yazi-adi, #/videolar/video-adi
+   - site:  yayınlanan site → /yazilar/yazi-adi/, /videolar/video-adi/ (GitHub Pages'te /depo-adi/... altında)
    ========================================================================== */
 (function (global) {
   'use strict';
@@ -84,14 +84,19 @@
     // Yayında görseller veri/gorsel/... altında durur; adres, sitenin kök yoluna göre tamamlanır
     const asset = (u) => (u && site && /^veri\//.test(u) ? base + u : u || '');
 
-    /** Eski ya da kısa biçimli site içi adresleri güncel biçime çevirir (#/yazi/x → yazilar/x) */
+    // Videolar /videolar/, blog yazıları /yazilar/ altında (ikisi de D.posts'ta; türü belirler)
+    const postRoute = (p) => (S.postKind(p) === 'video' ? 'videolar/' : 'yazilar/') + p.slug;
+
+    /** Eski ya da kısa biçimli site içi adresleri güncel biçime çevirir (#/yazi/x → yazilar/x, yanlış sekmedeki video → videolar/x) */
     function normalize(route) {
       const r = String(route || '').replace(/^\/+|\/+$/g, '');
-      const [seg, arg] = r.split('/');
+      const parts = r.split('/');
+      const [seg, arg] = parts;
+      const postAt = (slug) => { const p = (D.posts || []).find((x) => x.slug === slug); return p ? postRoute(p) : ''; };
       switch (seg) {
-        case 'yazi': return arg ? 'yazilar/' + arg : 'yazilar';
-        case 'videolar': return 'yazilar';
-        case 'video': { const p = (D.posts || []).find((x) => x.legacyVideoId === arg || x.id === arg); return p ? 'yazilar/' + p.slug : 'yazilar'; }
+        case 'yazi': return arg ? postAt(arg) || 'yazilar/' + arg : 'yazilar';
+        case 'yazilar': case 'videolar': return parts.length === 2 ? postAt(arg) || r : r;
+        case 'video': { const p = (D.posts || []).find((x) => x.legacyVideoId === arg || x.id === arg); return p ? postRoute(p) : 'videolar'; }
         case 'bolum': { const x = (D.podcasts || []).find((y) => y.id === arg || y.slug === arg); return x ? 'podcast/' + x.slug : 'podcast'; }
         case 'remix': { const x = (D.remixes || []).find((y) => y.id === arg || y.slug === arg); return x ? 'remixler/' + x.slug : 'remixler'; }
         default: return r;
@@ -114,12 +119,12 @@
     function items() {
       if (cache) return cache;
       const out = [];
-      // Yazılar sekmesi: videolar ve blog yazıları birlikte (fk: akış filtresi anahtarı)
+      // Videolar ve blog yazıları (ayrı sekmeler; fk: tür ve akış filtresi anahtarı)
       // Videonun küçük resmi YouTube'dan, blog yazısınınki kapak görselinden gelir
       pub(D.posts).forEach((p) => {
         const vid = S.postKind(p) === 'video';
         out.push({
-          type: 'post', fk: vid ? 'video' : 'yazi', label: vid ? 'Video' : 'Yazı', id: p.id, title: p.title, date: p.date, href: href('yazilar/' + p.slug),
+          type: 'post', fk: vid ? 'video' : 'yazi', label: vid ? 'Video' : 'Yazı', id: p.id, title: p.title, date: p.date, href: href(postRoute(p)),
           thumb: vid ? S.ytThumb(p.video, 'mqdefault') : asset(p.cover), video: vid,
           tags: p.tags || [], text: S.strip((p.excerpt || '') + ' ' + (p.content || '')), raw: p
         });
@@ -147,10 +152,11 @@
     }
 
     /* ---------- Menü & alt bilgi ---------- */
-    const ROUTE_OF = { home: '', blog: 'yazilar', podcast: 'podcast', remixes: 'remixler', about: 'hakkinda' };
+    const ROUTE_OF = { home: '', videos: 'videolar', blog: 'yazilar', podcast: 'podcast', remixes: 'remixler', about: 'hakkinda' };
     function menuHref(m) {
       switch (m.type) {
         case 'home': return href('');
+        case 'videos': return href('videolar');
         case 'blog': return href('yazilar');
         case 'podcast': return href('podcast');
         case 'remixes': return href('remixler');
@@ -271,7 +277,7 @@
         const targetId = feat.id || (D.posts || []).find((p) => p.featured && p.published !== false)?.id;
         if (targetId) {
           const colls = [
-            { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => href('yazilar/' + x.slug), thumb: postThumb, excerpt: (x) => x.excerpt },
+            { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => href(postRoute(x)), thumb: postThumb, excerpt: (x) => x.excerpt },
             { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => href('podcast/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => S.strip(x.description) },
             { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => href('remixler/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt || x.original || S.strip(x.description) },
             { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => href('sayfa/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt }
@@ -309,7 +315,7 @@
           date: latestPost.date,
           excerpt: feat.customExcerpt !== undefined && feat.customExcerpt !== '' ? feat.customExcerpt : (latestPost.excerpt || ''),
           cover: asset(feat.customImage) || postThumb(latestPost) || asset(st.heroImage),
-          href: link(feat.customLink) || href('yazilar/' + latestPost.slug),
+          href: link(feat.customLink) || href(postRoute(latestPost)),
           btnText: feat.customButtonText || (vid ? 'İzle' : 'Oku')
         };
       }
@@ -381,7 +387,7 @@
       const years = all.map((i) => (i.date || '').slice(0, 4)).filter(Boolean).sort();
       const since = years[0] || new Date().getFullYear();
       const parts = [];
-      if (counts.video) parts.push(`<a href="${href('yazilar')}"><b>${counts.video}</b></a> video`);
+      if (counts.video) parts.push(`<a href="${href('videolar')}"><b>${counts.video}</b></a> video`);
       if (counts.yazi) parts.push(`<a href="${href('yazilar')}"><b>${counts.yazi}</b></a> yazı`);
       if (counts.podcast) parts.push(`<a href="${href('podcast')}"><b>${counts.podcast}</b></a> podcast bölümü`);
       if (counts.remix) parts.push(`<a href="${href('remixler')}"><b>${counts.remix}</b></a> remix`);
@@ -463,33 +469,43 @@
     </nav>`;
     }
 
-    /* ---------- Yazılar (yazı + video tek sekmede) ---------- */
-    function listPosts() {
-      const pp = st.postsPage || {};
-      const name = pp.title || 'Yazılar';
-      const list = items().filter((i) => i.type === 'post');
+    /* ---------- Videolar ve Yazılar: aynı düzende iki sekme ---------- */
+    // kind 'video' → Videolar (/videolar/), 'yazi' → Yazılar (/yazilar/); başlık, açıklama ve ışık rengi panelden
+    const POST_TABS = {
+      video: { key: 'videosPage', route: 'videolar', title: 'Videolar', tint: '#7A1E2E', empty: 'Henüz video yok.' },
+      yazi: { key: 'postsPage', route: 'yazilar', title: 'Yazılar', tint: '#7A4E1E', empty: 'Henüz yazı yok.' }
+    };
+    function postTab(kind) {
+      const t = POST_TABS[kind], c = st[t.key] || {};
+      return { ...t, name: c.title || t.title, intro: c.intro, tint: c.tint || t.tint };
+    }
+
+    function listPosts(kind) {
+      const t = postTab(kind);
+      const list = items().filter((i) => i.type === 'post' && i.fk === kind);
       return {
-        title: name + ' — ' + st.siteName, name, desc: pp.intro, ogType: 'website', modified: list[0] && list[0].date, noindex: !list.length,
-        crumbs: crumbs([[name, 'yazilar']]),
-        schema: [listNode('CollectionPage', 'yazilar', name, pp.intro, list)],
-        html: `<div class="page-wash" style="--wash:${esc(pp.tint || '#7A4E1E')}"></div>
+        title: t.name + ' — ' + st.siteName, name: t.name, desc: t.intro, ogType: 'website', modified: list[0] && list[0].date, noindex: !list.length,
+        crumbs: crumbs([[t.name, t.route]]),
+        schema: [listNode('CollectionPage', t.route, t.name, t.intro, list)],
+        html: `<div class="page-wash" style="--wash:${esc(t.tint)}"></div>
       <header class="phead phead-plain"><div class="wrap">
-        <h1 class="rise d1">${esc(name)}</h1>
-        ${pp.intro ? `<p class="pintro rise d2">${esc(pp.intro)}</p>` : ''}
+        <h1 class="rise d1">${esc(t.name)}</h1>
+        ${t.intro ? `<p class="pintro rise d2">${esc(t.intro)}</p>` : ''}
       </div></header>
       <section class="ix ix-plain"><div class="wrap">
-        <div class="feed">${list.length ? list.map((i) => row(i, true)).join('') : '<div class="empty-note">Henüz video ya da yazı yok.</div>'}</div>
+        <div class="feed">${list.length ? list.map((i) => row(i, true)).join('') : `<div class="empty-note">${t.empty}</div>`}</div>
       </div></section>`
       };
     }
 
-    function postPage(slug) {
-      const list = pub(D.posts);
+    function postPage(slug, kind) {
+      const list = pub(D.posts).filter((p) => S.postKind(p) === kind);
       const idx = list.findIndex((p) => p.slug === slug);
       const p = list[idx];
       if (!p) return notFound();
-      const postsTitle = (st.postsPage || {}).title || 'Yazılar';
-      const route = 'yazilar/' + p.slug;
+      const tab = postTab(kind);
+      const postsTitle = tab.name;
+      const route = postRoute(p);
       // Video ise üstte oynatıcı, blog yazısıysa aynı yerde kapak görseli
       const yt = S.postKind(p) === 'video' ? S.ytId(p.video) : '';
       const words = S.wordCount((p.excerpt || '') + ' ' + (p.content || ''));
@@ -497,9 +513,9 @@
       const bg = yt ? S.ytThumb(p.video, 'hqdefault') : asset(p.cover);
       const alt = p.coverAlt || p.title;
       const ctx = {
-        crail: [{ label: postsTitle, href: href('yazilar') }, ...(p.tags || []).slice(0, 3).map((t) => ({ label: t }))],
-        prev: prev && { href: href('yazilar/' + prev.slug), title: prev.title },
-        next: next && { href: href('yazilar/' + next.slug), title: next.title },
+        crail: [{ label: postsTitle, href: href(tab.route) }, ...(p.tags || []).slice(0, 3).map((t) => ({ label: t }))],
+        prev: prev && { href: href(postRoute(prev)), title: prev.title },
+        next: next && { href: href(postRoute(next)), title: next.title },
         tint: p.tint, tintSrc: bg, readbar: true
       };
       // Video varsa solda video (kaydırınca sabitlenir), yoksa kapak görseli
@@ -532,7 +548,7 @@
       return {
         title: p.seoTitle || `${p.title} — ${st.siteName}`, name: p.title, desc, image, imageAlt: alt, ogType: 'article',
         published: p.date, modified: p.updated || p.date, tags: p.tags, ctx, schema,
-        crumbs: crumbs([[postsTitle, 'yazilar'], [p.title, route]]),
+        crumbs: crumbs([[postsTitle, tab.route], [p.title, route]]),
         html: `<article class="post tinted tinted-full" style="--tint:${esc(p.tint || '#2F4A66')}">
       ${bg ? `<img class="ephero-bg" src="${esc(bg)}" alt="">` : ''}
       <div class="ephero-wash"></div>
@@ -549,8 +565,8 @@
         ${p.content ? `<div class="prose dropcap">${fixHtml(p.content)}</div>` : ''}
         ${sourcesBlock(p.sources, 'Notlar ve kaynaklar')}
         ${sourcesBlock(p.credits, 'Görsel kaynaklar ve lisanslar', 'credits')}
-        <div class="afoot">${chipsBlock(p.tags, 'Bu yazıdaki kavramlar')}${relatedBlock('post', p)}</div>
-        ${prevNext(list, idx, (x) => href('yazilar/' + x.slug), (x) => (S.postKind(x) === 'video' ? 'Video' : 'Yazı') + ' · ' + S.fmtDate(x.date))}
+        <div class="afoot">${chipsBlock(p.tags, yt ? 'Bu videodaki kavramlar' : 'Bu yazıdaki kavramlar')}${relatedBlock('post', p)}</div>
+        ${prevNext(list, idx, (x) => href(postRoute(x)), (x) => S.fmtDate(x.date))}
       </div>
     </article>`
       };
@@ -826,7 +842,8 @@
       else {
         switch (seg || '') {
           case '': pg = homePage(); break;
-          case 'yazilar': pg = arg ? postPage(arg) : listPosts(); break;
+          case 'videolar': pg = arg ? postPage(arg, 'video') : listPosts('video'); break;
+          case 'yazilar': pg = arg ? postPage(arg, 'yazi') : listPosts('yazi'); break;
           case 'podcast': pg = arg ? episodePage(arg) : listPodcasts(); break;
           case 'remixler': pg = arg ? remixPage(arg) : listRemixes(); break;
           case 'hakkinda': pg = aboutPage(); break;
@@ -843,8 +860,11 @@
     function routes() {
       const menuHas = (t) => visibleMenu().some((m) => m.type === t);
       const r = [''];
-      if (pub(D.posts).length || menuHas('blog')) r.push('yazilar');
-      pub(D.posts).forEach((p) => r.push('yazilar/' + p.slug));
+      [['video', 'videos'], ['yazi', 'blog']].forEach(([kind, menuType]) => {
+        const list = pub(D.posts).filter((p) => S.postKind(p) === kind);
+        if (list.length || menuHas(menuType)) r.push(POST_TABS[kind].route);
+        list.forEach((p) => r.push(postRoute(p)));
+      });
       if (pub(D.podcasts).length || menuHas('podcast')) r.push('podcast');
       pub(D.podcasts).forEach((p) => r.push('podcast/' + p.slug));
       if (pub(D.remixes).length || menuHas('remixes')) r.push('remixler');

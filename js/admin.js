@@ -146,33 +146,46 @@
   ];
   const ALT_HELP = 'Görselde ne olduğunu bir cümleyle anlatın. Google Görseller ve ekran okuyucular için; boşsa başlık kullanılır.';
 
+  // Videolar ve yazılar aynı koleksiyonda (D.posts) durur; tür (kind) sitede hangi sekmede görüneceğini belirler
+  const postFields = (kind) => [
+    { k: 'title', t: 'title', l: 'Başlık', req: true },
+    ...(kind === 'video'
+      ? [{ k: 'video', t: 'youtube', l: 'YouTube video bağlantısı', req: true, ph: 'https://www.youtube.com/watch?v=...', help: 'Bağlantıyı yapıştırın; başlık boşsa videonun adı otomatik gelir, küçük resim YouTube’dan alınır.' }]
+      : [
+        { k: 'cover', t: 'image', l: 'Kapak görseli', req: true, help: 'Yazının üstünde gösterilir; listelerde küçük resim olarak da kullanılır.' },
+        { k: 'coverAlt', t: 'text', l: 'Kapak görseli açıklaması (alt metin)', ph: 'Görselde ne var?', help: ALT_HELP }
+      ]),
+    { k: 'excerpt', t: 'textarea', l: 'Özet', rows: 3, help: 'Sayfanın başında büyük italik giriş olarak, ayrıca listelerde ve ana sayfa manşetinde görünür. Arama sonucunda da açıklama olarak kullanılır.' },
+    { k: 'content', t: 'richtext', l: 'İçerik', help: (kind === 'video' ? 'Videonun yazıya dökülmüş metnini buraya ekleyin: arama motorları ve yapay zekâ videoyu izleyemez, bu metni okur. ' : '') + 'Görsel eklerken yerleşimi seçebilirsiniz: ortada, sağa yaslı, sola yaslı veya geniş.' },
+    { k: 'sources', t: 'textarea', l: 'Notlar ve kaynaklar', rows: 4, ph: 'Başlık | https://adres\nBaşka bir kaynak | https://...', help: 'Her satıra bir kaynak: <code>Başlık | Bağlantı</code>. Sayfanın sonunda açılır liste olarak görünür.' },
+    { k: 'credits', t: 'textarea', l: 'Görsel kaynakları ve lisanslar', rows: 3, ph: 'Kapak: Fotoğrafçı adı, lisans', help: 'Her satıra bir görsel kaynağı. İsteğe bağlı olarak <code>| bağlantı</code> ekleyebilirsiniz.' },
+    { k: 'published', t: 'switch', l: 'Yayında', help: 'Kapalıysa taslak olarak saklanır.', side: 'Yayın' },
+    { k: 'featured', t: 'switch', l: 'Öne çıkar', help: 'Ana sayfa manşetinde gösterilir.', side: 'Yayın' },
+    { k: 'date', t: 'date', l: 'Yayın tarihi', side: 'Yayın' },
+    { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: `Adres: /${kind === 'video' ? 'videolar' : 'yazilar'}/<b>baglanti</b>/. Boş bırakılırsa başlıktan oluşturulur.` },
+    { k: 'tint', t: 'color', l: 'Sayfa tonu', side: 'Görünüm', help: `Sayfanın arka plan rengi. Boş bırakılırsa ${kind === 'video' ? 'videodan' : 'kapaktan'} otomatik seçilir.` },
+    { k: 'tags', t: 'tags', l: 'Kavramlar / etiketler', side: 'Etiketler', help: 'İlk üçü sayfanın üstündeki konum satırında, hepsi sayfanın sonunda görünür.' },
+    ...SEO_FIELDS
+  ];
+  const postSub = (x) => [(x.tags || []).join(', '), x.featured ? '★ Öne çıkan' : ''].filter(Boolean).join(' · ');
+
+  // coll: verinin durduğu koleksiyon (yoksa bölümün adı), kind: koleksiyonda bu bölüme düşen tür
   const TYPES = {
-    // Yazı ve video tek türde (sitede tek "Yazılar" sekmesi): video, yazının isteğe bağlı parçası
-    // Sitedeki tek "Yazılar" sekmesi: YouTube videoları (öncelikli) ve kapak görselli blog yazıları
+    videos: {
+      title: 'Videolar', one: 'Video', icon: '▶', coll: 'posts', kind: 'video',
+      desc: 'Sitedeki Videolar sekmesi. Video sayfasının üstünde YouTube oynatıcı görünür ve kaydırınca solda sabit kalır. Videonun yazıya dökülmüş metnini eklemeyi unutmayın: arama motorları videoyu izleyemez, metni okur.',
+      view: (x) => '#/videolar/' + x.slug,
+      thumb: (x) => S.ytThumb(x.video, 'mqdefault'),
+      sub: postSub,
+      fields: postFields('video')
+    },
     posts: {
-      title: 'Yazılar & Videolar', one: 'İçerik', icon: '✎',
-      desc: 'Sitedeki Yazılar sekmesinde videolarınız ve blog yazılarınız birlikte listelenir. Video sayfasının üstünde YouTube oynatıcı görünür ve kaydırınca solda sabit kalır; blog yazısında aynı yerde kapak görseli durur.',
+      title: 'Yazılar', one: 'Yazı', icon: '✎', coll: 'posts', kind: 'yazi',
+      desc: 'Sitedeki Yazılar sekmesi: kapak görselli blog yazılarınız. Yazı sayfasının üstünde kapak görseli durur.',
       view: (x) => '#/yazilar/' + x.slug,
-      thumb: (x) => (S.postKind(x) === 'video' ? S.ytThumb(x.video, 'mqdefault') : x.cover),
-      sub: (x) => [S.postKind(x) === 'video' ? '▶ Video' : '✎ Blog yazısı', (x.tags || []).join(', '), x.featured ? '★ Öne çıkan' : ''].filter(Boolean).join(' · '),
-      fields: [
-        { k: 'kind', t: 'segment', l: 'İçerik türü', options: [['video', '▶ YouTube Videosu', 'Üstte video oynatıcı; kaydırınca solda sabit kalır'], ['yazi', '✎ Blog Yazısı', 'Üstte video yerine kapak görseli']] },
-        { k: 'title', t: 'title', l: 'Başlık', req: true },
-        { k: 'video', t: 'youtube', l: 'YouTube video bağlantısı', req: true, when: 'video', ph: 'https://www.youtube.com/watch?v=...', help: 'Bağlantıyı yapıştırın; başlık boşsa videonun adı otomatik gelir, küçük resim YouTube’dan alınır.' },
-        { k: 'cover', t: 'image', l: 'Kapak görseli', req: true, when: 'yazi', help: 'Yazının üstünde video yerine bu görsel gösterilir; listelerde küçük resim olarak da kullanılır.' },
-        { k: 'coverAlt', t: 'text', l: 'Kapak görseli açıklaması (alt metin)', when: 'yazi', ph: 'Görselde ne var?', help: ALT_HELP },
-        { k: 'excerpt', t: 'textarea', l: 'Özet', rows: 3, help: 'Sayfanın başında büyük italik giriş olarak, ayrıca listelerde ve ana sayfa manşetinde görünür. Arama sonucunda da açıklama olarak kullanılır.' },
-        { k: 'content', t: 'richtext', l: 'İçerik', help: 'Video için videonun yazıya dökülmüş metnini buraya ekleyin: arama motorları ve yapay zekâ videoyu izleyemez, bu metni okur. Görsel eklerken yerleşimi seçebilirsiniz: ortada, sağa yaslı, sola yaslı veya geniş.' },
-        { k: 'sources', t: 'textarea', l: 'Notlar ve kaynaklar', rows: 4, ph: 'Başlık | https://adres\nBaşka bir kaynak | https://...', help: 'Her satıra bir kaynak: <code>Başlık | Bağlantı</code>. Yazının sonunda açılır liste olarak görünür.' },
-        { k: 'credits', t: 'textarea', l: 'Görsel kaynakları ve lisanslar', rows: 3, ph: 'Kapak: Fotoğrafçı adı, lisans', help: 'Her satıra bir görsel kaynağı. İsteğe bağlı olarak <code>| bağlantı</code> ekleyebilirsiniz.' },
-        { k: 'published', t: 'switch', l: 'Yayında', help: 'Kapalıysa taslak olarak saklanır.', side: 'Yayın' },
-        { k: 'featured', t: 'switch', l: 'Öne çıkar', help: 'Ana sayfa manşetinde gösterilir.', side: 'Yayın' },
-        { k: 'date', t: 'date', l: 'Yayın tarihi', side: 'Yayın' },
-        { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: 'Boş bırakılırsa başlıktan oluşturulur.' },
-        { k: 'tint', t: 'color', l: 'Sayfa tonu', side: 'Görünüm', help: 'Sayfanın arka plan rengi. Boş bırakılırsa videodan / kapaktan otomatik seçilir.' },
-        { k: 'tags', t: 'tags', l: 'Kavramlar / etiketler', side: 'Etiketler', help: 'İlk üçü sayfanın üstündeki konum satırında, hepsi yazının sonunda görünür.' },
-        ...SEO_FIELDS
-      ]
+      thumb: (x) => x.cover,
+      sub: postSub,
+      fields: postFields('yazi')
     },
     podcasts: {
       title: 'Podcast Bölümleri', one: 'Bölüm', icon: '◉',
@@ -251,8 +264,22 @@
     }
   };
 
-  /* Liste sayfalarının üst bölüm ayarları (sitedeki "Yazılar", "Podcast" ve "Remixler" sayfalarının başı) */
+  const collOf = (type) => TYPES[type].coll || type;
+  const inType = (type, x) => !TYPES[type].kind || S.postKind(x) === TYPES[type].kind;
+  // Bir videonun ya da yazının paneldeki bölümü
+  const postType = (x) => (S.postKind(x) === 'video' ? 'videos' : 'posts');
+
+  /* Liste sayfalarının üst bölüm ayarları (sitedeki "Videolar", "Yazılar", "Podcast" ve "Remixler" sayfalarının başı) */
   const SECTIONS = {
+    videos: {
+      key: 'videosPage', title: 'Videolar Sayfası', btn: 'Sayfa Ayarları',
+      desc: 'Sitedeki Videolar sekmesinin başlığı, açıklaması ve başlığın arkasındaki ışık rengi.',
+      fields: [
+        { k: 'title', t: 'title', l: 'Sayfa başlığı' },
+        { k: 'intro', t: 'textarea', l: 'Açıklama', rows: 4, help: 'Başlığın altında görünür.' },
+        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Sayfanın üst kısmındaki yumuşak renkli ışık.' }
+      ]
+    },
     posts: {
       key: 'postsPage', title: 'Yazılar Sayfası', btn: 'Sayfa Ayarları',
       desc: 'Sitedeki Yazılar sekmesinin başlığı, açıklaması ve başlığın arkasındaki ışık rengi.',
@@ -342,9 +369,6 @@
         return `<div class="fld"><span class="fld-l">${f.l}</span>${rte(f.k, val)}${help(f)}</div>`;
       case 'select':
         return `<label class="fld"><span>${lbl(f)}</span><select data-k="${f.k}">${f.options.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>${help(f)}</label>`;
-      case 'segment':
-        // Kart görünümlü seçim; değer gizli alanda tutulur, form-grid'e data-[anahtar] olarak yansır
-        return `<div class="fld"><span class="fld-l">${lbl(f)}</span><div class="seg" role="radiogroup">${f.options.map(([v, l, sub]) => `<button type="button" role="radio" aria-checked="${v === val}" data-seg="${f.k}" data-v="${esc(v)}" class="${v === val ? 'on' : ''}"><b>${l}</b>${sub ? `<small>${sub}</small>` : ''}</button>`).join('')}</div><input type="hidden" data-k="${f.k}" value="${esc(val || '')}"></div>`;
       case 'color': {
         // Değer metin kutusunda tutulur; boş = otomatik
         const v = /^#[0-9a-f]{6}$/i.test(val || '') ? val.toUpperCase() : '';
@@ -458,16 +482,6 @@
       });
     });
 
-    // Kart seçimi (ör. içerik türü): seçilen değer gizli alana ve forma yazılır
-    $$('[data-seg]', root).forEach((b) => b.addEventListener('click', () => {
-      const k = b.dataset.seg;
-      $$(`[data-seg="${k}"]`, root).forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-checked', on); });
-      $(`[data-k="${k}"]`, root).value = b.dataset.v;
-      root.dataset[k] = b.dataset.v;
-      const h = $('.vh h1', view);
-      if (k === 'kind' && h) h.textContent = h.textContent.replace(/Video|Blog Yazısı/, b.dataset.v === 'video' ? 'Video' : 'Blog Yazısı');
-      markDirty();
-    }));
 
     // Renk alanları: seçici ↔ metin kutusu
     $$('[data-color-for]', root).forEach((pick) => {
@@ -736,11 +750,11 @@
     view.style.animation = 'none'; void view.offsetWidth; view.style.animation = '';
     window.scrollTo(0, 0);
 
-    // Videolar, Yazılar'a katıldı (videolar aynı kimlikle yazıya dönüştü)
-    if (v === 'videos') { location.replace(a === 'edit' && id ? `#posts/edit/${id}` : '#posts'); return; }
+    // Eski bağlantı: "Yazılar & Videolar" tek bölümken #posts/new/video
+    if (v === 'posts' && a === 'new' && id === 'video') { location.replace('#videos/new'); return; }
     if (TYPES[v]) {
       if (a === 'settings' && SECTIONS[v]) return sectionView(v);
-      if (a === 'new') return formView(v, null, id); // #posts/new/video ya da #posts/new/yazi
+      if (a === 'new') return formView(v, null);
       if (a === 'edit') return formView(v, id);
       return listView(v);
     }
@@ -776,7 +790,7 @@
     }
 
     const colls = [
-      { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => '#/yazilar/' + x.slug, thumb: (x) => (S.postKind(x) === 'video' ? S.ytThumb(x.video, 'maxresdefault') : x.cover), excerpt: (x) => x.excerpt },
+      { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => (S.postKind(x) === 'video' ? '#/videolar/' : '#/yazilar/') + x.slug, thumb: (x) => (S.postKind(x) === 'video' ? S.ytThumb(x.video, 'maxresdefault') : x.cover), excerpt: (x) => x.excerpt },
       { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => '#/podcast/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => (x.description || '').replace(/<[^>]+>/g, '') },
       { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => '#/remixler/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt || x.original || (x.description || '').replace(/<[^>]+>/g, '') },
       { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => '#/sayfa/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt }
@@ -854,7 +868,7 @@
     crumbs(['Gösterge Paneli']);
     const cnt = (k) => (D[k] || []).length;
     const all = [
-      ...(D.posts || []).map((x) => ({ ...x, _t: 'posts', _l: S.postKind(x) === 'video' ? 'Video' : 'Yazı' })),
+      ...(D.posts || []).map((x) => ({ ...x, _t: postType(x), _l: S.postKind(x) === 'video' ? 'Video' : 'Yazı' })),
       ...(D.podcasts || []).map((x) => ({ ...x, _t: 'podcasts', _l: 'Podcast' })),
       ...(D.remixes || []).map((x) => ({ ...x, _t: 'remixes', _l: 'Remix' }))
     ].sort(byDate).slice(0, 8);
@@ -874,8 +888,8 @@
       ${!Yayin.ready() ? `<div class="alert"><span>⇪</span><div><b>Site henüz yayına bağlı değil.</b> GitHub bağlantısını kurun; kaydettiğiniz her şey otomatik olarak yayına gitsin: <a href="#yayin" style="text-decoration:underline">Yayın &amp; SEO</a>.</div></div>` : ''}
       ${guide ? `<div class="alert"><span>ℹ</span><div><b>Örnek içerikler yüklü.</b> Her özelliğin nasıl kullanıldığını <a href="index.html#/yazilar/${esc(guide.slug)}" target="_blank" style="text-decoration:underline">“${esc(guide.title)}”</a> yazısında görebilir, <a href="#posts/edit/${guide.id}" style="text-decoration:underline">panelde nasıl hazırlandığını</a> inceleyebilirsiniz. Örnekleri ilgili listelerden silebilirsiniz.</div></div>` : ''}
       <div class="stats">
-        <a class="stat" href="#posts"><span class="ic">▶</span><div class="n">${(D.posts || []).filter((x) => S.postKind(x) === 'video').length}</div><div class="l">Video</div></a>
-        <a class="stat" href="#posts"><span class="ic">✎</span><div class="n">${(D.posts || []).filter((x) => S.postKind(x) === 'yazi').length}</div><div class="l">Blog Yazısı</div></a>
+        <a class="stat" href="#videos"><span class="ic">▶</span><div class="n">${(D.posts || []).filter((x) => S.postKind(x) === 'video').length}</div><div class="l">Video</div></a>
+        <a class="stat" href="#posts"><span class="ic">✎</span><div class="n">${(D.posts || []).filter((x) => S.postKind(x) === 'yazi').length}</div><div class="l">Yazı</div></a>
         <a class="stat" href="#podcasts"><span class="ic">◉</span><div class="n">${cnt('podcasts')}</div><div class="l">Podcast Bölümü</div></a>
         <a class="stat" href="#remixes"><span class="ic">♫</span><div class="n">${cnt('remixes')}</div><div class="l">Remix</div></a>
         <a class="stat" href="#pages"><span class="ic">▤</span><div class="n">${cnt('pages')}</div><div class="l">Özel Sayfa</div></a>
@@ -906,8 +920,8 @@
         <div>
           <div class="card"><h3>Hızlı işlemler</h3>
             <div class="quick">
-              <a class="btn" href="#posts/new/video">▶ Yeni video</a>
-              <a class="btn" href="#posts/new/yazi">✎ Yeni blog yazısı</a>
+              <a class="btn" href="#videos/new">▶ Yeni video</a>
+              <a class="btn" href="#posts/new">✎ Yeni yazı</a>
               <a class="btn" href="#podcasts/new">◉ Yeni bölüm</a>
               <a class="btn" href="#remixes/new">♫ Yeni remix</a>
               <a class="btn" href="#pages/new">▤ Yeni sayfa</a>
@@ -928,15 +942,10 @@
      ====================================================================== */
   function listView(type) {
     const T = TYPES[type];
+    const C = collOf(type);
     crumbs([T.title]);
-    const arr = (D[type] || []).slice().sort(byDate);
-    const isPosts = type === 'posts';
-    const kindOf = (x) => (isPosts ? S.postKind(x) : '');
-    // Yazılar & Videolar: önce video, sonra blog yazısı oluşturma düğmesi
-    const newBtns = isPosts
-      ? `<a class="btn btn-acid" href="#posts/new/video">▶ Yeni Video</a><a class="btn" href="#posts/new/yazi">✎ Yeni Blog Yazısı</a>`
-      : `<a class="btn btn-acid" href="#${type}/new">+ Yeni ${T.one}</a>`;
-    const nKind = (k) => arr.filter((x) => kindOf(x) === k).length;
+    const arr = (D[C] || []).filter((x) => inType(type, x)).sort(byDate);
+    const newBtns = `<a class="btn btn-acid" href="#${type}/new">+ Yeni ${T.one}</a>`;
 
     view.innerHTML = `
       <div class="vh"><div><h1>${T.title}</h1><p>${T.desc}</p></div>
@@ -944,14 +953,13 @@
       ${arr.length ? `
       <div class="toolbar">
         <label class="search"><input type="search" id="q" placeholder="${T.title} içinde ara..."></label>
-        ${isPosts ? `<select id="kd" style="width:auto"><option value="">Tüm türler</option><option value="video">▶ Videolar (${nKind('video')})</option><option value="yazi">✎ Blog yazıları (${nKind('yazi')})</option></select>` : ''}
         <select id="st" style="width:auto"><option value="">Tümü (${arr.length})</option><option value="1">Yayında (${arr.filter((x) => x.published !== false).length})</option><option value="0">Taslak (${arr.filter((x) => x.published === false).length})</option></select>
       </div>
       <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>Başlık</th><th>Tarih</th><th>Durum</th><th style="text-align:right">İşlemler</th></tr></thead>
         <tbody>${arr.map((x) => {
           const th = T.thumb(x);
-          return `<tr data-id="${x.id}" data-s="${esc((x.title + ' ' + (T.sub(x) || '')).toLocaleLowerCase('tr'))}" data-p="${x.published === false ? 0 : 1}" data-kind="${kindOf(x)}">
+          return `<tr data-id="${x.id}" data-s="${esc((x.title + ' ' + (T.sub(x) || '')).toLocaleLowerCase('tr'))}" data-p="${x.published === false ? 0 : 1}">
             <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}</div><div class="ts">${esc(T.sub(x) || '')}</div></div></div></td>
             <td class="dt">${S.fmtDate(x.date)}</td>
             <td><button class="pill ${x.published === false ? '' : 'on'}" data-toggle title="Durumu değiştir">${x.published === false ? 'Taslak' : 'Yayında'}</button></td>
@@ -965,23 +973,22 @@
       <div class="tbl-wrap"><div class="empty"><b>Henüz ${T.one.toLowerCase()} yok</b>İlk içeriğinizi ekleyerek başlayın.<br><br><div class="empty-acts">${newBtns}</div></div></div>`}`;
 
     const filter = () => {
-      const q = ($('#q').value || '').toLocaleLowerCase('tr'), st = $('#st').value, kd = $('#kd') ? $('#kd').value : '';
+      const q = ($('#q').value || '').toLocaleLowerCase('tr'), st = $('#st').value;
       $$('tbody tr', view).forEach((tr) => {
-        tr.hidden = !(tr.dataset.s.includes(q) && (st === '' || tr.dataset.p === st) && (kd === '' || tr.dataset.kind === kd));
+        tr.hidden = !(tr.dataset.s.includes(q) && (st === '' || tr.dataset.p === st));
       });
     };
     if (arr.length) {
       $('#q').addEventListener('input', filter);
       $('#st').addEventListener('change', filter);
-      if ($('#kd')) $('#kd').addEventListener('change', filter);
     }
 
     view.onclick = (e) => {
       const tr = e.target.closest('tr[data-id]');
       if (!tr) return;
       const id = tr.dataset.id;
-      const idx = D[type].findIndex((x) => x.id === id);
-      const item = D[type][idx];
+      const idx = D[C].findIndex((x) => x.id === id);
+      const item = D[C][idx];
       if (e.target.closest('[data-edit]')) { location.hash = `#${type}/edit/${id}`; }
       else if (e.target.closest('[data-toggle]')) {
         item.published = item.published === false;
@@ -994,13 +1001,13 @@
         copy.title = item.title + ' (kopya)';
         copy.published = false;
         copy.featured = false;
-        if (copy.slug) copy.slug = uniqueSlug(type, item.slug + '-kopya');
-        D[type].push(copy);
+        if (copy.slug) copy.slug = uniqueSlug(C, item.slug + '-kopya');
+        D[C].push(copy);
         persist('Kopya oluşturuldu (taslak)');
         listView(type);
       } else if (e.target.closest('[data-del]')) {
         if (!confirm(`“${item.title}” silinsin mi? Bu işlem geri alınamaz.`)) return;
-        D[type].splice(idx, 1);
+        D[C].splice(idx, 1);
         if (type === 'pages') D.menu = D.menu.filter((m) => !(m.type === 'page' && m.target === item.slug));
         persist('Silindi');
         listView(type);
@@ -1011,22 +1018,22 @@
   /* ======================================================================
      Form görünümü (ekle / düzenle)
      ====================================================================== */
-  function formView(type, id, kind) {
+  function formView(type, id) {
     view.onclick = null;
     const T = TYPES[type];
+    const C = collOf(type);
     const isNew = !id;
-    let item = isNew ? newItem(type, kind) : (D[type] || []).find((x) => x.id === id);
+    let item = isNew ? newItem(C, T.kind) : (D[C] || []).find((x) => x.id === id);
     if (!item) { toast('İçerik bulunamadı', true); go('#' + type); return; }
+    // Video Yazılar'dan (ya da yazı Videolar'dan) açıldıysa kendi bölümüne geç
+    if (!isNew && !inType(type, item)) { location.replace(`#${postType(item)}/edit/${id}`); return; }
     if (type === 'pages' && !isNew) item = { ...item, inMenu: D.menu.some((m) => m.type === 'page' && m.target === item.slug) };
-    if (type === 'posts') item = { ...item, kind: item.kind === 'video' || item.kind === 'yazi' ? item.kind : S.postKind(item) };
-    const one = type === 'posts' ? (item.kind === 'video' ? 'Video' : 'Blog Yazısı') : T.one;
+    const one = T.one;
 
     crumbs([`<a href="#${type}">${T.title}</a>`, isNew ? 'Yeni ' + one : esc(item.title)]);
     view.dataset.form = '1';
 
-    // "when" alanları yalnızca seçili türde görünür (form-grid[data-kind])
-    const main = T.fields.filter((f) => !f.side)
-      .map((f) => (f.when ? `<div data-when="${f.when}">${field(f, item[f.k])}</div>` : field(f, item[f.k])));
+    const main = T.fields.filter((f) => !f.side).map((f) => field(f, item[f.k]));
 
     view.innerHTML = `
       <div class="vh"><div><h1>${isNew ? 'Yeni ' + one : one + ' Düzenle'}</h1><p>${isNew ? 'Alanları doldurun ve kaydedin.' : 'Son değişiklikleri kaydetmeyi unutmayın. <code>Ctrl+S</code> ile hızlı kaydet.'}</p></div>
@@ -1035,7 +1042,7 @@
           ${!isNew ? `<a class="btn btn-ghost" target="_blank" href="index.html${T.view(item)}">Görüntüle ↗</a>` : ''}
           <button class="btn btn-acid" data-save>Kaydet</button>
         </div></div>
-      <form class="form-grid" id="frm" novalidate ${item.kind ? `data-kind="${item.kind}"` : ''}>
+      <form class="form-grid" id="frm" novalidate>
         <div class="form-main">${main.join('')}</div>
         <div class="form-side">
           ${sideGroups(T.fields, item)}
@@ -1051,30 +1058,31 @@
     const save = () => {
       const v = collect(frm, T.fields);
       if (!v.title) { toast('Başlık zorunludur', true); $('[data-k="title"]', frm).focus(); return; }
-      if (v.kind === 'video' && !S.ytId(v.video)) { toast('Video için geçerli bir YouTube bağlantısı girin', true); $('[data-k="video"]', frm).focus(); return; }
-      if (v.kind === 'yazi' && !v.cover) { toast('Blog yazısı için bir kapak görseli ekleyin', true); $('[data-k="cover"]', frm).focus(); return; }
-      if ('slug' in v) v.slug = uniqueSlug(type, S.slugify(v.slug || v.title), item.id);
+      if (T.kind === 'video' && !S.ytId(v.video)) { toast('Video için geçerli bir YouTube bağlantısı girin', true); $('[data-k="video"]', frm).focus(); return; }
+      if (T.kind === 'yazi' && !v.cover) { toast('Yazı için bir kapak görseli ekleyin', true); $('[data-k="cover"]', frm).focus(); return; }
+      if ('slug' in v) v.slug = uniqueSlug(C, S.slugify(v.slug || v.title), item.id);
 
       const inMenu = v.inMenu;
       delete v.inMenu;
       const oldSlug = item.slug;
       const rec = { ...item, ...v };
       delete rec.inMenu;
+      if (T.kind) rec.kind = T.kind;
       rec.updated = today(); // site haritası ve yapılandırılmış veride "son güncelleme"
 
-      if (isNew) { rec.id = S.uid(); D[type].push(rec); }
-      else { const i = D[type].findIndex((x) => x.id === rec.id); D[type][i] = rec; }
+      if (isNew) { rec.id = S.uid(); D[C].push(rec); }
+      else { const i = D[C].findIndex((x) => x.id === rec.id); D[C][i] = rec; }
 
       if (rec.featured) {
         ['posts', 'podcasts', 'remixes', 'pages'].forEach((c) => {
           (D[c] || []).forEach((x) => {
-            if (c !== type || x.id !== rec.id) x.featured = false;
+            if (c !== C || x.id !== rec.id) x.featured = false;
           });
         });
         D.settings.featured = {
           ...(D.settings.featured || {}),
           mode: 'manual',
-          type,
+          type: C,
           id: rec.id
         };
       } else if (D.settings.featured && D.settings.featured.id === rec.id) {
@@ -1099,7 +1107,7 @@
     const del = $('[data-del]', view);
     if (del) del.addEventListener('click', () => {
       if (!confirm(`“${item.title}” silinsin mi? Bu işlem geri alınamaz.`)) return;
-      D[type] = D[type].filter((x) => x.id !== item.id);
+      D[C] = D[C].filter((x) => x.id !== item.id);
       if (type === 'pages') D.menu = D.menu.filter((m) => !(m.type === 'page' && m.target === item.slug));
       persist('Silindi');
       go('#' + type);
@@ -1108,7 +1116,7 @@
   }
 
   /* ======================================================================
-     Liste sayfası ayarları (Yazılar sayfası, Podcast programı)
+     Liste sayfası ayarları (Videolar, Yazılar, Podcast programı, Remixler)
      ====================================================================== */
   function sectionView(type) {
     view.onclick = null;
@@ -1120,7 +1128,7 @@
       <div class="vh"><div><h1>${C.title}</h1><p>${C.desc}</p></div>
         <div class="vh-actions">
           <a class="btn btn-ghost" href="#${type}">← ${T.title}</a>
-          <a class="btn btn-ghost" href="index.html${{ posts: '#/yazilar', podcasts: '#/podcast', remixes: '#/remixler' }[type]}" target="_blank">Görüntüle ↗</a>
+          <a class="btn btn-ghost" href="index.html${{ videos: '#/videolar', posts: '#/yazilar', podcasts: '#/podcast', remixes: '#/remixler' }[type]}" target="_blank">Görüntüle ↗</a>
           <button class="btn btn-acid" data-save>Kaydet</button>
         </div></div>
       <form class="form-grid" id="frm" novalidate>
@@ -1581,10 +1589,10 @@
      Menü yöneticisi
      ====================================================================== */
   const MENU_TYPES = [
-    ['home', 'Ana Sayfa'], ['blog', 'Yazılar'], ['podcast', 'Podcast'],
+    ['home', 'Ana Sayfa'], ['videos', 'Videolar'], ['blog', 'Yazılar'], ['podcast', 'Podcast'],
     ['remixes', 'Remixler'], ['about', 'Hakkında'], ['page', 'Özel Sayfa'], ['url', 'Dış Bağlantı (URL)']
   ];
-  const AUTO_PATH = { home: '#/', blog: '#/yazilar', podcast: '#/podcast', remixes: '#/remixler', about: '#/hakkinda' };
+  const AUTO_PATH = { home: '#/', videos: '#/videolar', blog: '#/yazilar', podcast: '#/podcast', remixes: '#/remixler', about: '#/hakkinda' };
 
   function menuView() {
     view.onclick = null;
@@ -1943,7 +1951,7 @@
     const subPath = !seo.siteUrl && repo && !/\.github\.io$/i.test(repo.split('/')[1] || '');
     return [
       [Yayin.ready() ? 'ok' : 'warn', 'GitHub bağlantısı', Yayin.ready() ? 'Kaydettiğiniz içerik otomatik olarak yayına gider.' : 'Sağdaki “GitHub bağlantısı” kartını doldurun.', ''],
-      [own ? 'ok' : 'warn', 'Kendi içerikleriniz', own ? `${own} içerik yayında.` : 'Henüz kendi içeriğiniz yok. Örnek içerikler yayına gönderilmez.', '#posts/new/video'],
+      [own ? 'ok' : 'warn', 'Kendi içerikleriniz', own ? `${own} içerik yayında.` : 'Henüz kendi içeriğiniz yok. Örnek içerikler yayına gönderilmez.', '#videos/new'],
       [nSamples ? 'info' : 'ok', 'Örnek içerikler', nSamples ? `${nSamples} örnek içerik panelde duruyor; yayına gönderilmez. İsterseniz hepsini tek tıkla silebilirsiniz.` : 'Panelde örnek içerik yok.', nSamples ? 'del-samples' : ''],
       [sampleAbout || !a.bio ? 'warn' : 'ok', 'Hakkında sayfası', sampleAbout ? 'Hakkında sayfasında örnek metin duruyor. Kendi biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.' : a.bio ? 'Biyografiniz yazılmış.' : 'Biyografinizi yazın: Google ve yapay zekâ sizi bu sayfadan tanır.', '#about'],
       [ownRole ? 'ok' : 'warn', 'Kısa tanım', ownRole ? `“${esc(a.role)}”` : 'Hakkında’ya kim olduğunuzu anlatan tek cümlelik kendi tanımınızı yazın (ör. “Müzik prodüktörü ve DJ”).', '#about'],

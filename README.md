@@ -23,9 +23,10 @@
 - İstatistik bandı: "… video, … yazı, … podcast bölümü ve … remix".
 - **Akış:** Tüm içerikler tarih sırasıyla; `Hepsi`, `Video`, `Yazı`, `Podcast`, `Remix` filtreleri.
 
-### Yazılar (Videolar + Blog Yazıları tek sekmede)
-- barisozcan.com/yazilar düzeni: büyük başlık, açıklama ve küçük resimli liste.
-- **Videolar öncelikli:** YouTube videoları ve blog yazıları aynı listede paylaşılır.
+### Videolar ve Yazılar (iki ayrı sekme)
+- **Videolar** (`/videolar/`): YouTube videoları; **Yazılar** (`/yazilar/`): kapak görselli blog yazıları. Menüde Videolar önce gelir.
+- İki sekme aynı düzende (barisozcan.com/yazilar): büyük başlık, açıklama, ışık rengi ve küçük resimli liste; videoların küçük resminde yarı saydam oynat işareti.
+- Yanlış sekmedeki eski bir adres (ör. `/yazilar/video-adi/`) doğru sekmeye kendiliğinden yönlenir.
 - **Video sayfası:** Üstte YouTube oynatıcı, sağında başlık, tarih, kelime sayısı ve "YouTube'da izle". Sayfa kaydırılınca video **solda küçük pencerede sabit kalır** (tablette sağ altta, mobilde menünün altında); × ile yerine döner.
 - **Blog yazısı sayfası:** Aynı düzen; videonun yerinde **kapak görseli** durur.
 - Ortak özellikler:
@@ -33,7 +34,7 @@
   - **Metin arası görseller:** ortada, sağa yaslı, sola yaslı, geniş — her birine açıklama ve kaynak satırı.
   - **Kaynaklı alıntılar** (alıntının altında kimin söylediği).
   - Sayfa sonunda açılır **Notlar ve kaynaklar**, **Görsel kaynakları ve lisanslar**, tıklanabilir **kavram kutuları** ve ortak etiketlere göre **ilgili içerik**.
-  - Menünün altında konum satırı (Yazılar › Etiket › …) ile önceki / sonraki bağlantıları, üstte okuma ilerleme çubuğu.
+  - Menünün altında konum satırı (Videolar ya da Yazılar › Etiket › …) ile aynı sekmedeki önceki / sonraki bağlantıları, üstte okuma ilerleme çubuğu.
   - Sayfa tonu: kapak görselinden ya da videodan otomatik seçilir veya panelden belirlenir.
 
 ### Podcast
@@ -59,12 +60,11 @@
 ## 🛠 Kontrol Paneli (`admin.html`)
 
 - **Giriş:** Şifre korumalı (ilk şifre: `admin` — Ayarlar'dan değiştirin).
-- **Gösterge Paneli:** Video, blog yazısı, podcast, remix, sayfa ve menü sayıları; öne çıkan manşet kartı; son içerikler; depolama göstergesi.
-- **Yazılar & Videolar:**
-  - **▶ Yeni Video** ve **✎ Yeni Blog Yazısı** düğmeleri; formun başında tür seçimi.
-  - Video için YouTube bağlantısı (başlık otomatik gelir), blog yazısı için kapak görseli zorunludur.
-  - Listede tür etiketi ve "Videolar / Blog yazıları" filtresi.
-  - **⚙ Sayfa Ayarları:** Yazılar sayfasının başlığı, açıklaması ve ışık rengi.
+- **Gösterge Paneli:** Video, yazı, podcast, remix, sayfa ve menü sayıları; öne çıkan manşet kartı; son içerikler; depolama göstergesi.
+- **Videolar** ve **Yazılar** ayrı bölümler:
+  - **+ Yeni Video**: YouTube bağlantısı zorunlu (başlık otomatik gelir). **+ Yeni Yazı**: kapak görseli zorunlu.
+  - Her bölümün kendi **⚙ Sayfa Ayarları**: sitedeki sekmenin başlığı, açıklaması ve ışık rengi.
+  - İkisi de aynı veride (`posts`) durur; içeriğin türü hangi sekmede görüneceğini belirler.
 - **Zengin metin editörü:** başlıklar, kalın/italik, listeler, bağlantılar, **▣ Görsel** (yerleşim seçmeli pencere; eklenen görsele tıklayınca düzenlenir), **❝ Kaynaklı** alıntı, YouTube gömme ve HTML kaynak düzenleme.
 - **Podcast:** bölümler (özet, MP3, gömülü oynatıcı, bölüm metni, kaynaklar, kapak kaynağı) ve **⚙ Program Ayarları** (kapak, ad, açıklama, platform bağlantıları).
 - **Remixler:** remixler (orijinal parça, özet, MP3, gömülü oynatıcı, remixin hikâyesi, notlar ve kaynaklar, süre, tür, BPM, kapak kaynağı, sayfa tonu) ve **⚙ Sayfa Ayarları** (kapak, ad, üst etiket, açıklama, SoundCloud / Mixcloud / Spotify / YouTube bağlantıları, ışık rengi).
@@ -141,7 +141,7 @@ Akcan Web Site/
 
 Yayındaki site, Google'ın ve ChatGPT, Claude, Perplexity gibi yapay zekâ asistanlarının okuyabileceği şekilde hazırlanır:
 
-- **Her içeriğin kendi adresi var:** `/yazilar/yazi-adi/`, `/podcast/bolum-adi/`, `/remixler/remix-adi/`, `/hakkinda/`, `/sayfa/iletisim/`.
+- **Her içeriğin kendi adresi var:** `/videolar/video-adi/`, `/yazilar/yazi-adi/`, `/podcast/bolum-adi/`, `/remixler/remix-adi/`, `/hakkinda/`, `/sayfa/iletisim/`.
 - **Her sayfa hazır HTML olarak gelir:** içerik JavaScript çalışmadan da okunur (yapay zekâ tarayıcıları JavaScript çalıştırmaz). Ziyaretçi için site yine tek sayfa gibi akar; sayfa değişince ses oynatıcı susmaz.
 - **Her sayfaya özel** başlık, açıklama, kanonik adres, Open Graph / X paylaşım kartı (WhatsApp, X, LinkedIn önizlemesi).
 - **Yapılandırılmış veri (schema.org):** `Person` (sosyal profillerinizle), `WebSite`, `BlogPosting`, `VideoObject` (Google video sonuçları), `PodcastSeries` / `PodcastEpisode`, `MusicRecording`, `BreadcrumbList`, `ProfilePage`; yazılardaki kaynaklar `citation` olarak.

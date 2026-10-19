@@ -31,8 +31,9 @@
   /** Örnek içerik mi? Örnekler panelde ve önizlemede görünür, yayına hiç gönderilmez. */
   const isSample = (x) => !!x && (x.sample === true || SAMPLE_IDS.has(x.id));
 
+  // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler (bkz. migrate)
   const DEFAULTS = {
-    version: 1,
+    version: 2,
     sampleVersion: SAMPLE_VERSION,
     settings: {
       siteName: 'Akcan',
@@ -50,10 +51,16 @@
         soundcloud: 'https://soundcloud.com/',
         email: 'merhaba@ornek.com'
       },
-      // Yazılar liste sayfası
+      // Videolar liste sayfası
+      videosPage: {
+        title: 'Videolar',
+        intro: 'Her hafta YouTube’a yeni bir video yüklüyorum. Burada videolarımı, yazıya dökülmüş notları ve kaynaklarıyla birlikte bulacaksınız.',
+        tint: '#7A1E2E'
+      },
+      // Yazılar (blog) liste sayfası
       postsPage: {
         title: 'Yazılar',
-        intro: 'Her hafta yeni bir video ya da yazı yayınlıyorum. Burada hem YouTube videolarımı, yazıya dökülmüş notlarıyla birlikte, hem de blog yazılarımı bulacaksınız.',
+        intro: 'Müzik, prodüksiyon ve sesin hikâyeleri üzerine yazılarım: bazen bir şarkının arkasındaki hikâye, bazen stüdyodan bir not.',
         tint: '#7A4E1E'
       },
       // Podcast programı (liste sayfasının üst bölümü)
@@ -109,12 +116,13 @@
     // Örnek içerik js/ornek-icerik.js dosyasından gelir; dosya yoksa site boş başlar
     about: O.about || { name: 'Akcan', role: '', photo: '', heroLeft: '', heroRight: '', lead: '', accent: '#3A9FF0', bio: '' },
     menu: O.menu || [
+      { id: 'm2', label: 'Videolar', type: 'videos', target: '', visible: true, newTab: false },
       { id: 'm1', label: 'Yazılar', type: 'blog', target: '', visible: true, newTab: false },
       { id: 'm3', label: 'Podcast', type: 'podcast', target: '', visible: true, newTab: false },
       { id: 'm4', label: 'Remixler', type: 'remixes', target: '', visible: true, newTab: false },
       { id: 'm6', label: 'Hakkında', type: 'about', target: '', visible: true, newTab: false }
     ],
-    // Yazılar sekmesi: kind 'video' (YouTube videosu) ya da 'yazi' (kapak görselli blog yazısı)
+    // Videolar ve Yazılar sekmeleri tek koleksiyonda: kind 'video' (YouTube videosu) ya da 'yazi' (kapak görselli blog yazısı)
     posts: O.posts || [],
     videos: [],
     podcasts: O.podcasts || [],
@@ -137,9 +145,12 @@
     return over === undefined ? base : over;
   }
 
+  // Videolar ve yazılar aynı listedeyken Yazılar sayfasının örnek açıklaması
+  const OLD_POSTS_INTRO = 'Her hafta yeni bir video ya da yazı yayınlıyorum. Burada hem YouTube videolarımı, yazıya dökülmüş notlarıyla birlikte, hem de blog yazılarımı bulacaksınız.';
+
   /**
    * Eski kayıtları güncel yapıya taşır. Değişiklik yaptıysa true döner.
-   * Videolar artık Yazılar'ın parçası: her video, aynı kimlikle videolu bir yazıya dönüşür
+   * En eski sürümde ayrı tutulan videolar, aynı kimlikle videolu bir yazıya dönüşür
    * (öne çıkan seçimi ve eski #/video/... bağlantıları bu sayede bozulmaz).
    */
   function migrate(data, raw) {
@@ -160,11 +171,22 @@
       data.videos = [];
       changed = true;
     }
-    if ((data.menu || []).some((m) => m.type === 'videos')) {
-      const hasBlog = data.menu.some((m) => m.type === 'blog');
-      data.menu = hasBlog
-        ? data.menu.filter((m) => m.type !== 'videos')
-        : data.menu.map((m) => (m.type === 'videos' ? { ...m, type: 'blog', label: 'Yazılar' } : m));
+    // 2: Videolar ve Yazılar ayrı sekmeler. Menüye bir kez "Videolar" eklenir (sonradan kaldırılırsa geri gelmez)
+    if (!(data.version >= 2)) {
+      data.menu = data.menu || [];
+      if (!data.menu.some((m) => m.type === 'videos')) {
+        const i = data.menu.findIndex((m) => m.type === 'blog');
+        const at = i >= 0 ? i : (data.menu[0] && data.menu[0].type === 'home' ? 1 : 0);
+        data.menu.splice(at, 0, { id: uid(), label: 'Videolar', type: 'videos', target: '', visible: true, newTab: false });
+      }
+      // Yazılar sayfasının açıklaması eski örnek metinse (videoları da anlatan) yalnızca yazıları anlatan metinle değişir
+      const pp = data.settings && data.settings.postsPage;
+      if (pp && pp.intro === OLD_POSTS_INTRO) pp.intro = DEFAULTS.settings.postsPage.intro;
+      // Panelde hiç kaydedilmemiş rehber yazısı, yeni sekme düzenini anlatan metinle güncellenir
+      const guide = (O.posts || []).find((x) => x.id === 'yazi-rehber');
+      const mine = (data.posts || []).find((x) => x.id === 'yazi-rehber' && !x.updated);
+      if (guide && mine) mine.content = guide.content;
+      data.version = 2;
       changed = true;
     }
     const f = data.settings && data.settings.featured;
