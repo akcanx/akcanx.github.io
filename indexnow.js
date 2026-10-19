@@ -55,11 +55,16 @@ function fark(eskiXml, yeniXml) {
 /** Ana sayfa (= site adresi): site haritasındaki en kısa adres */
 const ana = (yeniXml) => [...adresler(yeniXml).keys()].sort((a, b) => a.length - b.length)[0] || '';
 
-/** IndexNow isteği; anahtar dosyası sitenin kökünde (alt klasörde yayınlanıyorsa o klasörde) */
+/**
+ * IndexNow isteği; anahtar dosyası sitenin kökünde (alt klasörde yayınlanıyorsa o klasörde).
+ * Yalnızca sitenin kendi adresleri gider: alan adı değiştiği yayında eski haritadaki başka ana makinenin
+ * adresleri listeye girerse IndexNow isteğin tamamını reddeder (422)
+ */
 function istek(site, urls) {
   const host = new URL(site).host;
   const key = anahtar(host);
-  return { url: ENDPOINT, body: { host, key, keyLocation: new URL(key + '.txt', site).href, urlList: urls } };
+  const own = urls.filter((u) => { try { return new URL(u).host === host && u.startsWith(new URL(site).href); } catch (e) { return false; } });
+  return { url: ENDPOINT, body: { host, key, keyLocation: new URL(key + '.txt', site).href, urlList: own } };
 }
 
 /* ---------- Komut satırı ---------- */
@@ -78,7 +83,9 @@ async function main(args) {
     const b = JSON.parse(process.env.BILDIRIM || '{}');
     if (!b.site || !(b.adresler || []).length) { console.log('IndexNow: bildirilecek adres yok'); return 0; }
     const r = istek(b.site, b.adresler);
-    const res = await fetch(r.url, { method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf-8' }, body: JSON.stringify(r.body) });
+    if (!r.body.urlList.length) { console.log('IndexNow: sitenin kendi adresi yok, bildirim yapılmadı'); return 0; }
+    // Uç nokta yanıt vermezse en fazla 30 sn beklenir: sıradaki yayın bu işi beklemesin
+    const res = await fetch(r.url, { method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf-8' }, body: JSON.stringify(r.body), signal: AbortSignal.timeout(30000) });
     console.log(`IndexNow: ${r.body.urlList.length} adres gönderildi → HTTP ${res.status}`);
     return res.status === 200 || res.status === 202 ? 0 : 1;
   }

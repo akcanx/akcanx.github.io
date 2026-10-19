@@ -492,14 +492,17 @@
       <ul class="seolist">${sc.maddeler.map((m) => `<li class="${m.ok === true ? 'ok' : 'no'}">${m.ok === true ? '✓ ' + esc(m.ad) : '! ' + esc(m.oneri)}</li>`).join('')}</ul>`;
   }
 
-  function collect(root, fields) {
+  // opt.commit === false: yalnızca okur (canlı önizleme); etiket kutusunda yazılmakta olan metin etikete çevrilmez
+  function collect(root, fields, opt) {
     const out = {};
+    const commit = !opt || opt.commit !== false;
     fields.forEach((f) => {
       if (f.t === 'tags') {
         const box = $(`[data-tags="${f.k}"]`, root);
         const pending = $('input', box).value.trim();
-        if (pending) addTag(box, pending);
+        if (pending && commit) addTag(box, pending);
         out[f.k] = $$('.tg-i', box).map((x) => x.dataset.v);
+        if (pending && !commit) out[f.k].push(...pending.split(',').map((s) => s.trim()).filter(Boolean));
       } else if (f.t === 'richtext') {
         out[f.k] = rteValue($(`.rte[data-rte="${f.k}"]`, root));
       } else {
@@ -1264,7 +1267,7 @@
     // SEO & GEO kutusu: formdaki değerlerle, yazdıkça (gecikmeli) yeniden çizilir; görselin genişliği ölçülür
     const seoBox = $('[data-seobox]', frm);
     let seoW = 0, seoImg = '', seoT = 0;
-    const seoRec = () => ({ ...item, ...collect(frm, T.fields), ...(T.kind ? { kind: T.kind } : {}) });
+    const seoRec = () => ({ ...item, ...collect(frm, T.fields, { commit: false }), ...(T.kind ? { kind: T.kind } : {}) });
     const paintSeo = () => {
       if (!seoBox || !seoBox.isConnected) return;
       const rec = seoRec(), R = seoRender(), o = R.seoOf(C, rec);

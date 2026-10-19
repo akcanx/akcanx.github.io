@@ -271,3 +271,13 @@ test('ara-baslik-capalari', () => {
   assert.match(html, /<h2 id="ses-hafiza">/);
   assert.match(html, /<h2> <\/h2>/);
 });
+
+test('snippet-sira-sayisi-ve-kisaltma', () => { // "20. yüzyıl", "Dr. Ayşe" cümle sonu sayılmaz
+  const a = 'Bu bölümde şehrin unutulmuş plakçılarını tek tek dolaşıyor, raflarda bekleyen eski plakların izini sürüyoruz, özellikle 20. yüzyılın sonunda açılan küçük dükkânların hikâyelerini dinliyoruz.';
+  const b = 'Bu bölümde stüdyoda kullandığımız mikrofonları, kabloları ve kayıt zincirinin her halkasını tek tek tanıtıyoruz, ayrıca Dr. Ayşe Yılmaz ile işitmenin nasıl çalıştığını konuşuyoruz.';
+  for (const s of [a, b]) {
+    assert.ok(s.indexOf('. ') >= 120 && s.indexOf('. ') < 160, 'örnek, kesim aralığına düşmeli');
+    const r = Render.snippet(s);
+    assert.ok(!/(20|Dr)\.$/.test(r), r);
+  }
+});

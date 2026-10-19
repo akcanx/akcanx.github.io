@@ -55,6 +55,7 @@ jobs:
 
       - name: Değişen adresler (IndexNow)
         id: fark
+        continue-on-error: true # hata olursa bildirim yapılmaz, yayın sürer
         run: node indexnow.js fark --eski eski-sitemap.xml --yeni _site/sitemap.xml --cikti "$GITHUB_OUTPUT"
 
       - uses: actions/upload-pages-artifact@v3
@@ -79,6 +80,7 @@ jobs:
     if: needs.derle.outputs.sayi != '0'
     runs-on: ubuntu-latest
     continue-on-error: true
+    timeout-minutes: 2 # yayın grubunu tutar: takılırsa sıradaki yayın beklemesin
     steps:
       - name: Kodu al
         uses: actions/checkout@v4

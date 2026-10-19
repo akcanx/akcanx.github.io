@@ -43,3 +43,16 @@ test('indexnow-istek-alan-adi', () => { // kendi alan adı: host, anahtar ve ana
   assert.equal(r.body.keyLocation, 'https://akcan.com/' + anahtar('akcan.com') + '.txt');
   assert.deepEqual(r.body.urlList, ['https://akcan.com/yazilar/x/']);
 });
+
+test('indexnow-alan-adi-gecisi', () => { // eski haritadaki başka ana makinenin adresleri isteği bozmaz (IndexNow 422)
+  const r = istek('https://akcan.com/', ['https://akcan.com/a/', 'https://akcanx.github.io/a/', 'https://akcanx.github.io/']);
+  assert.deepEqual(r.body.urlList, ['https://akcan.com/a/']);
+});
+
+test('is-akisi-bildirim-yayini-bozmaz', () => { // IndexNow adımları yayını durduramaz ya da bekletemez
+  const y = require('fs').readFileSync(require('path').join(__dirname, '..', '.github', 'workflows', 'yayin.yml'), 'utf8');
+  const fark = y.slice(y.indexOf('id: fark') - 60, y.indexOf('indexnow.js fark'));
+  assert.match(fark, /continue-on-error: true/);
+  const bildir = y.slice(y.indexOf('\n  bildir:'));
+  assert.match(bildir, /timeout-minutes: \d+/);
+});

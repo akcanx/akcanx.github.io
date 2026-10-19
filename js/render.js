@@ -53,11 +53,15 @@
     return cut.slice(0, Math.max(cut.lastIndexOf(' '), Math.floor(n * 0.6))).replace(/[\s,.;:–-]+$/, '') + '…';
   }
 
+  // Cümle sonu sayılmayan noktalar: kısaltmalar ("Dr.", "vb.") ve ardından büyük harf gelmeyen sıra sayıları ("20. yüzyıl")
+  const ABBR = /(?:^|[\s(])(?:dr|prof|doç|av|sn|bkz|örn|vb|vs|vd|no|st)\.$/i;
+  const notEnd = (s, i) => s[i] === '.' && (ABBR.test(s.slice(Math.max(0, i - 6), i + 1)) || (/\d/.test(s[i - 1] || '') && !/^\s+["“(]?[A-ZÇĞİÖŞÜ]/.test(s.slice(i + 1))));
+
   /** Arama sonucu açıklaması: 120–160 karakter arasındaki son cümle sonunda biter; yoksa kelime sınırında (clip) */
   function snippet(s) {
     s = String(s || '').replace(/\s+/g, ' ').trim();
     if (s.length <= 160) return s;
-    const ends = [...s.slice(0, 160).matchAll(/[.!?…](?=\s)/g)].map((m) => m.index).filter((i) => i >= 120);
+    const ends = [...s.slice(0, 160).matchAll(/[.!?…](?=\s)/g)].map((m) => m.index).filter((i) => i >= 120 && !notEnd(s, i));
     return ends.length ? s.slice(0, ends[ends.length - 1] + 1) : clip(s, 160);
   }
 
