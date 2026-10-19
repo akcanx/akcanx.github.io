@@ -154,9 +154,9 @@
  },
  "menu": [
   {
-   "id": "mv8mzh9poo8s6",
-   "label": "Yazılar",
-   "type": "blog",
+   "id": "mvf2t3nmj4tvp",
+   "label": "Videolar",
+   "type": "videos",
    "target": "",
    "visible": true,
    "newTab": false
@@ -165,6 +165,14 @@
    "id": "mv8mzh9ptgns0",
    "label": "Podcast",
    "type": "podcast",
+   "target": "",
+   "visible": true,
+   "newTab": false
+  },
+  {
+   "id": "mv8mzh9poo8s6",
+   "label": "Yazılar",
+   "type": "blog",
    "target": "",
    "visible": true,
    "newTab": false
