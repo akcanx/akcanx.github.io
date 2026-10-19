@@ -15,14 +15,16 @@
   /* ---------- Varsayılan içerik ---------- */
   const O = global.AKCAN_ORNEK || {};
   // Örnek içerik sürümü: yükseltildiğinde, kayıtlı verisi olan tarayıcılara da yeni örnekler bir kez eklenir
-  const SAMPLE_VERSION = 5;
+  const SAMPLE_VERSION = 6;
   // Sürüm 4'te eklenen örnekler (Gıda ve Gündem alt kategorilerinin yazıları)
   const NEW_SAMPLES_4 = new Set(['yazi-gida', 'yazi-gundem']);
   // Sürüm 5'te eklenen örnekler (Sofra ve Satır Arası podcast serileri, Sofra bölümleri)
   const NEW_SAMPLES_5 = new Set(['seri-sofra', 'seri-satir-arasi', 'pod-sofra-1', 'pod-sofra-2', 'pod-sofra-3']);
+  // Sürüm 6'da eklenen örnekler (Kitaplar sekmesi)
+  const NEW_SAMPLES_6 = new Set(['kitap-1', 'kitap-2', 'kitap-3']);
 
   /* ---------- Örnek içeriği tanıma ---------- */
-  const SAMPLE_IDS = new Set(['posts', 'podcasts', 'remixes', 'pages', 'series'].flatMap((c) => (O[c] || []).map((x) => x.id)));
+  const SAMPLE_IDS = new Set(['posts', 'podcasts', 'remixes', 'pages', 'series', 'books'].flatMap((c) => (O[c] || []).map((x) => x.id)));
   // Sitenin ilk sürümündeki örnekler her açılışta rastgele kimlik alıyordu: başlıklarından tanınır
   const LEGACY_SAMPLES = {
     posts: ['Bir Remix Nasıl Doğar?', 'Kulaklıkla Dinlemek Neden Farklı Hissettirir?', 'Gece Yarısı Stüdyo Notları', 'Stüdyo Turu: Ekipmanlarım ve Çalışma Düzenim', 'Canlı Set: Pazar Akşamı Seansı', 'Sıfırdan Remix Yapımı'],
@@ -46,6 +48,12 @@
   /* ---------- Podcast serileri ---------- */
   const SERIES_STATUS = { devam: 'Devam ediyor', tamam: 'Tamamlandı', yakinda: 'Yakında' };
   /** Bölümün bağlı olduğu seri */
+  /* ---------- Kitaplar ---------- */
+  const BOOK_STATUS = { yayinda: 'Yayında', onsiparis: 'Ön sipariş', yakinda: 'Yakında' };
+  const BOOK_FORMAT = { karton: 'Karton kapak', ciltli: 'Ciltli', ekitap: 'E-kitap', sesli: 'Sesli kitap' };
+  // Satış platformları: sitedeki düğmelerin sırası ve adları
+  const BOOK_SHOPS = [['amazon', 'Amazon'], ['dr', 'D&R'], ['kitapyurdu', 'Kitapyurdu'], ['idefix', 'Idefix'], ['bkm', 'BKM Kitap'], ['hepsiburada', 'Hepsiburada'], ['trendyol', 'Trendyol']];
+
   const seriesOf = (data, ep) => (ep && ep.series ? ((data && data.series) || []).find((s) => s.id === ep.series) : undefined);
   const cat = (id, name, desc) => ({ id, name, slug: id, desc, link: '' });
   const startCats = (what) => [
@@ -56,9 +64,9 @@
   /** Bir sekmenin alt kategorileri (tab: 'video' | 'yazi'); adı ya da bağlantısı olmayanlar sayılmaz */
   const cats = (data, tab) => ((((data && data.settings) || {})[CAT_KEYS[tab]] || {}).cats || []).filter((c) => c && c.id && c.name && c.slug);
 
-  // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler, 3 → alt kategoriler, 4 → podcast serileri (bkz. migrate)
+  // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler, 3 → alt kategoriler, 4 → podcast serileri, 5 → Kitaplar (bkz. migrate)
   const DEFAULTS = {
-    version: 4,
+    version: 5,
     sampleVersion: SAMPLE_VERSION,
     settings: {
       siteName: 'Akcan',
@@ -100,6 +108,13 @@
         eyebrow: 'Podcast · Sesin hikâyeleri',
         description: 'Her seri ayrı bir merak: müzik, sofralar ve gündem. Bir seri seçin; ister baştan dinleyin, ister en yeni bölümden başlayın.',
         tint: '#1F5A50'
+      },
+      // Kitaplar sekmesi: vitrinin üst bölümü (kitapların kendisi D.books'ta)
+      booksPage: {
+        title: 'Kitaplar',
+        eyebrow: 'Kitap · Basılı ve yayımlanmış',
+        intro: 'Basılmış ve yayımlanmış kitaplarım: her birinin hikâyesi, künyesi ve satın alabileceğiniz yerler.',
+        tint: '#4A3A1E'
       },
       // Remixler sayfasının üst bölümü (Podcast programının ikizi)
       remixPage: {
@@ -145,6 +160,7 @@
       { id: 'm1', label: 'Yazılar', type: 'blog', target: '', visible: true, newTab: false },
       { id: 'm3', label: 'Podcast', type: 'podcast', target: '', visible: true, newTab: false },
       { id: 'm4', label: 'Remixler', type: 'remixes', target: '', visible: true, newTab: false },
+      { id: 'm8', label: 'Kitaplar', type: 'books', target: '', visible: false, newTab: false },
       { id: 'm6', label: 'Hakkında', type: 'about', target: '', visible: true, newTab: false }
     ],
     // Videolar ve Yazılar sekmeleri tek koleksiyonda: kind 'video' (YouTube videosu) ya da 'yazi' (kapak görselli blog yazısı)
@@ -154,6 +170,8 @@
     series: O.series || [],
     podcasts: O.podcasts || [],
     remixes: O.remixes || [],
+    // Basılı kitaplar (dizideki sıra = vitrindeki sıra)
+    books: O.books || [],
     pages: O.pages || []
   };
 
@@ -258,6 +276,15 @@
       data.version = 4;
       changed = true;
     }
+    // 5: Kitaplar sekmesi. Sürüm 4 kaydında kitap yoktur (birleştirmede varsayılanlardan gelen örnekler atılır);
+    // menüye gizli "Kitaplar" öğesi bir kez eklenir (sonradan silinirse geri gelmez)
+    if (!(data.version >= 5)) {
+      data.books = [];
+      data.menu = data.menu || [];
+      if (!data.menu.some((m) => m.type === 'books')) data.menu.push({ id: uid(), label: 'Kitaplar', type: 'books', target: '', visible: false, newTab: false });
+      data.version = 5;
+      changed = true;
+    }
     const f = data.settings && data.settings.featured;
     if (f && f.type === 'videos') { f.type = 'posts'; changed = true; }
     // Her yazıya tür: videosu olan "video", olmayan "yazi" (kapak görselli blog yazısı)
@@ -288,13 +315,15 @@
     // 5: iki örnek podcast serisi ve Sofra bölümleri. Örnekleri silmiş olana eklenmez
     // (seriler sayılmaz: değiştirilmemiş programdan geçişte oluşan örnek seri, örnekleri silmiş kayıtta da vardır)
     if (sv < 5 && ['posts', 'podcasts', 'remixes', 'pages'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['series', 'podcasts'], NEW_SAMPLES_5);
+    // 6: üç örnek kitap. Örnekleri silmiş olana eklenmez
+    if (sv < 6 && ['posts', 'podcasts', 'remixes', 'pages'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['books'], NEW_SAMPLES_6);
     if (sv < SAMPLE_VERSION) { data.sampleVersion = SAMPLE_VERSION; changed = true; }
     // Podcast bölümleri ve remixler de kimlik yerine okunur adresle açılır (/podcast/seri/bolum-adi/).
     // Örnek eklemelerinden sonra: yeni eklenen örneklerin de bağlantısı olsun
-    ['podcasts', 'remixes'].forEach((c) => {
+    ['podcasts', 'remixes', 'books'].forEach((c) => {
       (data[c] || []).forEach((x) => {
         if (x.slug) return;
-        const base = slugify(x.title) || (c === 'podcasts' ? 'bolum' : 'remix');
+        const base = slugify(x.title) || ({ podcasts: 'bolum', remixes: 'remix', books: 'kitap' })[c];
         let slug = base, n = 2;
         while (data[c].some((y) => y.slug === slug)) slug = `${base}-${n++}`;
         x.slug = slug;
@@ -315,7 +344,7 @@
    * Örnek içeriklerden eksik olanları ekler (kimliği ya da bağlantısı zaten varsa atlar). Eklenen sayısını döner.
    * only: yalnızca bu kimlikteki örnekler
    */
-  function addSamples(data, cols = ['series', 'posts', 'podcasts', 'remixes', 'pages'], only) {
+  function addSamples(data, cols = ['series', 'posts', 'podcasts', 'remixes', 'books', 'pages'], only) {
     let n = 0;
     cols.forEach((c) => {
       data[c] = data[c] || [];
@@ -353,7 +382,7 @@
     delete d.settings.adminHash;
     delete d.videos;
     const live = (x) => x.published !== false && !isSample(x);
-    ['posts', 'podcasts', 'remixes', 'pages', 'series'].forEach((c) => { d[c] = (d[c] || []).filter(live); });
+    ['posts', 'podcasts', 'remixes', 'pages', 'series', 'books'].forEach((c) => { d[c] = (d[c] || []).filter(live); });
     const ids = new Set(d.series.map((s) => s.id));
     d.podcasts = d.podcasts.filter((x) => ids.has(x.series));
     return d;
@@ -509,7 +538,7 @@
   }
 
   global.Store = {
-    KEY, DEFAULTS, uid, get, save, onSave, reset, exportJSON, importJSON, normalize, forPublish, SERIES_STATUS, seriesOf,
+    KEY, DEFAULTS, uid, get, save, onSave, reset, exportJSON, importJSON, normalize, forPublish, SERIES_STATUS, seriesOf, BOOK_STATUS, BOOK_FORMAT, BOOK_SHOPS,
     slugify, esc, strip, fmtDate, fmtDateShort, fmtNum, isProfile, ytId, ytThumb, embed, wordCount, readingTime, hash, MONTHS,
     postKind, addSamples, isSample, CAT_KEYS, cats
   };

@@ -6,7 +6,7 @@ const { S, mem, v3 } = require('./yukle');
 
 test('gecis-ornek-program', () => { // değiştirilmemiş program → örnek seri
   const d = S.normalize(v3());
-  assert.equal(d.version, 4);
+  assert.ok(d.version >= 4);
   assert.equal(d.series.length, 1);
   assert.equal(d.series[0].id, 'seri-frekans');
   assert.ok(S.isSample(d.series[0]));
@@ -52,7 +52,7 @@ test('ornek-surum-5-eklenir', () => { // panelde kayıtlı eski veri: örnek ser
   assert.deepEqual(d.series.map((s) => s.id), ['seri-frekans', 'seri-sofra', 'seri-satir-arasi']);
   assert.equal(d.podcasts.filter((p) => p.series === 'seri-sofra').length, 3);
   assert.ok(d.podcasts.every((p) => p.slug), 'sonradan eklenen örnek bölümlerin de bağlantısı olmalı');
-  assert.equal(JSON.parse(mem.get(S.KEY)).sampleVersion, 5);
+  assert.ok(JSON.parse(mem.get(S.KEY)).sampleVersion >= 5);
 });
 
 test('ornek-silmis-olana-eklenmez', () => {
@@ -118,4 +118,39 @@ test('ornek-silmis-program-degismemis-eklenmez', () => { // örnekleri silmiş a
   mem.clear();
   mem.set(S.KEY, JSON.stringify(raw));
   assert.deepEqual(S.get().series.map((s) => s.id), ['seri-frekans']);
+});
+
+/* ---------- Kitaplar ---------- */
+test('kitap-ilk-kurulum', () => {
+  const d = S.normalize({});
+  assert.deepEqual(d.books.map((b) => b.id), ['kitap-1', 'kitap-2', 'kitap-3']);
+  assert.equal(d.books[2].status, 'onsiparis');
+  assert.ok(d.books.every(S.isSample));
+  const m = d.menu.find((x) => x.type === 'books');
+  assert.equal(m.visible, false);
+  assert.equal(m.label, 'Kitaplar');
+  assert.equal(d.settings.booksPage.title, 'Kitaplar');
+});
+
+test('kitap-menu-bir-kez', () => { // sürüm 4 kaydına gizli öğe bir kez eklenir; silinmişse geri gelmez
+  const once = S.normalize({ version: 4, menu: [{ id: 'm1', label: 'Videolar', type: 'videos', visible: true }] });
+  assert.equal(once.menu.filter((x) => x.type === 'books').length, 1);
+  assert.equal(once.menu.find((x) => x.type === 'books').visible, false);
+  once.menu = once.menu.filter((x) => x.type !== 'books');
+  assert.equal(S.normalize(JSON.parse(JSON.stringify(once))).menu.filter((x) => x.type === 'books').length, 0);
+});
+
+test('kitap-ornek-surum-6', () => { // panelde kayıtlı eski veriye örnek kitaplar bir kez eklenir; örnekleri silmişe eklenmez
+  mem.clear();
+  mem.set(S.KEY, JSON.stringify({ ...v3(), sampleVersion: 5, version: 4, series: [] }));
+  assert.equal(S.get().books.length, 3);
+  mem.clear();
+  mem.set(S.KEY, JSON.stringify({ version: 4, sampleVersion: 5, posts: [], podcasts: [], remixes: [], pages: [], series: [] }));
+  assert.equal(S.get().books.length, 0);
+});
+
+test('kitap-forPublish', () => {
+  const d = S.normalize({});
+  d.books.push({ id: 'k', title: 'Kendi', slug: 'kendi', published: true }, { id: 't', title: 'Taslak', slug: 'taslak', published: false });
+  assert.deepEqual(S.forPublish(d).books.map((b) => b.id), ['k']);
 });

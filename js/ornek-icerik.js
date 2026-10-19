@@ -520,6 +520,50 @@
   /* ======================================================================
      ÖZEL SAYFALAR
      ====================================================================== */
+  /* ======================================================================
+     KİTAPLAR — basılı kitaplar ve satış platformları (dizideki sıra = vitrin sırası)
+     status: 'yayinda', 'onsiparis', 'yakinda' · format: 'karton', 'ciltli', 'ekitap', 'sesli'
+     Örnek satış bağlantıları platformlarda kitabın adıyla arama yapar
+     ====================================================================== */
+  const shops = (q) => {
+    const k = encodeURIComponent(q);
+    return {
+      amazon: `https://www.amazon.com.tr/s?k=${k}`, dr: `https://www.dr.com.tr/search?q=${k}`,
+      kitapyurdu: `https://www.kitapyurdu.com/index.php?route=product/search&filter_name=${k}`, idefix: `https://www.idefix.com/arama?q=${k}`,
+      bkm: `https://www.bkmkitap.com/arama?q=${k}`, hepsiburada: `https://www.hepsiburada.com/ara?q=${k}`, trendyol: `https://www.trendyol.com/sr?q=${k}`
+    };
+  };
+  const books = [
+    {
+      id: 'kitap-1', title: 'Sesin Hafızası', subtitle: 'Bir şarkı bizi neden yıllar öncesine götürür?', slug: 'sesin-hafizasi',
+      tagline: 'Müzik, hafıza ve duygular üzerine bir deneme', status: 'yayinda', date: '2024-03-15',
+      publisher: 'Örnek Yayınları', pages: 240, isbn: '978-605-000-000-1', edition: '2. baskı', language: 'Türkçe', format: 'karton',
+      cover: PIC('kitap-sesin-hafizasi', 800, 1200), coverAlt: 'Sesin Hafızası kitabının kapağı', tint: '#3E2A4A', published: true,
+      tags: ['Müzik', 'Hafıza', 'Deneme'], ...shops('Sesin Hafızası'),
+      quote: 'Bir şarkıyı hatırlamıyoruz; şarkı bizi hatırlıyor.',
+      description: `<p>Kulaklığınızı taktığınız an on beş yıl öncesine dönebilirsiniz. <em>Sesin Hafızası</em>, müziğin beynimizde duygularla ve anılarla nasıl iç içe işlendiğini anlatan bir deneme.</p>`
+        + `<p>Anı tümseğinden kulak kurtlarına, ninnilerden stadyum marşlarına uzanan bu yolculukta, her bölüm bir şarkıyla başlıyor.</p>`
+    },
+    {
+      id: 'kitap-2', title: 'Gece Yarısı Stüdyo Notları', subtitle: 'Bir prodüktörün defterinden', slug: 'gece-yarisi-studyo-notlari',
+      tagline: 'Remix, prodüksiyon ve sahne arkasından hikâyeler', status: 'yayinda', date: '2022-11-02',
+      publisher: 'Örnek Yayınları', pages: 184, isbn: '978-605-000-000-2', edition: '1. baskı', language: 'Türkçe', format: 'ciltli',
+      cover: PIC('kitap-studyo-notlari', 800, 1200), coverAlt: 'Gece Yarısı Stüdyo Notları kitabının kapağı', tint: '#1E3A4A', published: true,
+      tags: ['Prodüksiyon', 'Remix', 'Stüdyo'], ...shops('Gece Yarısı Stüdyo Notları'),
+      quote: '',
+      description: `<p>On yıl boyunca gece yarılarında tutulmuş stüdyo notları: bir remixin nasıl doğduğu, bir sesin nasıl yakalandığı ve hiç yayınlanmayan parçaların neden yayınlanmadığı.</p>`
+    },
+    {
+      id: 'kitap-3', title: 'Frekans', subtitle: 'Dinlemenin kısa tarihi', slug: 'frekans-dinlemenin-kisa-tarihi',
+      tagline: 'Fonograftan kulaklığa, dinlemenin hikâyesi', status: 'onsiparis', date: '2026-12-01',
+      publisher: 'Örnek Yayınları', pages: 312, isbn: '978-605-000-000-3', edition: '1. baskı', language: 'Türkçe', format: 'karton',
+      cover: PIC('kitap-frekans', 800, 1200), coverAlt: 'Frekans kitabının kapağı', tint: '#4A3A1E', published: true,
+      tags: ['Müzik', 'Tarih', 'Ses'], ...shops('Frekans Dinlemenin Kısa Tarihi'),
+      quote: 'Kulak kapakları olmayan tek organımızdır.',
+      description: `<p>Edison'un fonografından cebimizdeki kulaklığa, insanlığın sesle ilişkisinin kısa tarihi. Ön siparişle aralık ayında okurlarla buluşuyor.</p>`
+    }
+  ];
+
   const pages = [
     {
       id: 'page-1', title: 'Stüdyo & Ekipmanlar', slug: 'ekipmanlar', cover: PIC('studio-gear', 1600, 900), published: true,
@@ -545,6 +589,8 @@
     { id: 'm1', label: 'Yazılar', type: 'blog', target: '', visible: true, newTab: false },
     { id: 'm3', label: 'Podcast', type: 'podcast', target: '', visible: true, newTab: false },
     { id: 'm4', label: 'Remixler', type: 'remixes', target: '', visible: true, newTab: false },
+    // Kitaplar sekmesi hazır ama menüde gizli: Menü Yönetimi'nden açılır
+    { id: 'm8', label: 'Kitaplar', type: 'books', target: '', visible: false, newTab: false },
     { id: 'm5', label: 'Ekipmanlar', type: 'page', target: 'ekipmanlar', visible: true, newTab: false },
     { id: 'm6', label: 'Hakkında', type: 'about', target: '', visible: true, newTab: false },
     { id: 'm7', label: 'İletişim', type: 'page', target: 'iletisim', visible: true, newTab: false }
@@ -570,5 +616,5 @@
       + `<p><em>Bu metin bir örnektir; Panel → Hakkında bölümünden düzenleyebilirsiniz.</em></p>`
   };
 
-  global.AKCAN_ORNEK = { posts, series, podcasts, remixes, pages, menu, about, featuredId: 'vid-bicep' };
+  global.AKCAN_ORNEK = { posts, series, podcasts, remixes, books, pages, menu, about, featuredId: 'vid-bicep' };
 })(window);
