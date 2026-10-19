@@ -290,7 +290,7 @@ Formun başında iki kart vardır:
 
 | Tür | Sitede nasıl görünür | Zorunlu |
 |---|---|---|
-| **▶ YouTube Videosu** | Sayfanın üstünde YouTube oynatıcı. Listelerde küçük resmin ortasında **beyaz oynat işareti**. | Geçerli bir YouTube bağlantısı |
+| **▶ YouTube Videosu** | Sayfanın üstünde YouTube oynatıcı. Listelerde küçük resmin ortasında **yarı saydam oynat işareti**. | Geçerli bir YouTube bağlantısı |
 | **✎ Blog Yazısı** | Üstte video yerine kapak görseli. Listelerde işaretsiz. | Kapak görseli |
 
 ### Alanlar
@@ -676,7 +676,7 @@ Bilgisayarınızdaki önizlemede (`index.html`) aynı sayfalar `#/yazilar/yazi-a
 3. **Akış**: bütün içerikler yeniden eskiye.
    - Filtreler: **Hepsi / Video / Yazı / Podcast / Remix**.
    - Her seferinde 12 içerik gösterilir; **Daha fazla göster** ile devamı gelir.
-   - Videoların küçük resminde **beyaz oynat işareti** ve "Video" etiketi var; yazılar işaretsiz.
+   - Videoların küçük resminde **yarı saydam oynat işareti** ve "Video" etiketi var; yazılar işaretsiz.
    - Podcast ve remix satırlarındaki **yeşil oynat düğmesi** sayfadan ayrılmadan çalar.
 
 ### Alt bilgi
