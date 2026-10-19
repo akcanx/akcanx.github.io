@@ -24,6 +24,9 @@ concurrency:
 jobs:
   derle:
     runs-on: ubuntu-latest
+    outputs:
+      bildirim: ${{ steps.fark.outputs.bildirim }}
+      sayi: ${{ steps.fark.outputs.sayi }}
     steps:
       - name: Kodu al
         uses: actions/checkout@v4
@@ -43,8 +46,16 @@ jobs:
         with:
           node-version: 22
 
+      # IndexNow karşılaştırması için yayındaki site haritası (ilk yayında yoktur)
+      - name: Yayındaki site haritasını al
+        run: curl -fsSL "${{ steps.pages.outputs.base_url }}/sitemap.xml" -o eski-sitemap.xml || true > eski-sitemap.xml
+
       - name: Siteyi derle
         run: node build.js --veri _icerik/veri --cikti _site --site-url "${{ steps.pages.outputs.base_url }}/"
+
+      - name: Değişen adresler (IndexNow)
+        id: fark
+        run: node indexnow.js fark --eski eski-sitemap.xml --yeni _site/sitemap.xml --cikti "$GITHUB_OUTPUT"
 
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -60,3 +71,23 @@ jobs:
       - name: GitHub Pages'e yayınla
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Yeni, değişen ve kaldırılan sayfaları arama motorlarına bildirir (Bing, Yandex, Seznam, Naver, Yep).
+  # Google IndexNow'u desteklemez; site haritasını kendisi okur. Bildirim hatası yayını bozmaz.
+  bildir:
+    needs: [derle, yayinla]
+    if: needs.derle.outputs.sayi != '0'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Arama motorlarına bildir (IndexNow)
+        env:
+          BILDIRIM: ${{ needs.derle.outputs.bildirim }}
+        run: node indexnow.js gonder

@@ -57,3 +57,23 @@ test('derleme-kitaplar-llms', () => { // kendi kitabı: sayfası, llms.txt böl�
   assert.match(site('llms-full.txt'), /https:\/\/www\.amazon\.com\.tr\/dp\/123/);
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('derleme-indexnow-anahtari', () => { // IndexNow anahtar dosyası; kendi alan adı varsa onun adına
+  const { anahtar } = require('../indexnow.js');
+  const derle = (raw) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'akcan-'));
+    fs.mkdirSync(path.join(dir, 'veri'));
+    fs.writeFileSync(path.join(dir, 'veri', 'site.json'), JSON.stringify(raw));
+    execFileSync(process.execPath, [path.join(__dirname, '..', 'build.js'), '--veri', path.join(dir, 'veri'), '--cikti', path.join(dir, '_site'), '--site-url', 'https://ornek.test/'], { stdio: 'pipe' });
+    return dir;
+  };
+  let dir = derle(v3());
+  const k = anahtar('ornek.test');
+  assert.equal(fs.readFileSync(path.join(dir, '_site', k + '.txt'), 'utf8'), k);
+  fs.rmSync(dir, { recursive: true, force: true });
+  const raw = v3();
+  raw.settings.seo = { siteUrl: 'https://akcan.com/' };
+  dir = derle(raw);
+  assert.ok(fs.existsSync(path.join(dir, '_site', anahtar('akcan.com') + '.txt')));
+  fs.rmSync(dir, { recursive: true, force: true });
+});

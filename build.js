@@ -4,7 +4,7 @@
    Panelin GitHub'a gönderdiği içerikten (veri/site.json + veri/gorsel/) yayınlanacak
    siteyi üretir: her sayfa için hazır HTML (arama motorları ve yapay zekâ tarayıcıları
    JavaScript çalıştırmadan içeriği okur), sitemap.xml, robots.txt, feed.xml (RSS),
-   llms.txt ve 404.html.
+   llms.txt, IndexNow anahtar dosyası ve 404.html.
 
    GitHub Actions her yayında çalıştırır (.github/workflows/yayin.yml).
    Bilgisayarda denemek için:
@@ -147,6 +147,10 @@ if (st.seo.aiTraining === false) {
 }
 robots += `\nSitemap: ${siteUrl}sitemap.xml\n`;
 write('robots.txt', robots);
+
+// IndexNow anahtar dosyası: arama motorları bildirimin bu siteden geldiğini buradan doğrular (indexnow.js)
+const indexKey = require(path.join(ROOT, 'indexnow.js')).anahtar(new URL(siteUrl).host);
+write(indexKey + '.txt', indexKey);
 
 /* ---------- RSS ---------- */
 const rfc822 = (d) => new Date((/^\d{4}-\d{2}-\d{2}$/.test(d || '') ? d : '2000-01-01') + 'T09:00:00+03:00').toUTCString();

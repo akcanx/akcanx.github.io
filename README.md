@@ -89,7 +89,7 @@
 - **Kitaplar:** vitrin sıralı liste (↑↓, Yayında/Taslak) ve kitap formu (ad, alt başlık, kısa tanıtım, tanıtım metni, alıntı, durum, yayın tarihi, künye: yayınevi · sayfa · ISBN · baskı · dil · biçim, dikey kapak, yedi satış platformunun adresi); **⚙ Sayfa Ayarları** (vitrinin başlığı, üst etiketi, tanıtım metni).
 - **Özel Sayfalar, Menü Yönetimi** (sürükle-bırak sıralama), **Öne Çıkan (Hero)** (manuel / otomatik / özel manşet, canlı önizleme, üst gradyan ayarı), **Hakkında** (fotoğraf üstü yazılar, vurgulu başlık, kısa tanım, vurgu rengi), **Sosyal Medya** (her hesabın simgesi, adresi ve Aktif / Pasif anahtarı, anlık "sitede görünür mü?" notu, üst menüde gösterme), **Ayarlar & Tema** (site kimliği, renk, şifre).
 - **Yayın & SEO:** GitHub bağlantısı, her kaydetmede otomatik yayın, yayın durumu, site adresi, varsayılan paylaşım görseli, Google / Bing doğrulama kodları, yapay zekâ eğitimi izni, yayın öncesi kontrol listesi ve site dışında yapılacaklar.
-- Her yazı, video, bölüm, remix ve sayfada **Arama & paylaşım** kartı (SEO başlığı, SEO açıklaması, paylaşım görseli) ve kapak görseli için **alt metin** alanı. Podcast bölümleri ve remixler de okunur adresle açılır (`/podcast/seri-adi/bolum-adi/`).
+- Her yazı, video, bölüm, seri, kitap, remix ve sayfada **Arama & paylaşım** kartı (SEO başlığı, SEO açıklaması, paylaşım görseli) ve kapak görseli için **alt metin** alanı. Kartın başında **SEO & GEO** kutusu: canlı Google önizlemesi, 0–100 puan ve öneriler; kaydedince bildirimde puan, **Yayın & SEO** kontrol listesinde site ortalaması ve geliştirilebilecek içerikler. Kurallarla hesaplanır, yapay zekâ kullanılmaz; hiçbir alana otomatik değer yazılmaz. Podcast bölümleri ve remixler de okunur adresle açılır (`/podcast/seri-adi/bolum-adi/`).
 - **Yedekleme:** `.json` olarak dışa/içe aktarma, **Örnek İçerikleri Ekle**, fabrika ayarlarına dönüş.
 - Mobilde tam uyumlu: açılır yan menü, kart görünümlü listeler, alttan açılan pencereler.
 
@@ -136,6 +136,7 @@ akcanakdag.com/
 ├── index.html            # Site (önizlemede doğrudan, yayında her sayfanın şablonu)
 ├── admin.html            # Kontrol paneli (yalnızca bilgisayarınızda; yayına girmez)
 ├── build.js              # Yayın derleyicisi: her sayfa için hazır HTML, sitemap, robots, RSS, llms.txt
+├── indexnow.js           # Yayından sonra değişen sayfaları arama motorlarına bildirir (IndexNow)
 ├── favicon.svg           # Site simgesi
 ├── README.md             # Bu belge
 ├── KULLANIM-KILAVUZU.md  # Ayrıntılı kullanım kılavuzu
@@ -150,6 +151,7 @@ akcanakdag.com/
     ├── ornek-icerik.js   # Örnek videolar, yazılar, bölümler, remixler, kitaplar, sayfalar (yayına girmez)
     ├── store.js          # Veri katmanı (localStorage, sürüm geçişleri, yardımcılar)
     ├── render.js         # Sayfa şablonları + başlık, açıklama, paylaşım kartları, yapılandırılmış veri
+    ├── seo.js            # Panel: SEO & GEO puanı ve öneriler (kurallı, yapay zekâ yok)
     ├── app.js            # Site: yönlendirici, oynatıcı, arama
     ├── yayin.js          # Panel → GitHub gönderimi ve otomatik yayın
     └── admin.js          # Panel: içerik yönetimi, editör, menü, ayarlar, Yayın & SEO, yedekleme
@@ -165,8 +167,10 @@ Yayındaki site, Google'ın ve ChatGPT, Claude, Perplexity gibi yapay zekâ asis
 - **Her sayfa hazır HTML olarak gelir:** içerik JavaScript çalışmadan da okunur (yapay zekâ tarayıcıları JavaScript çalıştırmaz). Ziyaretçi için site yine tek sayfa gibi akar; sayfa değişince ses oynatıcı susmaz.
 - **Her sayfaya özel** başlık, açıklama, kanonik adres, Open Graph / X paylaşım kartı (WhatsApp, X, LinkedIn önizlemesi).
 - **Yapılandırılmış veri (schema.org):** `Person` (sosyal profillerinizle), `WebSite`, `BlogPosting`, `VideoObject` (Google video sonuçları), `PodcastSeries` / `PodcastEpisode`, `MusicRecording`, `Book` (satın alma bağlantılarıyla), `BreadcrumbList`, `ProfilePage`; yazılardaki kaynaklar `citation` olarak.
-- **Otomatik üretilen dosyalar:** `sitemap.xml` (görsellerle, son güncelleme tarihleriyle), `robots.txt`, `feed.xml` (RSS), `llms.txt` (yapay zekâ asistanları için site özeti), `llms-full.txt` (bütün içeriğin tam metni tek dosyada), `apple-touch-icon.png`, gerçek `404.html`.
-- **GEO:** kişi kaydında sosyal profiller ve içeriklerde en çok geçen konular (`knowsAbout`), video kayıtlarında süre, uzun başlıklarda site adı eki atılır, video paylaşım görseli varsa 1280×720.
+- **Otomatik üretilen dosyalar:** `sitemap.xml` (görsellerle, son güncelleme tarihleriyle), `robots.txt`, `feed.xml` (RSS), `llms.txt` (yapay zekâ asistanları için site özeti), `llms-full.txt` (bütün içeriğin tam metni tek dosyada), IndexNow anahtar dosyası, `apple-touch-icon.png`, gerçek `404.html`.
+- **GEO:** kişi kaydında sosyal profiller ve içeriklerde en çok geçen konular (`knowsAbout`), video kayıtlarında süre, uzun başlıklarda site adı eki atılır, video paylaşım görseli varsa 1280×720, ara başlıklara kalıcı çapa (`#ses-nedir`).
+- **Otomatik açıklama:** SEO açıklaması boşsa her yayında özetten ya da metinden üretilir ve cümle sonunda biter; kayda yazılmaz, metin değişince kendiliğinden güncellenir. Panel önizlemesi ve site aynı fonksiyonu (`Render.seoOf`) kullanır.
+- **IndexNow:** her yayından sonra yeni, değişen ve silinen sayfalar Bing, Yandex, Seznam, Naver ve Yep'e bildirilir (`indexnow.js`, yayındaki eski site haritasıyla karşılaştırarak). Anahtar site adresinden türetilir, ayar gerekmez; hata yayını bozmaz. Google IndexNow'u desteklemez, site haritasını okur.
 - **Hız:** yazı tipleri sitenin kendi sunucusundan, görseller WebP olarak ve gerektiğinde yüklenir, görsellerin boyutu sayfaya yazılır (sayfa kayması / CLS yok), YouTube oynatıcısı yalnızca tıklanınca açılır, kod güncellenince tarayıcı önbelleği yenilenir.
 - **Boş sayfalar dizine girmez:** henüz içeriği olmayan liste sayfaları `noindex` olarak işaretlenir.
 

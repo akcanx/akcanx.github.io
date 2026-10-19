@@ -251,6 +251,25 @@ Sayfanın sonunda açılır-kapanır bir liste olarak görünür. Ayrıca arama 
 
 ### Arama & paylaşım kartı (her içerikte)
 
+Kartın başındaki **SEO & GEO** kutusu, içeriğin arama sonucunda nasıl görüneceğini ve ne kadar hazır olduğunu siz yazdıkça gösterir:
+
+- **Puan** (0–100): 80 ve üstü yeşil, 50–79 sarı, 50'nin altı kırmızı.
+- **Google önizlemesi**: adres, mavi başlık ve açıklama. Boş bıraktığınız alanlarda sitenin kendisinin kullanacağı değer görünür.
+- **Maddeler**: ✓ tamam olanlar, ! geliştirilebilecekler ve ne yapmanız gerektiği.
+
+| Madde | Puan | Tam puan için |
+|---|---|---|
+| Başlık | 15 | Arama sonucundaki başlık 60 karakteri geçmesin. |
+| Açıklama | 20 | Özet (kitap ve seride kısa tanıtım) ya da SEO açıklaması yazın, 70–160 karakter. Yalnızca metinden üretiliyorsa yarım puan. |
+| Görsel | 15 | Kapak ya da paylaşım görseli olsun. 1200 piksel genişlikten darsa 10 puan (Google Discover büyük görsel ister). |
+| Görsel açıklaması | 10 | Kapağın alt metni yazılı olsun. |
+| İçerik derinliği | 20 | Metin en az 300 kelime (yazı ve özel sayfa) ya da 80 kelime (video, bölüm, remix, kitap, seri). Yarısına ulaşıyorsa yarım puan. |
+| Ara başlık | 10 | 600 kelimeyi aşan metin ara başlıklarla (H2) bölünsün. |
+| Etiketler | 5 | En az bir etiket. |
+| Adres | 5 | Bağlantı (slug) 60 karakteri geçmesin. |
+
+Kaydettiğinizde bildirimde puan görünür (ör. "Değişiklikler kaydedildi · SEO & GEO 86/100"); puan 80'in altındaysa en çok puan kazandıracak öneri de yazar. Puan kurallarla hesaplanır; yapay zekâ kullanılmaz ve hiçbir alanınız kendiliğinden değiştirilmez.
+
 | Alan | Açıklama |
 |---|---|
 | **SEO başlığı** | Google sonucundaki mavi başlık. Boşsa içerik başlığı kullanılır. 60 karakteri geçmemesi önerilir. |
@@ -760,6 +779,7 @@ Panel sitenizi tarar ve her maddeyi ✓ (tamam), ! (uyarı) ya da i (bilgi) olar
 - Podcast serileri: yayında kendi seriniz var mı? Örnek ya da yayında olmayan bir seriye bağlı bölümleriniz yayına gitmez.
 - E-posta adresi: örnek adres (`@ornek.com`) aktif mi?
 - Örnek görseller: yayına giden ayarlarda ya da içeriklerde picsum.photos görseli var mı (manşet görseli, podcast/remix kapağı, Hakkında fotoğrafı…)?
+- **SEO & GEO puanı**: yayındaki kendi içeriklerinizin ortalama puanı; 80'in altındakiler (en düşükten başlayarak en fazla 5) başlıklarıyla listelenir, tıklayınca formu açılır. Ayrıntı: [Arama & paylaşım kartı](#arama--paylaşım-kartı-her-içerikte).
 - Özetler: özeti olmayan içerik sayısı.
 - Kapak açıklamaları: alt metni olmayan kapak sayısı.
 - Alan adı: site kök adreste mi?
@@ -905,7 +925,9 @@ Bütün sayfalar 360 piksel genişliğindeki telefonlardan geniş ekranlara kada
 Bunların hiçbiri için bir şey yapmanız gerekmez; site her yayında bunları kendisi üretir.
 
 - **Her içeriğin kendi adresi** ve **hazır HTML sayfası**: içerik JavaScript çalışmadan da okunur. ChatGPT, Claude ve Perplexity gibi yapay zekâ tarayıcıları JavaScript çalıştırmadığı için bu önemlidir.
-- **Her sayfaya özel** başlık, açıklama, kanonik adres ve WhatsApp / X / LinkedIn paylaşım kartı. Başlık "— Site adı" ekiyle 60 karakteri aşıyorsa ek yazılmaz (Google uzun başlığı keser). Video sayfalarında paylaşım görseli YouTube'un 1280×720 karesidir; panel videoyu kaydederken bu karenin var olup olmadığını denetler, yoksa her videoda bulunan küçük kare kullanılır.
+- **Her sayfaya özel** başlık, açıklama, kanonik adres ve WhatsApp / X / LinkedIn paylaşım kartı. Başlık "— Site adı" ekiyle 60 karakteri aşıyorsa ek yazılmaz (Google uzun başlığı keser). SEO açıklaması boşsa açıklama özetten ya da metinden her yayında yeniden üretilir ve **cümle sonunda** biter (120–160 karakter arasındaki son cümle; yoksa kelime sınırında "…"). Bu değerler kaydınıza yazılmaz; metni değiştirdiğinizde açıklama da kendiliğinden güncellenir. Paneldeki önizleme sitenin kullandığı değerin aynısıdır.
+- **Ara başlık çapaları**: metindeki her ara başlık kalıcı bir bağlantı alır (ör. `/yazilar/yazi-adi/#ses-nedir`). Google'ın "şuraya atla" bağlantıları ve yapay zekâ alıntıları doğrudan o bölüme gidebilir.
+- **Arama motorlarına anında haber (IndexNow)**: her yayından sonra yeni, değişen ve silinen sayfaların adresleri IndexNow'a bildirilir; Bing, Yandex, Seznam, Naver ve Yep bu bildirimi paylaşır. Ayar gerekmez: anahtar dosyası (`<anahtar>.txt`) her yayında üretilir. Google IndexNow'u desteklemez; site haritasındaki güncelleme tarihlerini kendisi okur. Bildirim başarısız olursa yayın etkilenmez (GitHub'da **Actions** sekmesinde "Arama motorlarına bildir" adımında görünür). Video sayfalarında paylaşım görseli YouTube'un 1280×720 karesidir; panel videoyu kaydederken bu karenin var olup olmadığını denetler, yoksa her videoda bulunan küçük kare kullanılır.
 - **Yapılandırılmış veri (schema.org)**:
   - kişi (sosyal profillerinizle ve içeriklerinizde en çok geçen konularla: "uzmanlık alanları"), site, blog yazısı, video (süresiyle; Google video sonuçları için);
   - podcast serisi ve bölümü (bölüm kendi serisine bağlı), müzik kaydı (remix), kitap (ISBN, yayınevi, satın alma bağlantılarıyla), konum satırı, profil sayfası;
