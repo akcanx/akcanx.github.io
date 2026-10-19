@@ -748,3 +748,20 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 
 /* Kitaplar listesinde dikey (2:3) küçük resim */
 .srow .th.tall { width: 40px; height: 60px; border-radius: 4px; }
+
+/* SEO & GEO kutusu (formun "Arama & paylaşım" kartında): puan, Google önizlemesi, maddeler */
+.seobox { margin: 0 0 18px; padding-bottom: 16px; border-bottom: 1px solid var(--rule); }
+.seohead { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.seohead span { display: flex; flex-direction: column; font-weight: 600; }
+.seohead small { color: var(--fg-3); font-weight: 400; font-size: 12px; }
+.seoscore { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-family: var(--mono); font-size: 15px; border: 2px solid currentColor; }
+.seoscore.iyi { color: var(--acid); }
+.seoscore.orta { color: #FFB020; }
+.seoscore.zayif { color: var(--danger); }
+.serp { padding: 12px; border-radius: 8px; background: var(--bg); border: 1px solid var(--rule); overflow-wrap: anywhere; }
+.serp-url { color: var(--fg-3); font-size: 12px; }
+.serp-t { color: #8AB4F8; font-size: 16px; line-height: 1.3; margin: 3px 0 4px; }
+.serp-d { color: var(--fg-2); font-size: 13px; }
+.seolist { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; }
+.seolist .ok { color: var(--fg-3); }
+.seolist .no { color: #FFB020; }

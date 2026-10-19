@@ -470,15 +470,26 @@
     }
   }
 
-  /* Yan sütundaki alanları "side" adına göre kartlarda toplar */
-  function sideGroups(fields, item) {
+  /* Yan sütundaki alanları "side" adına göre kartlarda toplar; lead: kart başına eklenecek HTML ({ 'Kart adı': html }) */
+  function sideGroups(fields, item, lead) {
     const groups = [];
     fields.filter((f) => f.side).forEach((f) => {
       let g = groups.find((x) => x[0] === f.side);
       if (!g) groups.push(g = [f.side, []]);
       g[1].push(f);
     });
-    return groups.map(([g, fs]) => `<div class="card"><h3>${g}</h3>${fs.map((f) => field(f, item[f.k])).join('')}</div>`).join('');
+    return groups.map(([g, fs]) => `<div class="card"><h3>${g}</h3>${(lead && lead[g]) || ''}${fs.map((f) => field(f, item[f.k])).join('')}</div>`).join('');
+  }
+
+  /* SEO & GEO: puanlanan koleksiyonlar; başlık, açıklama ve görsel sitenin kullanacağı değerlerin aynısı (Render.seoOf).
+     Kurallarla hesaplanır, yapay zekâ kullanılmaz; hiçbir alana otomatik değer yazılmaz */
+  const SEO_COLS = ['posts', 'podcasts', 'series', 'books', 'remixes', 'pages'];
+  const seoRender = () => window.Render.create(D, { mode: 'site', siteUrl: siteAddress() || 'https://alanadiniz.com/' });
+  function seoBoxHTML(o, sc) {
+    const url = o.url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/').join(' › ');
+    return `<div class="seohead"><b class="seoscore ${SEO.level(sc.puan)}">${sc.puan}</b><span>SEO & GEO<small>Arama sonucunda böyle görünür</small></span></div>
+      <div class="serp"><div class="serp-url">${esc(url)}</div><div class="serp-t">${esc(o.title || 'Başlık yok')}</div><div class="serp-d">${esc(o.desc || 'Açıklama yok')}</div></div>
+      <ul class="seolist">${sc.maddeler.map((m) => `<li class="${m.ok === true ? 'ok' : 'no'}">${m.ok === true ? '✓ ' + esc(m.ad) : '! ' + esc(m.oneri)}</li>`).join('')}</ul>`;
   }
 
   function collect(root, fields) {
@@ -824,7 +835,7 @@
      Kirli durum (kaydedilmemiş değişiklik) takibi
      ====================================================================== */
   let dirty = false, lastHash = location.hash, skipGuard = false;
-  const markDirty = () => { if (view.dataset.form) dirty = true; };
+  const markDirty = () => { if (view.dataset.form) dirty = true; if (view._seoPaint) view._seoPaint(); };
   view.addEventListener('input', markDirty);
   view.addEventListener('change', markDirty);
   window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
@@ -1240,7 +1251,7 @@
       <form class="form-grid" id="frm" novalidate>
         <div class="form-main">${main.join('')}</div>
         <div class="form-side">
-          ${sideGroups(T.fields, item)}
+          ${sideGroups(T.fields, item, SEO_COLS.includes(C) ? { 'Arama & paylaşım': '<div class="seobox" data-seobox></div>' } : null)}
           <button type="button" class="btn btn-acid btn-block" data-save>Kaydet</button>
           ${!isNew ? `<button type="button" class="btn btn-danger btn-block" data-del>Bu içeriği sil</button>` : ''}
         </div>
@@ -1249,6 +1260,21 @@
     const frm = $('#frm');
     bindForm(frm);
     if (isNew) setTimeout(() => { const t = $('[data-k="title"]', frm); if (t) t.focus(); }, 50);
+
+    // SEO & GEO kutusu: formdaki değerlerle, yazdıkça (gecikmeli) yeniden çizilir; görselin genişliği ölçülür
+    const seoBox = $('[data-seobox]', frm);
+    let seoW = 0, seoImg = '', seoT = 0;
+    const seoRec = () => ({ ...item, ...collect(frm, T.fields), ...(T.kind ? { kind: T.kind } : {}) });
+    const paintSeo = () => {
+      if (!seoBox || !seoBox.isConnected) return;
+      const rec = seoRec(), R = seoRender(), o = R.seoOf(C, rec);
+      if (o.image !== seoImg) {
+        seoImg = o.image; seoW = 0;
+        if (o.image) imgDims(o.image).then((wh) => { if (seoImg === o.image) { seoW = wh ? wh[0] : 0; paintSeo(); } });
+      }
+      seoBox.innerHTML = seoBoxHTML(o, SEO.score(C, rec, { R, imgW: seoW }));
+    };
+    if (seoBox) { view._seoPaint = () => { clearTimeout(seoT); seoT = setTimeout(paintSeo, 300); }; paintSeo(); }
 
     const save = () => {
       const v = collect(frm, T.fields);
@@ -1300,7 +1326,10 @@
           if (x && x.ytMax !== ok) { x.ytMax = ok; S.save(D); }
         });
       }
-      if (persist(isNew ? `${T.one} oluşturuldu` : 'Değişiklikler kaydedildi')) {
+      // Bildirimde SEO & GEO puanı; 80'in altındaysa en çok puan kazandıracak öneri
+      const sc = seoBox ? SEO.score(C, rec, { R: seoRender(), imgW: seoW }) : null;
+      const seoMsg = sc ? ` · SEO & GEO ${sc.puan}/100` + (sc.puan < 80 ? ' — ' + SEO.oneriler(sc)[0] : '') : '';
+      if (persist((isNew ? `${T.one} oluşturuldu` : 'Değişiklikler kaydedildi') + seoMsg)) {
         dirty = false;
         go(`#${type}/edit/${rec.id}`);
       }
@@ -2419,6 +2448,14 @@
     const nSamples = ['posts', 'podcasts', 'remixes', 'pages', 'series', 'books'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
     const noDesc = ['posts', 'podcasts', 'remixes'].flatMap(live).filter((x) => !(x.seoDesc || x.excerpt));
     const noAlt = [...live('posts').filter((p) => S.postKind(p) === 'yazi'), ...live('podcasts'), ...live('remixes'), ...live('pages')].filter((x) => x.cover && !x.coverAlt);
+    // SEO & GEO puanı: yayındaki kendi içerikler (görsel genişliği burada ölçülmez)
+    const seoR = seoRender();
+    const scored = SEO_COLS.flatMap((c) => live(c).map((x) => ({ c, x, p: SEO.score(c, x, { R: seoR }).puan })));
+    const seoAvg = scored.length ? Math.round(scored.reduce((t, s) => t + s.p, 0) / scored.length) : 0;
+    const seoLow = scored.filter((s) => s.p < 80).sort((a, b) => a.p - b.p).slice(0, 5);
+    const seoRow = scored.length ? [[seoAvg >= 80 ? 'ok' : 'warn', 'SEO & GEO puanı', `Ortalama ${seoAvg}/100.` + (seoLow.length
+      ? ' Geliştirilebilecekler: ' + seoLow.map((s) => `<a href="#${s.c === 'posts' ? postType(s.x) : s.c}/edit/${s.x.id}">${esc(s.x.title || '(başlıksız)')}</a> (${s.p})`).join(', ')
+      : ' Bütün içerikler 80 ve üstü.'), '']] : [];
     const badSocial = SOCIALS.filter(([k]) => k !== 'email' && so[k] && !S.isProfile(so[k]) && !(st.socialOff || []).includes(k)).map(([, l]) => l);
     const sampleMail = /ornek\.com$/i.test(so.email || '') && !(st.socialOff || []).includes('email');
     // Yayına giden kendi serileriniz; örnek ya da yayında olmayan seriye bağlı bölümler yayına gitmez
@@ -2447,6 +2484,7 @@
       [strayEps.length ? 'warn' : ownSeries.length ? 'ok' : 'info', 'Podcast serileri', strayEps.length ? `${strayEps.length} bölüm yayında olmayan ya da örnek bir seriye bağlı; yayına gitmez. Bölümü kendi serinize taşıyın ya da seriyi yayına alın.` : ownSeries.length ? `${ownSeries.length} seri yayında.` : 'Yayında seri yok: Podcast sayfası boş görünür. ◫ Seriler’den kendi serinizi ekleyin.', '#series'],
       [sampleMail ? 'warn' : 'ok', 'E-posta adresi', sampleMail ? `“${esc(so.email)}” örnek bir adres; kendi adresinizi yazın, silin ya da pasif yapın.` : 'Örnek adres kullanılmıyor.', '#sosyal'],
       [picsum ? 'warn' : 'ok', 'Örnek görseller', picsum ? 'Yayına giden ayarlarda ya da içeriklerde örnek görsel (picsum.photos) var: manşet görseli, podcast kapağı, Hakkında fotoğrafı… Kendi görsellerinizi yükleyin.' : 'Örnek görsel kullanılmıyor.', '#settings'],
+      ...seoRow,
       [noDesc.length ? 'warn' : 'ok', 'Özetler', noDesc.length ? `${noDesc.length} içeriğin özeti yok; arama sonucunda metnin başı gösterilir.` : 'Tüm içeriklerin özeti var.', ''],
       [noAlt.length ? 'info' : 'ok', 'Kapak açıklamaları', noAlt.length ? `${noAlt.length} kapak görselinin açıklaması (alt metin) yok; başlık kullanılacak.` : 'Kapak görsellerinin açıklaması var.', ''],
       [subPath ? 'info' : 'ok', 'Alan adı', subPath ? 'Site github.io altındaki bir klasörde yayınlanıyor. Çalışır, ama kendi alan adınız (ör. akcan.com) arama sonuçlarında daha güçlüdür ve robots.txt ancak alan adının kökünde okunur.' : 'Site kendi adresinin kökünde yayınlanıyor.', ''],
@@ -2644,7 +2682,7 @@
 
   // Görünüm değişince eski kaydetme fonksiyonunu temizle
   const _route = route;
-  route = function () { view._save = null; resetViewHandlers(); _route(); }; // eslint-disable-line no-func-assign
+  route = function () { view._save = null; view._seoPaint = null; resetViewHandlers(); _route(); }; // eslint-disable-line no-func-assign
 
   // Başka sekmede değişiklik olursa veriyi tazele (form açık değilse).
   // Önizleme ekranı yeniden çizilmez: içindeki site değişikliği kendisi alır
