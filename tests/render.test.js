@@ -405,3 +405,18 @@ test('kaynak-arama-metni-katlanir', () => { // İngilizce büyük I: "MIDI" aram
   const h = Render.create(d, { mode: 'local' }).page('kaynaklar').html;
   assert.match(h, /data-find="[^"]*midi kontrolcü/);
 });
+
+test('hero-kitap', () => { // kitap manşette: bulanık kapak zemini + net dikey kapak; özel görsel varsa normal manşet; taslakta en son içerik
+  const D = S.normalize({});
+  D.settings.featured = { mode: 'manual', type: 'books', id: 'kitap-1' };
+  const h = Render.create(D, { mode: 'local' }).page('').html;
+  assert.match(h, /Öne çıkan kitap/);
+  assert.match(h, /Sesin Hafızası/);
+  assert.match(h, /class="fhero fhero-book"/);
+  assert.match(h, /<a class="fbook[^"]*" href="#\/kitaplar\/sesin-hafizasi"[^>]*><img [^>]*alt="Sesin Hafızası kitabının kapağı"/);
+  D.settings.featured.customImage = 'https://ornek.test/yatay.jpg';
+  assert.ok(!/fhero-book/.test(Render.create(D, { mode: 'local' }).page('').html));
+  delete D.settings.featured.customImage;
+  D.books[0].published = false;
+  assert.ok(!/Öne çıkan kitap/.test(Render.create(D, { mode: 'local' }).page('').html));
+});

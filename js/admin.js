@@ -1025,7 +1025,8 @@
       { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => '#/podcast/' + ((S.seriesOf(data, x) || {}).slug || '') + '/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => (x.description || '').replace(/<[^>]+>/g, '') },
       { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => '#/remixler/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt || x.original || (x.description || '').replace(/<[^>]+>/g, '') },
       { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => '#/sayfa/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt },
-      { type: 'resources', label: 'Kaynak', btn: 'İncele', href: (x) => '#/kaynaklar/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.summary }
+      { type: 'resources', label: 'Kaynak', btn: 'İncele', href: (x) => '#/kaynaklar/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.summary },
+      { type: 'books', label: 'Kitap', btn: 'İncele', href: (x) => '#/kitaplar/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.tagline || x.subtitle || (x.description || '').replace(/<[^>]+>/g, '') }
     ];
 
     if (mode === 'manual') {
@@ -1809,7 +1810,7 @@
             published: x.published !== false,
             featured: !!x.featured,
             thumb: vid ? S.ytThumb(x.video, 'mqdefault') : x.cover,
-            excerpt: type === 'pages' ? (x.excerpt || '') : (x.excerpt || x.summary || (x.description || '').replace(/<[^>]+>/g, '')),
+            excerpt: type === 'pages' ? (x.excerpt || '') : (x.excerpt || x.summary || x.tagline || (x.description || '').replace(/<[^>]+>/g, '')),
             raw: x
           });
         });
@@ -1819,16 +1820,20 @@
       add(D.remixes, 'remixes', 'Remix', true);
       add(D.pages, 'pages', 'Sayfa', false);
       add(D.resources, 'resources', 'Kaynak', false);
+      add(D.books, 'books', 'Kitap', false);
       return items.sort(byDate);
     };
 
     const previewHTML = (pv) => {
       const showTopGrad = draftFeat.topGradient !== false;
       const op = Math.max(0, Math.min(100, Number(draftFeat.topGradientOpacity ?? 85))) / 100;
+      // Kitap: sitedeki gibi kapak bulanık zemin, net hâli sağda (özel görsel seçildiyse normal önizleme)
+      const book = pv.type === 'books' && pv.item && pv.item.cover && !draftFeat.customImage ? pv.item : null;
       return `
-        ${pv.cover ? `<img class="fbg" src="${esc(pv.cover)}" alt="">` : ''}
+        ${pv.cover ? `<img class="fbg${book ? ' fbg-book' : ''}" src="${esc(pv.cover)}" alt="">` : ''}
         ${showTopGrad ? `<div class="top-grad" style="opacity:${op.toFixed(2)}"></div>` : ''}
         <div class="fgrad"></div><div class="fglow"></div>
+        ${book ? `<div class="fbook"><img src="${esc(book.cover)}" alt=""></div>` : ''}
         <div class="fcontent">
           <div class="feye">${esc(pv.eyebrow)}${pv.date ? ` · ${S.fmtDate(pv.date)}` : ''}</div>
           <h2 class="ftitle">${esc(pv.title)}</h2>
@@ -1907,7 +1912,7 @@
           </div>
           <p class="muted" style="margin:0;font-size:13px" id="modeDesc">
             ${draftFeat.mode === 'manual'
-              ? 'Aşağıdaki listeden istediğiniz Blog Yazısı, YouTube Videosu, Podcast, Remix, Sayfa veya Kaynağı seçebilirsiniz.'
+              ? 'Aşağıdaki listeden istediğiniz Blog Yazısı, YouTube Videosu, Podcast, Remix, Sayfa, Kitap veya Kaynağı seçebilirsiniz.'
               : draftFeat.mode === 'latest'
                 ? 'Ana sayfa manşetinde her zaman en son yayınlanan içerik (yazı, video, podcast veya remix) dinamik olarak gösterilir.'
                 : 'Sitedeki bir içeriğe bağlı kalmadan tamamen kendi belirleyeceğiniz bağımsız başlık, görsel ve bağlantı ile özel bir manşet oluşturabilirsiniz.'}
@@ -1930,6 +1935,7 @@
               <button type="button" class="pill ${activeFilter === 'remixes' ? 'on' : ''}" data-filter="remixes">Remixler</button>
               <button type="button" class="pill ${activeFilter === 'pages' ? 'on' : ''}" data-filter="pages">Sayfalar</button>
               <button type="button" class="pill ${activeFilter === 'resources' ? 'on' : ''}" data-filter="resources">Kaynaklar</button>
+              <button type="button" class="pill ${activeFilter === 'books' ? 'on' : ''}" data-filter="books">Kitaplar</button>
             </div>
           </div>
           <div class="toolbar" style="margin-bottom:12px">

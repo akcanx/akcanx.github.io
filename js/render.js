@@ -423,7 +423,8 @@
             { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => href(epRoute(x)), thumb: (x) => asset(x.cover), excerpt: (x) => S.strip(x.description) },
             { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => href('remixler/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt || x.original || S.strip(x.description) },
             { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => href('sayfa/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt },
-            { type: 'resources', label: 'Kaynak', btn: 'İncele', href: (x) => href(resRoute(x)), thumb: (x) => asset(x.cover), excerpt: (x) => x.summary }
+            { type: 'resources', label: 'Kaynak', btn: 'İncele', href: (x) => href(resRoute(x)), thumb: (x) => asset(x.cover), excerpt: (x) => x.summary },
+            { type: 'books', label: 'Kitap', btn: 'İncele', href: (x) => href(bookRoute(x)), thumb: (x) => asset(x.cover), excerpt: (x) => x.tagline || x.subtitle || clip(S.strip(x.description), 200) }
           ];
 
           for (const c of colls) {
@@ -502,16 +503,19 @@
         const showTopGrad = featConfig.topGradient !== false;
         const topGradOpacity = Math.max(0, Math.min(100, Number(featConfig.topGradientOpacity ?? 85))) / 100;
         const topGradHTML = showTopGrad ? `<div class="top-grad" style="opacity:${topGradOpacity.toFixed(2)}"></div>` : '';
+        // Kitap: dikey kapak zemin olarak kırpılmaz; kapak bulanık zemin olur, net hâli sağda durur (özel görsel seçildiyse normal manşet)
+        const book = featHero.type === 'books' && featHero.item.cover && !featConfig.customImage ? featHero.item : null;
+        const txt = `<div class="eyebrow rise d1">${esc(featHero.eyebrow)}${dateText}</div>
+            <h1 class="rise d2"><a href="${esc(featHero.href)}">${esc(featHero.title)}</a></h1>
+            ${featHero.excerpt ? `<p class="fsub rise d3">${esc(featHero.excerpt)}</p>` : ''}
+            <a class="readlink rise d4" href="${esc(featHero.href)}"><span class="arr">→</span> ${esc(featHero.btnText)}</a>`;
         hero = `
-        <header class="fhero">
+        <header class="fhero${book ? ' fhero-book' : ''}">
           ${img ? `<img class="fbg" src="${esc(img)}" alt="" fetchpriority="high">` : ''}
           ${topGradHTML}
           <div class="grad"></div><div class="glow"></div>
           <div class="wrap">
-            <div class="eyebrow rise d1">${esc(featHero.eyebrow)}${dateText}</div>
-            <h1 class="rise d2"><a href="${esc(featHero.href)}">${esc(featHero.title)}</a></h1>
-            ${featHero.excerpt ? `<p class="fsub rise d3">${esc(featHero.excerpt)}</p>` : ''}
-            <a class="readlink rise d4" href="${esc(featHero.href)}"><span class="arr">→</span> ${esc(featHero.btnText)}</a>
+            ${book ? `<div class="fbook-grid"><div class="fbook-txt">${txt}</div><a class="fbook rise d2" href="${esc(featHero.href)}"><img src="${esc(asset(book.cover))}" alt="${esc(book.coverAlt || book.title)}" width="800" height="1200"></a></div>` : txt}
           </div>
         </header>`;
       } else {

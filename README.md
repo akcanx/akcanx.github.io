@@ -62,7 +62,7 @@
 ### Kitaplar (başlangıçta menüde gizli)
 - **Vitrin** (`/kitaplar/`, barisozcan.com/sesli-kitaplar düzeni): dikey (2:3) kapaklar yan yana; kapakta "Ön sipariş" / "Yakında"; ad, kısa tanıtım, yıl · yayınevi.
 - **Kitap sayfası** (`/kitaplar/kitap-adi/`): kapak, alt başlık, yıl · sayfa · biçim, satın alma düğmeleri (Amazon, D&R, Kitapyurdu, Idefix, BKM Kitap, Hepsiburada, Trendyol; yalnızca girilen ürün adresleri), tanıtım, alıntı, künye, diğer kitaplar.
-- Menü Yönetimi'nden "Kitaplar" görünür yapılınca menüye gelir.
+- Menü Yönetimi'nden "Kitaplar" görünür yapılınca menüye gelir; Öne Çıkan (Hero) ekranından ana sayfa manşetine de seçilebilir (kapak bulanık zemin, net hâli sağda).
 
 ### Kaynaklar (başlangıçta menüde gizli)
 - **Liste** (`/kaynaklar/`): anında arama ve "N / M kaynak" sayacı, tür çipleri (türler panelden düzenlenir), öne çıkan (★) kaynaklar büyük kartlarla, kapaklı kart ızgarası; son 30 günde eklenenlerde "Yeni" rozeti.

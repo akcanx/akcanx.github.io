@@ -545,6 +545,7 @@ Kenar çubuğunda **İçerik → Kitaplar** (`#books`).
 - **Vitrin** (`/kitaplar/`): üst etiket, başlık, tanıtım ve "3 kitap" bilgisi; altında dikey kapaklar yan yana (masaüstünde ve tablette üç, telefonda iki sütun). Kapağın köşesinde "Ön sipariş" ya da "Yakında"; altında ad, kısa tanıtım ve yeşil "yıl · yayınevi".
 - **Kitap sayfası** (`/kitaplar/kitap-adi/`): solda kapak; sağda "Kitap · Yayınevi" etiketi, ad, alt başlık, "yıl · sayfa · biçim" ve satın alma düğmeleri: ilk platform vurgulu ("Satın al · Amazon"), diğerleri yanında. Geçerli adres yoksa "Yakında satışta." yazar. Altında tanıtım metni, alıntı, konu etiketleri, **Künye** ve **Diğer kitaplar**.
 - Menüde gizliyken de yayındaki kendi kitaplarınızın sayfaları yayına girer (adresiyle açılır, site haritasında yer alır); yalnızca menüde bağlantı görünmez.
+- Bir kitabı ana sayfanın manşetinde göstermek için [Öne Çıkan (Hero)](#15-öne-çıkan-hero) ekranında **Kitaplar** süzgecinden seçin: kapak bulanık zemin olur, net hâli sağda durur.
 - Arama motorlarına her kitap `Book` kaydıyla bildirilir (yazar, ISBN, sayfa, yayınevi, satın alma bağlantıları). Kitaplar site içi aramada, `llms.txt` ve `llms-full.txt`'de de yer alır.
 
 ---
@@ -616,13 +617,13 @@ Yaptığınız her değişiklik burada anında görünür.
 
 | Mod | Ne gösterir |
 |---|---|
-| **📌 Mevcut İçeriklerden Seç (Manuel)** | Seçtiğiniz bir video, yazı, bölüm, remix, sayfa ya da kaynak (listede **Kaynaklar** süzgeci; manşette "Öne çıkan kaynak" ve **İncele** düğmesi). |
+| **📌 Mevcut İçeriklerden Seç (Manuel)** | Seçtiğiniz bir video, yazı, bölüm, remix, sayfa, kaynak ya da kitap (listede **Kaynaklar** ve **Kitaplar** süzgeçleri; manşette "Öne çıkan kaynak" / "Öne çıkan kitap" ve **İncele** düğmesi). Kitapta dikey kapak kırpılmaz: kapak manşetin bulanık zemini olur, net hâli sağda durur (telefonda metnin üstünde). **Özel görsel** seçerseniz normal manşet görünür. |
 | **⚡ En Son Eklenen İçerik (Otomatik)** | Her zaman en son yayınlanan içerik (yazı, video, podcast ya da remix). |
 | **✍️ Bağımsız Özel Manşet** | Sitedeki bir içeriğe bağlı olmayan, kendi başlığınız, görseliniz ve bağlantınız. |
 
 ### Manuel modda seçim
 
-- Filtreler: Tümü, Videolar, Blog yazıları, Podcast, Remixler, Sayfalar, Kaynaklar.
+- Filtreler: Tümü, Videolar, Blog yazıları, Podcast, Remixler, Sayfalar, Kaynaklar, Kitaplar.
 - Başlıkta arama yapılabilir.
 - Bir karta ya da **Öne Çıkar** düğmesine tıklayın; seçilen kartta **★ Seçildi** yazar.
 
