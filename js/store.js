@@ -15,16 +15,18 @@
   /* ---------- Varsayılan içerik ---------- */
   const O = global.AKCAN_ORNEK || {};
   // Örnek içerik sürümü: yükseltildiğinde, kayıtlı verisi olan tarayıcılara da yeni örnekler bir kez eklenir
-  const SAMPLE_VERSION = 6;
+  const SAMPLE_VERSION = 7;
   // Sürüm 4'te eklenen örnekler (Gıda ve Gündem alt kategorilerinin yazıları)
   const NEW_SAMPLES_4 = new Set(['yazi-gida', 'yazi-gundem']);
   // Sürüm 5'te eklenen örnekler (Sofra ve Satır Arası podcast serileri, Sofra bölümleri)
   const NEW_SAMPLES_5 = new Set(['seri-sofra', 'seri-satir-arasi', 'pod-sofra-1', 'pod-sofra-2', 'pod-sofra-3']);
   // Sürüm 6'da eklenen örnekler (Kitaplar sekmesi)
   const NEW_SAMPLES_6 = new Set(['kitap-1', 'kitap-2', 'kitap-3']);
+  // Sürüm 7'de eklenen örnekler (Kaynaklar sekmesi)
+  const NEW_SAMPLES_7 = new Set(['kaynak-1', 'kaynak-2', 'kaynak-3', 'kaynak-4', 'kaynak-5', 'kaynak-6']);
 
   /* ---------- Örnek içeriği tanıma ---------- */
-  const SAMPLE_IDS = new Set(['posts', 'podcasts', 'remixes', 'pages', 'series', 'books'].flatMap((c) => (O[c] || []).map((x) => x.id)));
+  const SAMPLE_IDS = new Set(['posts', 'podcasts', 'remixes', 'pages', 'series', 'books', 'resources'].flatMap((c) => (O[c] || []).map((x) => x.id)));
   // Sitenin ilk sürümündeki örnekler her açılışta rastgele kimlik alıyordu: başlıklarından tanınır
   const LEGACY_SAMPLES = {
     posts: ['Bir Remix Nasıl Doğar?', 'Kulaklıkla Dinlemek Neden Farklı Hissettirir?', 'Gece Yarısı Stüdyo Notları', 'Stüdyo Turu: Ekipmanlarım ve Çalışma Düzenim', 'Canlı Set: Pazar Akşamı Seansı', 'Sıfırdan Remix Yapımı'],
@@ -66,7 +68,7 @@
 
   // Veri sürümü: 2 → Videolar ve Yazılar ayrı sekmeler, 3 → alt kategoriler, 4 → podcast serileri, 5 → Kitaplar (bkz. migrate)
   const DEFAULTS = {
-    version: 5,
+    version: 6,
     sampleVersion: SAMPLE_VERSION,
     settings: {
       siteName: 'Akcan',
@@ -116,6 +118,21 @@
         intro: 'Basılmış ve yayımlanmış kitaplarım: her birinin hikâyesi, künyesi ve satın alabileceğiniz yerler.',
         tint: '#4A3A1E'
       },
+      // Kaynaklar sekmesi: liste sayfasının üst bölümü (kaynakların kendisi D.resources'ta)
+      resourcesPage: {
+        title: 'Kaynaklar',
+        eyebrow: 'Kaynak · Araçlar, rehberler ve bağlantılar',
+        intro: 'Videolarımda, yazılarımda ve bölümlerimde andığım araçlar, rehberler ve bağlantılar: hepsi tek yerde, kısa notlarıyla.',
+        tint: '#2A3550'
+      },
+      // Kaynak türleri (sıra = listedeki süzgeç çiplerinin sırası); panelden eklenir, adlandırılır, silinir
+      resourceTypes: [
+        { id: 'rehber', name: 'Rehber' },
+        { id: 'arac', name: 'Araç' },
+        { id: 'video', name: 'Video' },
+        { id: 'kitap', name: 'Kitap' },
+        { id: 'site', name: 'Site' }
+      ],
       // Remixler sayfasının üst bölümü (Podcast programının ikizi)
       remixPage: {
         name: 'Remixler',
@@ -161,6 +178,7 @@
       { id: 'm3', label: 'Podcast', type: 'podcast', target: '', visible: true, newTab: false },
       { id: 'm4', label: 'Remixler', type: 'remixes', target: '', visible: true, newTab: false },
       { id: 'm8', label: 'Kitaplar', type: 'books', target: '', visible: false, newTab: false },
+      { id: 'm9', label: 'Kaynaklar', type: 'resources', target: '', visible: false, newTab: false },
       { id: 'm6', label: 'Hakkında', type: 'about', target: '', visible: true, newTab: false }
     ],
     // Videolar ve Yazılar sekmeleri tek koleksiyonda: kind 'video' (YouTube videosu) ya da 'yazi' (kapak görselli blog yazısı)
@@ -172,6 +190,8 @@
     remixes: O.remixes || [],
     // Basılı kitaplar (dizideki sıra = vitrindeki sıra)
     books: O.books || [],
+    // Kaynaklar (en yeni önde; pinned: Kaynaklar sayfasında öne çıkan)
+    resources: O.resources || [],
     pages: O.pages || []
   };
 
@@ -288,6 +308,19 @@
       data.version = 5;
       changed = true;
     }
+    // 6: Kaynaklar sekmesi. Sürüm 5 kaydında kaynak yoktur (birleştirmede varsayılanlardan gelen örnekler atılır);
+    // menüye gizli "Kaynaklar" öğesi bir kez, Kitaplar'ın (yoksa Remixler'in) ardına eklenir (sonradan silinirse geri gelmez)
+    if (!(data.version >= 6)) {
+      data.resources = [];
+      data.menu = data.menu || [];
+      if (!data.menu.some((m) => m.type === 'resources')) {
+        let at = data.menu.findIndex((m) => m.type === 'books');
+        if (at < 0) at = data.menu.findIndex((m) => m.type === 'remixes');
+        data.menu.splice(at < 0 ? data.menu.length : at + 1, 0, { id: uid(), label: 'Kaynaklar', type: 'resources', target: '', visible: false, newTab: false });
+      }
+      data.version = 6;
+      changed = true;
+    }
     const f = data.settings && data.settings.featured;
     if (f && f.type === 'videos') { f.type = 'posts'; changed = true; }
     // Her yazıya tür: videosu olan "video", olmayan "yazi" (kapak görselli blog yazısı)
@@ -320,13 +353,15 @@
     if (sv < 5 && ['posts', 'podcasts', 'remixes', 'pages'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['series', 'podcasts'], NEW_SAMPLES_5);
     // 6: üç örnek kitap. Örnekleri silmiş olana eklenmez
     if (sv < 6 && ['posts', 'podcasts', 'remixes', 'pages'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['books'], NEW_SAMPLES_6);
+    // 7: altı örnek kaynak. Örnekleri silmiş olana eklenmez
+    if (sv < 7 && ['posts', 'podcasts', 'remixes', 'pages'].some((c) => (data[c] || []).some(isSample))) addSamples(data, ['resources'], NEW_SAMPLES_7);
     if (sv < SAMPLE_VERSION) { data.sampleVersion = SAMPLE_VERSION; changed = true; }
     // Podcast bölümleri ve remixler de kimlik yerine okunur adresle açılır (/podcast/seri/bolum-adi/).
     // Örnek eklemelerinden sonra: yeni eklenen örneklerin de bağlantısı olsun
-    ['podcasts', 'remixes', 'books'].forEach((c) => {
+    ['podcasts', 'remixes', 'books', 'resources'].forEach((c) => {
       (data[c] || []).forEach((x) => {
         if (x.slug) return;
-        const base = slugify(x.title) || ({ podcasts: 'bolum', remixes: 'remix', books: 'kitap' })[c];
+        const base = slugify(x.title) || ({ podcasts: 'bolum', remixes: 'remix', books: 'kitap', resources: 'kaynak' })[c];
         let slug = base, n = 2;
         while (data[c].some((y) => y.slug === slug)) slug = `${base}-${n++}`;
         x.slug = slug;
@@ -347,7 +382,7 @@
    * Örnek içeriklerden eksik olanları ekler (kimliği ya da bağlantısı zaten varsa atlar). Eklenen sayısını döner.
    * only: yalnızca bu kimlikteki örnekler
    */
-  function addSamples(data, cols = ['series', 'posts', 'podcasts', 'remixes', 'books', 'pages'], only) {
+  function addSamples(data, cols = ['series', 'posts', 'podcasts', 'remixes', 'books', 'resources', 'pages'], only) {
     let n = 0;
     cols.forEach((c) => {
       data[c] = data[c] || [];
@@ -385,7 +420,7 @@
     delete d.settings.adminHash;
     delete d.videos;
     const live = (x) => x.published !== false && !isSample(x);
-    ['posts', 'podcasts', 'remixes', 'pages', 'series', 'books'].forEach((c) => { d[c] = (d[c] || []).filter(live); });
+    ['posts', 'podcasts', 'remixes', 'pages', 'series', 'books', 'resources'].forEach((c) => { d[c] = (d[c] || []).filter(live); });
     const ids = new Set(d.series.map((s) => s.id));
     d.podcasts = d.podcasts.filter((x) => ids.has(x.series));
     return d;

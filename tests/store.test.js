@@ -2,7 +2,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { S, mem, v3 } = require('./yukle');
+const { S, O, mem, v3 } = require('./yukle');
 
 test('gecis-ornek-program', () => { // değiştirilmemiş program → örnek seri
   const d = S.normalize(v3());
@@ -143,9 +143,9 @@ test('kitap-menu-bir-kez', () => { // sürüm 4 kaydına gizli öğe bir kez ekl
 test('kitap-menu-konumu', () => { // gizli öğe Remixler'in hemen ardına girer (İletişim'in sonuna değil); Remixler yoksa sona
   const m = (type) => ({ id: type, label: type, type, visible: true });
   const a = S.normalize({ version: 4, menu: [m('home'), m('videos'), m('remixes'), m('about'), m('link')] });
-  assert.deepEqual(a.menu.map((x) => x.type), ['home', 'videos', 'remixes', 'books', 'about', 'link']);
+  assert.deepEqual(a.menu.map((x) => x.type), ['home', 'videos', 'remixes', 'books', 'resources', 'about', 'link']);
   const b = S.normalize({ version: 4, menu: [m('home'), m('about')] });
-  assert.deepEqual(b.menu.map((x) => x.type), ['home', 'about', 'books']);
+  assert.deepEqual(b.menu.map((x) => x.type), ['home', 'about', 'books', 'resources']);
 });
 
 test('kitap-ornek-surum-6', () => { // panelde kayıtlı eski veriye örnek kitaplar bir kez eklenir; örnekleri silmişe eklenmez
@@ -161,4 +161,55 @@ test('kitap-forPublish', () => {
   const d = S.normalize({});
   d.books.push({ id: 'k', title: 'Kendi', slug: 'kendi', published: true }, { id: 't', title: 'Taslak', slug: 'taslak', published: false });
   assert.deepEqual(S.forPublish(d).books.map((b) => b.id), ['k']);
+});
+
+/* ---------- Kaynaklar ---------- */
+test('kaynak-ilk-kurulum', () => {
+  const d = S.normalize({});
+  assert.ok(d.version >= 6);
+  assert.deepEqual(d.resources.map((r) => r.id), ['kaynak-1', 'kaynak-2', 'kaynak-3', 'kaynak-4', 'kaynak-5', 'kaynak-6']);
+  assert.ok(d.resources.every(S.isSample));
+  assert.deepEqual(d.settings.resourceTypes.map((t) => t.id), ['rehber', 'arac', 'video', 'kitap', 'site']);
+  assert.equal(d.settings.resourcesPage.title, 'Kaynaklar');
+  const i = d.menu.findIndex((x) => x.type === 'resources');
+  assert.equal(d.menu[i].visible, false);
+  assert.equal(d.menu[i].label, 'Kaynaklar');
+  assert.equal(d.menu[i - 1].type, 'books');
+});
+
+test('kaynak-gecis-menu', () => { // gizli öğe bir kez: Kitaplar'ın, yoksa Remixler'in ardına, o da yoksa sona
+  const m = (type) => ({ id: type, label: type, type, visible: true });
+  const a = S.normalize({ version: 5, menu: [m('home'), m('remixes'), m('books'), m('about')] });
+  assert.deepEqual(a.menu.map((x) => x.type), ['home', 'remixes', 'books', 'resources', 'about']);
+  assert.deepEqual(a.resources, []);
+  assert.deepEqual(S.normalize({ version: 5, menu: [m('home'), m('remixes'), m('about')] }).menu.map((x) => x.type), ['home', 'remixes', 'resources', 'about']);
+  assert.deepEqual(S.normalize({ version: 5, menu: [m('home'), m('about')] }).menu.map((x) => x.type), ['home', 'about', 'resources']);
+  a.menu = a.menu.filter((x) => x.type !== 'resources');
+  assert.equal(S.normalize(JSON.parse(JSON.stringify(a))).menu.filter((x) => x.type === 'resources').length, 0);
+});
+
+test('kaynak-ornek-surum-7', () => { // örneği kalmış eski kayda örnek kaynaklar bir kez eklenir; örneklerini silmişe eklenmez
+  mem.clear();
+  mem.set(S.KEY, JSON.stringify({ ...v3(), sampleVersion: 6, version: 5, series: [] }));
+  assert.equal(S.get().resources.length, 6);
+  mem.clear();
+  mem.set(S.KEY, JSON.stringify({ version: 5, sampleVersion: 6, posts: [], podcasts: [], remixes: [], pages: [], series: [], books: [] }));
+  assert.equal(S.get().resources.length, 0);
+});
+
+test('kaynak-forPublish', () => {
+  const d = S.normalize({});
+  d.resources.push({ id: 'k', title: 'Kendi', slug: 'kendi', published: true }, { id: 't', title: 'Taslak', slug: 'taslak', published: false });
+  assert.deepEqual(S.forPublish(d).resources.map((r) => r.id), ['k']);
+});
+
+test('kaynak-ornekleri', () => { // beş tür, iki öne çıkan, videoya bağlı biri, çok bağlantılı biri, asgari biri; featured yok
+  const r = S.normalize({}).resources;
+  assert.deepEqual([...new Set(r.map((x) => x.type))].sort(), ['arac', 'kitap', 'rehber', 'site', 'video']);
+  assert.equal(r.filter((x) => x.pinned).length, 2);
+  const vids = new Set(O.posts.filter((p) => p.kind === 'video').map((p) => 'posts:' + p.id));
+  assert.ok(r.some((x) => (x.related || []).some((k) => vids.has(k))));
+  assert.ok(r.some((x) => (x.links || []).length >= 3));
+  assert.ok(r.some((x) => !x.summary && !x.body && !x.cover && x.url));
+  assert.ok(r.every((x) => !('featured' in x)));
 });

@@ -564,6 +564,62 @@
     }
   ];
 
+  /* ======================================================================
+     KAYNAKLAR — videolarda ve yazılarda anılan araçlar, rehberler, bağlantılar (en yeni önde)
+     type: settings.resourceTypes kimliği · pinned: Kaynaklar sayfasında öne çıkan
+     related: sitedeki içerik ('posts:<id>', 'podcasts:<id>', 'remixes:<id>')
+     ====================================================================== */
+  const resources = [
+    {
+      id: 'kaynak-1', title: 'Ev stüdyosu kurulum rehberi', slug: 'ev-studyosu-kurulum-rehberi', type: 'rehber', pinned: true, date: '2026-10-12',
+      summary: 'Küçük bir odayı kayıt yapılabilir bir stüdyoya çevirmek için akustik, ekipman ve yerleşim üzerine adım adım notlar.',
+      cover: PIC('kaynak-ev-studyosu', 1280, 720), coverAlt: 'Masada ses kartı, mikrofon ve stüdyo monitörleri', tint: '#2A3550', published: true,
+      url: 'https://en.wikipedia.org/wiki/Recording_studio', urlLabel: 'Kayıt stüdyosu nedir?',
+      links: [
+        { label: 'Akustik', url: 'https://tr.wikipedia.org/wiki/Akustik' },
+        { label: 'Ses kartı', url: 'https://tr.wikipedia.org/wiki/Ses_kart%C4%B1' },
+        { label: 'Mikrofon', url: 'https://tr.wikipedia.org/wiki/Mikrofon' }
+      ],
+      related: ['posts:vid-james-hype'], tags: ['Stüdyo', 'Akustik', 'Ekipman'],
+      body: '<p>İyi bir kayıt için pahalı ekipmandan önce doğru oda gelir. Bu rehber, küçük bir odada nelere dikkat ettiğimi sırasıyla anlatıyor.</p>'
+        + '<h2>Oda ve akustik</h2><p>Paralel duvarlar arasındaki yankıyı kırmak için kitaplık, halı ve kalın perdeler çoğu zaman yeterli. Dinleme noktasını odanın tam ortasına değil, üçte birine koyun.</p>'
+        + '<h2>Ekipman sırası</h2><ul><li>Önce kulaklık ve iki girişli bir ses kartı</li><li>Sonra dinamik bir mikrofon</li><li>En son bir çift stüdyo monitörü</li></ul>'
+        + '<h2>Yerleşim</h2><p>Monitörler kulak hizasında ve sizinle eşkenar üçgen oluşturacak açıda durmalı.</p>'
+    },
+    {
+      id: 'kaynak-2', title: 'Audacity: ücretsiz ses düzenleyici', slug: 'audacity', type: 'arac', pinned: true, date: '2026-10-05',
+      summary: 'Kayıt, kesme, gürültü azaltma ve dışa aktarma için açık kaynaklı, ücretsiz bir ses düzenleme programı.',
+      cover: PIC('kaynak-audacity', 1280, 720), coverAlt: 'Ekranda ses dalgası düzenlenen bir program', tint: '#1F3A5A', published: true,
+      url: 'https://www.audacityteam.org/download/', urlLabel: 'Audacity\'yi indir',
+      links: [{ label: 'Kullanım kılavuzu', url: 'https://manual.audacityteam.org/' }],
+      related: ['posts:vid-remix-ableton'], tags: ['Ses', 'Ücretsiz', 'Kurgu'],
+      body: '<p>Podcast bölümlerinin ilk kurgusunu ve hızlı gürültü temizliğini hâlâ bu programla yapıyorum. Windows, macOS ve Linux\'ta çalışıyor.</p>'
+    },
+    {
+      id: 'kaynak-3', title: 'Bicep\'in Printworks seti', slug: 'bicep-printworks-seti', type: 'video', date: '2026-09-28',
+      summary: 'Videoda parça parça incelediğim canlı performansın kendisi: önce bütününü izleyin, sonra incelemeye dönün.',
+      cover: PIC('kaynak-bicep', 1280, 720), coverAlt: 'Karanlık bir sahnede ışık huzmeleri', tint: '#3A2450', published: true,
+      url: 'https://www.youtube.com/results?search_query=Bicep+Printworks', urlLabel: 'YouTube\'da izle',
+      related: ['posts:vid-bicep'], tags: ['Canlı performans', 'Elektronik müzik']
+    },
+    {
+      id: 'kaynak-4', title: 'This Is Your Brain on Music', slug: 'this-is-your-brain-on-music', type: 'kitap', date: '2026-09-20',
+      summary: 'Daniel Levitin\'in müziğin beyinde nasıl işlendiğini anlatan kitabı; "Sesin Hafızası" bölümlerinin çıkış noktası.',
+      cover: PIC('kaynak-levitin', 1280, 720), coverAlt: 'Açık bir kitap ve yanında kulaklık', tint: '#4A3A1E', published: true,
+      url: 'https://www.google.com/search?tbm=bks&q=This+Is+Your+Brain+on+Music', urlLabel: 'Kitabı bul',
+      tags: ['Kitap', 'Müzik', 'Beyin']
+    },
+    {
+      id: 'kaynak-5', title: 'Freesound: telifsiz ses arşivi', slug: 'freesound', type: 'site', date: '2026-09-14',
+      summary: 'Yağmurdan şehir gürültüsüne, kayıtlarda kullanabileceğiniz binlerce Creative Commons lisanslı ses.',
+      cover: PIC('kaynak-freesound', 1280, 720), coverAlt: 'Mikrofonla dışarıda ses kaydı yapan biri', tint: '#1E4A3A', published: true,
+      url: 'https://freesound.org/search/?q=rain', urlLabel: 'Freesound\'da ara',
+      links: [{ label: 'Lisanslar hakkında', url: 'https://freesound.org/help/faq/' }],
+      tags: ['Ses efekti', 'Ücretsiz', 'Lisans']
+    },
+    { id: 'kaynak-6', title: 'Çevrim içi metronom', slug: 'cevrim-ici-metronom', type: 'site', url: 'https://www.google.com/search?q=metronome', published: true }
+  ];
+
   const pages = [
     {
       id: 'page-1', title: 'Stüdyo & Ekipmanlar', slug: 'ekipmanlar', cover: PIC('studio-gear', 1600, 900), published: true,
@@ -591,6 +647,8 @@
     { id: 'm4', label: 'Remixler', type: 'remixes', target: '', visible: true, newTab: false },
     // Kitaplar sekmesi hazır ama menüde gizli: Menü Yönetimi'nden açılır
     { id: 'm8', label: 'Kitaplar', type: 'books', target: '', visible: false, newTab: false },
+    // Kaynaklar sekmesi hazır ama menüde gizli: Menü Yönetimi'nden açılır
+    { id: 'm9', label: 'Kaynaklar', type: 'resources', target: '', visible: false, newTab: false },
     { id: 'm5', label: 'Ekipmanlar', type: 'page', target: 'ekipmanlar', visible: true, newTab: false },
     { id: 'm6', label: 'Hakkında', type: 'about', target: '', visible: true, newTab: false },
     { id: 'm7', label: 'İletişim', type: 'page', target: 'iletisim', visible: true, newTab: false }
@@ -616,5 +674,5 @@
       + `<p><em>Bu metin bir örnektir; Panel → Hakkında bölümünden düzenleyebilirsiniz.</em></p>`
   };
 
-  global.AKCAN_ORNEK = { posts, series, podcasts, remixes, books, pages, menu, about, featuredId: 'vid-bicep' };
+  global.AKCAN_ORNEK = { posts, series, podcasts, remixes, books, resources, pages, menu, about, featuredId: 'vid-bicep' };
 })(window);
