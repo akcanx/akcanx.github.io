@@ -213,3 +213,12 @@ test('kaynak-ornekleri', () => { // beş tür, iki öne çıkan, videoya bağlı
   assert.ok(r.some((x) => !x.summary && !x.body && !x.cover && x.url));
   assert.ok(r.every((x) => !('featured' in x)));
 });
+
+test('kaynak-adres-duzeltme', () => { // https:// olmadan yazılan alan adı biçimli adres tamamlanır; diğerleri değişmez
+  assert.equal(S.fixUrl('github.com/kullanici/repo'), 'https://github.com/kullanici/repo');
+  assert.equal(S.fixUrl('  www.ornek.test  '), 'https://www.ornek.test');
+  assert.equal(S.fixUrl('https://ornek.test/a'), 'https://ornek.test/a');
+  assert.equal(S.fixUrl('mailto:a@b.c'), 'mailto:a@b.c');
+  assert.equal(S.fixUrl(''), '');
+  assert.equal(S.fixUrl('düz metin'), 'düz metin');
+});

@@ -1053,7 +1053,8 @@
     /** Kart: kaynağın sayfasına giden bağlantı; liste sayfasında tıklanınca yan panel açılır (app.js) */
     function resCard(r, big) {
       const tn = resTypeName(r.type), dom = domainOf(r.url);
-      const q = [r.title, r.summary, dom, ...resLinks(r).map((l) => l.label)].filter(Boolean).join(' ').toLocaleLowerCase('tr');
+      // Aramada Türkçe ve İngilizce "I" birlikte eşleşsin: ı → i (İstanbul/istanbul, IŞIK/ışık, MIDI/midi)
+      const q = [r.title, r.summary, dom, ...resLinks(r).map((l) => l.label)].filter(Boolean).join(' ').toLocaleLowerCase('tr').replace(/ı/g, 'i');
       return `<a class="rcard${big ? ' big' : ''} reveal" href="${href(resRoute(r))}" data-res="${esc(r.id)}" data-type="${esc(tn ? r.type : '')}" data-date="${esc(r.date || '')}" data-find="${esc(q)}">
         <span class="rcover">${r.cover ? `<img src="${esc(asset(r.cover))}" alt="${esc(r.coverAlt || r.title)}" loading="lazy" decoding="async">` : ''}</span>
         <span class="rbody">

@@ -513,6 +513,13 @@
     return m ? m[1] : '';
   }
   /** Gerçek bir profil adresi mi? (https://www.youtube.com/ gibi boş adresler sayılmaz) */
+  /** https:// olmadan yazılmış alan adı biçimli adresi tamamlar ("github.com/x" → "https://github.com/x"); diğerlerini değiştirmez */
+  function fixUrl(u) {
+    const s = String(u || '').trim();
+    if (!s || /^[a-z][a-z0-9+.-]*:/i.test(s)) return s;
+    return /^[\w-]+(\.[\w-]+)+([/?#].*)?$/.test(s) ? 'https://' + s : s;
+  }
+
   function isProfile(u) {
     try {
       const x = new URL(String(u || ''));
@@ -577,7 +584,7 @@
 
   global.Store = {
     KEY, DEFAULTS, uid, get, save, onSave, reset, exportJSON, importJSON, normalize, forPublish, SERIES_STATUS, seriesOf, BOOK_STATUS, BOOK_FORMAT, BOOK_SHOPS,
-    slugify, esc, strip, fmtDate, fmtDateShort, fmtNum, isProfile, ytId, ytThumb, embed, wordCount, readingTime, hash, MONTHS,
+    slugify, esc, strip, fmtDate, fmtDateShort, fmtNum, isProfile, fixUrl, ytId, ytThumb, embed, wordCount, readingTime, hash, MONTHS,
     postKind, addSamples, isSample, CAT_KEYS, cats
   };
 })(typeof window !== 'undefined' ? window : globalThis);

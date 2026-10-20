@@ -525,7 +525,7 @@
     const grid = $('#resgrid');
     if (!grid) return;
     const pin = $('#respinned');
-    const q = resState.q.trim().toLocaleLowerCase('tr'), t = resState.t;
+    const q = resState.q.trim().toLocaleLowerCase('tr').replace(/ı/g, 'i'), t = resState.t;
     const active = !!(q || t);
     if (pin) {
       pin.hidden = active;
@@ -565,6 +565,8 @@
     $('.rd-panel', d).scrollTop = 0;
     resFrom = from;
     d.hidden = false;
+    // Arka plan kaymasın: sayfayı kaydıran öğe html (body'nin overflow'u görünüm alanına aktarılmıyor)
+    document.documentElement.classList.add('rd-open');
     document.body.classList.add('rd-open');
     void d.offsetWidth; // geçişin başlangıç durumu çizilsin (requestAnimationFrame arka plan sekmesinde beklemeye alınabilir)
     d.classList.add('open');
@@ -575,6 +577,7 @@
     const d = $('.rdrawer');
     if (!d || d.hidden) return;
     d.classList.remove('open');
+    document.documentElement.classList.remove('rd-open');
     document.body.classList.remove('rd-open');
     setTimeout(() => { if (!d.classList.contains('open')) { d.hidden = true; $('.rd-panel', d).innerHTML = ''; } }, reduceMotion() ? 0 : 380);
     if (resFrom && resFrom.isConnected) resFrom.focus({ preventScroll: true });

@@ -398,3 +398,10 @@ test('bos-kaynak-listesi', () => {
   assert.match(pg.html, /Henüz kaynak yok\./);
   assert.equal(pg.noindex, true);
 });
+
+test('kaynak-arama-metni-katlanir', () => { // İngilizce büyük I: "MIDI" aramada "midi" ile bulunur (ı → i katlanır)
+  const d = S.normalize({});
+  d.resources = [{ id: 'm', title: 'MIDI kontrolcü', slug: 'midi', url: 'https://ornek.test/m' }];
+  const h = Render.create(d, { mode: 'local' }).page('kaynaklar').html;
+  assert.match(h, /data-find="[^"]*midi kontrolcü/);
+});

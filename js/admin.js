@@ -280,7 +280,7 @@
       desc: 'Videolarda, yazılarda ve bölümlerde andığınız araçlar, rehberler ve bağlantılar. Sitedeki Kaynaklar sekmesinde kartlar halinde durur; karta tıklanınca yan panelde açılır, her kaynağın kendi sayfası da vardır. ★ ile işaretledikleriniz en üstte büyük kartla görünür.',
       view: (x) => '#/kaynaklar/' + x.slug,
       thumb: (x) => x.cover,
-      sub: (x) => [resTypeName(x.type), domainOf(x.url)].filter(Boolean).join(' · '),
+      sub: (x) => domainOf(x.url), // tür adı satırda zaten kalın yazılır
       fields: [
         { k: 'title', t: 'title', l: 'Kaynağın adı', req: true },
         { k: 'summary', t: 'textarea', l: 'Kısa açıklama', rows: 3, help: 'Kartta (iki satır), yan panelde ve kaynak sayfasının girişinde görünür; arama sonucunda açıklama olarak kullanılır. 150–160 karakter önerilir.' },
@@ -1306,7 +1306,7 @@
         delete copy.sample; // kopya sizin içeriğinizdir: düzenleyip yayına alabilirsiniz
         copy.title = item.title + ' (kopya)';
         copy.published = false;
-        copy.featured = false;
+        if ('featured' in copy) copy.featured = false;
         if (copy.slug) copy.slug = uniqueSlug(C, item.slug + '-kopya', null, catSlugs(type));
         D[C].push(copy);
         persist('Kopya oluşturuldu (taslak)');
@@ -1388,6 +1388,11 @@
       if (T.kind === 'yazi' && !v.cover) { toast('Yazı için bir kapak görseli ekleyin', true); $('[data-k="cover"]', frm).focus(); return; }
       if (type === 'podcasts' && !v.series) { toast('Bölüm için bir seri seçin (önce ◫ Seriler’den bir seri ekleyin)', true); return; }
       if ('slug' in v) v.slug = uniqueSlug(C, S.slugify(v.slug || v.title), item.id, catSlugs(type));
+      // Kaynak bağlantıları: https:// olmadan yazılan adres tamamlanır ("github.com/x" → "https://github.com/x")
+      if (type === 'resources') {
+        v.url = S.fixUrl(v.url);
+        v.links = (v.links || []).map((l) => ({ ...l, url: S.fixUrl(l.url) }));
+      }
 
       const inMenu = v.inMenu;
       delete v.inMenu;
@@ -1401,7 +1406,9 @@
       if (isNew) { rec.id = S.uid(); D[C].push(rec); }
       else { const i = D[C].findIndex((x) => x.id === rec.id); D[C][i] = rec; }
 
-      if (rec.featured) {
+      // Hero eşitlemesi yalnızca formunda "Öne çıkan" anahtarı olan türlerde (kaynaklar Hero'ya Öne Çıkan ekranından seçilir)
+      const hasFeat = T.fields.some((f) => f.k === 'featured');
+      if (hasFeat && rec.featured) {
         ['posts', 'podcasts', 'remixes', 'pages'].forEach((c) => {
           (D[c] || []).forEach((x) => {
             if (c !== C || x.id !== rec.id) x.featured = false;
@@ -1413,7 +1420,7 @@
           type: C,
           id: rec.id
         };
-      } else if (D.settings.featured && D.settings.featured.id === rec.id) {
+      } else if (hasFeat && D.settings.featured && D.settings.featured.id === rec.id) {
         D.settings.featured.id = '';
       }
 
@@ -1900,7 +1907,7 @@
           </div>
           <p class="muted" style="margin:0;font-size:13px" id="modeDesc">
             ${draftFeat.mode === 'manual'
-              ? 'Aşağıdaki listeden istediğiniz Blog Yazısı, YouTube Videosu, Podcast, Remix veya Sayfayı seçebilirsiniz.'
+              ? 'Aşağıdaki listeden istediğiniz Blog Yazısı, YouTube Videosu, Podcast, Remix, Sayfa veya Kaynağı seçebilirsiniz.'
               : draftFeat.mode === 'latest'
                 ? 'Ana sayfa manşetinde her zaman en son yayınlanan içerik (yazı, video, podcast veya remix) dinamik olarak gösterilir.'
                 : 'Sitedeki bir içeriğe bağlı kalmadan tamamen kendi belirleyeceğiniz bağımsız başlık, görsel ve bağlantı ile özel bir manşet oluşturabilirsiniz.'}

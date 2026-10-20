@@ -622,7 +622,7 @@ Yaptığınız her değişiklik burada anında görünür.
 
 ### Manuel modda seçim
 
-- Filtreler: Tümü, Videolar, Blog yazıları, Podcast, Remixler, Sayfalar.
+- Filtreler: Tümü, Videolar, Blog yazıları, Podcast, Remixler, Sayfalar, Kaynaklar.
 - Başlıkta arama yapılabilir.
 - Bir karta ya da **Öne Çıkar** düğmesine tıklayın; seçilen kartta **★ Seçildi** yazar.
 
