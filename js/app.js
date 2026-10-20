@@ -211,6 +211,7 @@
     // Eski bağlantılar (#/yazi/..., #/bolum/...) yeni adrese yönlenir
     if (pg.redirect !== undefined) { go(pg.redirect, true); return; }
     teardown();
+    resClose();
     pageCtx = pg.ctx || null;
     document.title = pg.title;
     updateHead(pg);
@@ -224,6 +225,7 @@
     applyPageCtx();
     onScroll();
     observe();
+    resInit();
     Player.sync();
   }
 
@@ -485,6 +487,7 @@
     if (e.key === 'Escape') {
       closeSearch();
       closeDrawer();
+      resClose();
       return;
     }
     // Ses oynatıcı kısayolları (yazı yazılmıyorken)
@@ -502,10 +505,114 @@
     }
   });
 
+  /* ---------- Kaynaklar: "Yeni" rozeti, arama, tür süzgeci, yan panel ---------- */
+  const reduceMotion = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const resState = { q: '', t: '' };
+  let resFrom = null;
+  // Sayfa her çizildiğinde: "Yeni" son 30 gün (hazır HTML derleme gününe göre üretildiği için burada yeniden hesaplanır)
+  function resInit() {
+    $$('a.rcard[data-date]').forEach((a) => {
+      const b = $('.rnew', a);
+      if (!b) return;
+      const t = Date.parse(a.dataset.date || ''), age = Date.now() - t;
+      b.hidden = !(t && age >= 0 && age < 30 * 864e5);
+    });
+    resState.q = '';
+    resState.t = '';
+  }
+  // Arama + tür çipi: kartları gizler, sayacı yazar; süzme etkinken öne çıkanlar ızgarada (kopya kart) görünür
+  function resFilter() {
+    const grid = $('#resgrid');
+    if (!grid) return;
+    const pin = $('#respinned');
+    const q = resState.q.trim().toLocaleLowerCase('tr'), t = resState.t;
+    const active = !!(q || t);
+    if (pin) {
+      pin.hidden = active;
+      if (active && !grid.dataset.pinned) {
+        $$('a.rcard', pin).forEach((c) => { const k = c.cloneNode(true); k.classList.remove('big'); k.classList.add('in'); k.dataset.clone = '1'; grid.appendChild(k); });
+        $$('a.rcard', grid).sort((a, b) => (b.dataset.date || '').localeCompare(a.dataset.date || '')).forEach((c) => grid.appendChild(c));
+        grid.dataset.pinned = '1';
+      }
+    }
+    let n = 0;
+    $$('a.rcard', grid).forEach((c) => {
+      const show = (!c.dataset.clone || active) && (!t || c.dataset.type === t) && (!q || (c.dataset.find || '').includes(q));
+      c.hidden = !show;
+      if (show) n++;
+    });
+    const total = (pin ? $$('a.rcard', pin).length : 0) + $$('a.rcard:not([data-clone])', grid).length;
+    const shown = active ? n : total;
+    const cnt = $('#rescount');
+    if (cnt) cnt.innerHTML = `<b>${shown}</b> / ${total} kaynak`;
+    const empty = $('#resempty');
+    if (empty) empty.hidden = shown > 0;
+  }
+  function resDrawerEl() {
+    let d = $('.rdrawer');
+    if (!d) {
+      d = document.createElement('div');
+      d.className = 'rdrawer';
+      d.hidden = true;
+      d.innerHTML = '<div class="rd-back" data-rclose></div><div class="rd-panel" role="dialog" aria-modal="true" aria-labelledby="rdTitle" tabindex="-1"></div>';
+      document.body.appendChild(d);
+    }
+    return d;
+  }
+  function resOpen(html, from) {
+    const d = resDrawerEl();
+    $('.rd-panel', d).innerHTML = html;
+    $('.rd-panel', d).scrollTop = 0;
+    resFrom = from;
+    d.hidden = false;
+    document.body.classList.add('rd-open');
+    void d.offsetWidth; // geçişin başlangıç durumu çizilsin (requestAnimationFrame arka plan sekmesinde beklemeye alınabilir)
+    d.classList.add('open');
+    const c = $('.rd-close', d);
+    if (c) c.focus({ preventScroll: true });
+  }
+  function resClose() {
+    const d = $('.rdrawer');
+    if (!d || d.hidden) return;
+    d.classList.remove('open');
+    document.body.classList.remove('rd-open');
+    setTimeout(() => { if (!d.classList.contains('open')) { d.hidden = true; $('.rd-panel', d).innerHTML = ''; } }, reduceMotion() ? 0 : 380);
+    if (resFrom && resFrom.isConnected) resFrom.focus({ preventScroll: true });
+    resFrom = null;
+  }
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.id === 'resq') { resState.q = e.target.value; resFilter(); }
+  });
+  // Yan panel açıkken Tab odağı panelin içinde tutar
+  document.addEventListener('keydown', (e) => {
+    const d = $('.rdrawer');
+    if (!d || d.hidden || e.key !== 'Tab') return;
+    const f = $$('a[href], button', $('.rd-panel', d));
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
   /* ---------- Tıklama yönetimi ---------- */
   document.addEventListener('click', (e) => {
     const pb = e.target.closest('[data-play]');
     if (pb) { e.preventDefault(); Player.play(pb.dataset.play); return; }
+
+    // Kaynaklar: kart liste sayfasında yan panelde açılır (değiştirici tuşsuz sol tık); aksi hâlde sayfasına gider
+    const rc = e.target.closest('a.rcard[data-res]');
+    if (rc && $('#resgrid') && R && !e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+      const html = R.resourceDrawer(rc.dataset.res);
+      if (html) { e.preventDefault(); resOpen(html, rc); return; }
+    }
+    if (e.target.closest('[data-rclose]')) { resClose(); return; }
+    const rchip = e.target.closest('#reschips button');
+    if (rchip) {
+      $$('#reschips button').forEach((b) => { b.classList.toggle('on', b === rchip); b.setAttribute('aria-pressed', b === rchip ? 'true' : 'false'); });
+      resState.t = rchip.dataset.t;
+      resFilter();
+      return;
+    }
 
     const ff = e.target.closest('#feedfilter button');
     if (ff) {
