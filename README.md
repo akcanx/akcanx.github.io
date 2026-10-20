@@ -64,6 +64,12 @@
 - **Kitap sayfası** (`/kitaplar/kitap-adi/`): kapak, alt başlık, yıl · sayfa · biçim, satın alma düğmeleri (Amazon, D&R, Kitapyurdu, Idefix, BKM Kitap, Hepsiburada, Trendyol; yalnızca girilen ürün adresleri), tanıtım, alıntı, künye, diğer kitaplar.
 - Menü Yönetimi'nden "Kitaplar" görünür yapılınca menüye gelir.
 
+### Kaynaklar (başlangıçta menüde gizli)
+- **Liste** (`/kaynaklar/`): anında arama ve "N / M kaynak" sayacı, tür çipleri (türler panelden düzenlenir), öne çıkan (★) kaynaklar büyük kartlarla, kapaklı kart ızgarası; son 30 günde eklenenlerde "Yeni" rozeti.
+- **Yan panel**: karta tıklayınca sayfa değişmeden açılır (masaüstünde sağdan, telefonda alttan; Esc ile kapanır): kapak, kısa açıklama, "Kaynağa git ↗", bağlantılar, ilgili içerik, "Sayfasına git →".
+- **Kaynak sayfası** (`/kaynaklar/kaynak-adi/`): metin, bağlantı listesi, "Bu kaynağı anlattığım içerik", diğer kaynaklar. Bağlanan videonun / yazının / bölümün sayfasında da "Bu içerikteki kaynaklar".
+- Menü Yönetimi'nden "Kaynaklar" görünür yapılınca menüye gelir; Öne Çıkan (Hero) ekranından ana sayfa manşetine de seçilebilir.
+
 ### Hakkında
 - barisozcan.com/hakkinda düzeni: tam ekran fotoğraf, üzerinde iki yana ayrılmış büyük italik yazı, altında vurgu renginde ortalanmış başlık ve ara başlıklı biyografi.
 
@@ -87,6 +93,7 @@
 - **Podcast:** **◫ Seriler** ekranı (vitrindeki sıra ↑↓, Yayında/Taslak, bölümleri başka seriye taşıyarak silme) ve seri formu (ad, kısa tanım, tanıtım metni, kare kapak, ışık rengi, yayın sıklığı, durum: Devam ediyor / Tamamlandı / Yakında, fragman, Spotify / Apple Podcasts / YouTube); bölümler (seri seçimi, özet, MP3, gömülü oynatıcı, bölüm metni, kaynaklar, kapak kaynağı), seriye göre süzme; **⚙ Sayfa Ayarları** (vitrinin başlığı, üst etiketi, tanıtım metni).
 - **Remixler:** remixler (orijinal parça, özet, MP3, gömülü oynatıcı, remixin hikâyesi, notlar ve kaynaklar, süre, tür, BPM, kapak kaynağı, sayfa tonu) ve **⚙ Sayfa Ayarları** (kapak, ad, üst etiket, açıklama, SoundCloud / Mixcloud / Spotify / YouTube bağlantıları, ışık rengi).
 - **Kitaplar:** vitrin sıralı liste (↑↓, Yayında/Taslak) ve kitap formu (ad, alt başlık, kısa tanıtım, tanıtım metni, alıntı, durum, yayın tarihi, künye: yayınevi · sayfa · ISBN · baskı · dil · biçim, dikey kapak, yedi satış platformunun adresi); **⚙ Sayfa Ayarları** (vitrinin başlığı, üst etiketi, tanıtım metni).
+- **Kaynaklar:** türe göre süzülen liste (★ öne çıkan), kaynak formu (ad, kısa açıklama, metin, tür, kapak, ana bağlantı ve düğme metni, sıralanabilir ek bağlantılar, sitedeki içerik seçici), **▦ Türler** (ekle, adlandır, sırala, sil) ve **⚙ Sayfa Ayarları**.
 - **Özel Sayfalar, Menü Yönetimi** (sürükle-bırak sıralama), **Öne Çıkan (Hero)** (manuel / otomatik / özel manşet, canlı önizleme, üst gradyan ayarı), **Hakkında** (fotoğraf üstü yazılar, vurgulu başlık, kısa tanım, vurgu rengi), **Sosyal Medya** (her hesabın simgesi, adresi ve Aktif / Pasif anahtarı, anlık "sitede görünür mü?" notu, üst menüde gösterme), **Ayarlar & Tema** (site kimliği, renk, şifre).
 - **Yayın & SEO:** GitHub bağlantısı, her kaydetmede otomatik yayın, yayın durumu, site adresi, varsayılan paylaşım görseli, Google / Bing doğrulama kodları, yapay zekâ eğitimi izni, yayın öncesi kontrol listesi ve site dışında yapılacaklar.
 - Her yazı, video, bölüm, seri, kitap, remix ve sayfada **Arama & paylaşım** kartı (SEO başlığı, SEO açıklaması, paylaşım görseli) ve kapak görseli için **alt metin** alanı. Kartın başında **SEO & GEO** kutusu: canlı Google önizlemesi, 0–100 puan ve öneriler; kaydedince bildirimde puan, **Yayın & SEO** kontrol listesinde site ortalaması ve geliştirilebilecek içerikler. Kurallarla hesaplanır, yapay zekâ kullanılmaz; hiçbir alana otomatik değer yazılmaz. Podcast bölümleri ve remixler de okunur adresle açılır (`/podcast/seri-adi/bolum-adi/`).
@@ -99,7 +106,7 @@
 
 Site ilk açıldığında kullanımı öğrenmek için örnek içeriklerle gelir:
 
-- 12 YouTube videosu, 7 blog yazısı, 3 podcast serisi (biri "Yakında", fragmanlı) ve 9 podcast bölümü, 6 remix, 3 kitap (biri "Ön sipariş"), 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+- 12 YouTube videosu, 7 blog yazısı, 3 podcast serisi (biri "Yakında", fragmanlı) ve 9 podcast bölümü, 6 remix, 3 kitap (biri "Ön sipariş"), 6 kaynak, 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
 - Örneklerin çoğu **Müzik** alt kategorisinde; **Gıda** ve **Gündem** alt kategorilerinde birer örnek yazı var.
 - **"Bu Site Nasıl Kullanılır?"** rehber yazısı, her özelliğin panelde nasıl yapıldığını anlatırken o özelliği kendi üzerinde gösterir.
 - **Örnek içerikler hiçbir zaman yayına gönderilmez**; yalnızca panelde (başlığın yanında **Örnek** etiketiyle) ve bilgisayarınızdaki önizlemede görünür. Sitenin ilk sürümünden kalan örnekler de başlıklarından tanınır ve yayına gönderilmez.
@@ -148,7 +155,7 @@ akcanakdag.com/
 │   └── admin.css         # Kontrol paneli stilleri
 ├── fonts/                # Bebas Neue, Fraunces, JetBrains Mono (Türkçe karakterler dahil)
 └── js/
-    ├── ornek-icerik.js   # Örnek videolar, yazılar, bölümler, remixler, kitaplar, sayfalar (yayına girmez)
+    ├── ornek-icerik.js   # Örnek videolar, yazılar, bölümler, remixler, kitaplar, kaynaklar, sayfalar (yayına girmez)
     ├── store.js          # Veri katmanı (localStorage, sürüm geçişleri, yardımcılar)
     ├── render.js         # Sayfa şablonları + başlık, açıklama, paylaşım kartları, yapılandırılmış veri
     ├── seo.js            # Panel: SEO & GEO puanı ve öneriler (kurallı, yapay zekâ yok)
@@ -163,10 +170,10 @@ akcanakdag.com/
 
 Yayındaki site, Google'ın ve ChatGPT, Claude, Perplexity gibi yapay zekâ asistanlarının okuyabileceği şekilde hazırlanır:
 
-- **Her içeriğin kendi adresi var:** `/videolar/video-adi/`, `/yazilar/yazi-adi/`, `/podcast/` (seri vitrini), `/podcast/seri-adi/`, `/podcast/seri-adi/bolum-adi/`, `/remixler/remix-adi/`, `/kitaplar/kitap-adi/`, `/hakkinda/`, `/sayfa/iletisim/`.
+- **Her içeriğin kendi adresi var:** `/videolar/video-adi/`, `/yazilar/yazi-adi/`, `/podcast/` (seri vitrini), `/podcast/seri-adi/`, `/podcast/seri-adi/bolum-adi/`, `/remixler/remix-adi/`, `/kitaplar/kitap-adi/`, `/kaynaklar/kaynak-adi/`, `/hakkinda/`, `/sayfa/iletisim/`.
 - **Her sayfa hazır HTML olarak gelir:** içerik JavaScript çalışmadan da okunur (yapay zekâ tarayıcıları JavaScript çalıştırmaz). Ziyaretçi için site yine tek sayfa gibi akar; sayfa değişince ses oynatıcı susmaz.
 - **Her sayfaya özel** başlık, açıklama, kanonik adres, Open Graph / X paylaşım kartı (WhatsApp, X, LinkedIn önizlemesi).
-- **Yapılandırılmış veri (schema.org):** `Person` (sosyal profillerinizle), `WebSite`, `BlogPosting`, `VideoObject` (Google video sonuçları), `PodcastSeries` / `PodcastEpisode`, `MusicRecording`, `Book` (satın alma bağlantılarıyla), `BreadcrumbList`, `ProfilePage`; yazılardaki kaynaklar `citation` olarak.
+- **Yapılandırılmış veri (schema.org):** `Person` (sosyal profillerinizle), `WebSite`, `BlogPosting`, `VideoObject` (Google video sonuçları), `PodcastSeries` / `PodcastEpisode`, `MusicRecording`, `Book` (satın alma bağlantılarıyla), `Article` (kaynaklar: ana ve ek bağlantılarla), `CollectionPage`, `BreadcrumbList`, `ProfilePage`; yazılardaki kaynaklar `citation` olarak.
 - **Otomatik üretilen dosyalar:** `sitemap.xml` (görsellerle, son güncelleme tarihleriyle), `robots.txt`, `feed.xml` (RSS), `llms.txt` (yapay zekâ asistanları için site özeti), `llms-full.txt` (bütün içeriğin tam metni tek dosyada), IndexNow anahtar dosyası, `apple-touch-icon.png`, gerçek `404.html`.
 - **GEO:** kişi kaydında sosyal profiller ve içeriklerde en çok geçen konular (`knowsAbout`), video kayıtlarında süre, uzun başlıklarda site adı eki atılır, video paylaşım görseli varsa 1280×720, ara başlıklara kalıcı çapa (`#ses-nedir`).
 - **Otomatik açıklama:** SEO açıklaması boşsa her yayında özetten ya da metinden üretilir ve cümle sonunda biter; kayda yazılmaz, metin değişince kendiliğinden güncellenir. Panel önizlemesi ve site aynı fonksiyonu (`Render.seoOf`) kullanır.

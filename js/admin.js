@@ -274,6 +274,33 @@
         ...SEO_FIELDS
       ]
     },
+    // Kaynaklar: araçlar, rehberler, bağlantılar (en yeni önde; ★ pinned: Kaynaklar sayfasında öne çıkar); ekranı #resources
+    resources: {
+      title: 'Kaynaklar', one: 'Kaynak', icon: '❖',
+      desc: 'Videolarda, yazılarda ve bölümlerde andığınız araçlar, rehberler ve bağlantılar. Sitedeki Kaynaklar sekmesinde kartlar halinde durur; karta tıklanınca yan panelde açılır, her kaynağın kendi sayfası da vardır. ★ ile işaretledikleriniz en üstte büyük kartla görünür.',
+      view: (x) => '#/kaynaklar/' + x.slug,
+      thumb: (x) => x.cover,
+      sub: (x) => [resTypeName(x.type), domainOf(x.url)].filter(Boolean).join(' · '),
+      fields: [
+        { k: 'title', t: 'title', l: 'Kaynağın adı', req: true },
+        { k: 'summary', t: 'textarea', l: 'Kısa açıklama', rows: 3, help: 'Kartta (iki satır), yan panelde ve kaynak sayfasının girişinde görünür; arama sonucunda açıklama olarak kullanılır. 150–160 karakter önerilir.' },
+        { k: 'body', t: 'richtext', l: 'Metin', help: 'Kaynak sayfasında: nedir, nasıl kullanılır, neden öneriyorsunuz? Yan panelde görünmez. Arama motorları ve yapay zekâ bu metni okur.' },
+        { k: 'published', t: 'switch', l: 'Yayında', side: 'Yayın' },
+        { k: 'pinned', t: 'switch', l: '★ Öne çıkan kaynak', side: 'Yayın', help: 'Kaynaklar sayfasının en üstünde büyük kartla görünür.' },
+        { k: 'date', t: 'date', l: 'Eklenme tarihi', side: 'Yayın', help: 'Liste en yeniden eskiye sıralanır; son 30 gün içindekilerde "Yeni" rozeti çıkar.' },
+        { k: 'slug', t: 'slug', l: 'Bağlantı (slug)', from: 'title', side: 'Yayın', help: 'Kaynağın adresi: /kaynaklar/<b>baglanti</b>/. Boş bırakılırsa addan oluşturulur.' },
+        { k: 'type', t: 'select', l: 'Tür', side: 'Tür', options: () => [['', '— Türsüz —'], ...(D.settings.resourceTypes || []).map((t) => [t.id, t.name])], help: 'Türleri Kaynaklar → ▦ Türler ekranından düzenleyin.' },
+        { k: 'cover', t: 'image', l: 'Kapak (16:9)', side: 'Kapak', help: 'Kartta ve kaynak sayfasında; ör. 1280×720.' },
+        { k: 'coverAlt', t: 'text', l: 'Kapak açıklaması (alt metin)', ph: 'Görselde ne var?', side: 'Kapak', help: ALT_HELP },
+        { k: 'url', t: 'url', l: 'Ana bağlantı', ph: 'https://…', side: 'Bağlantılar', help: 'Büyük "Kaynağa git" düğmesi; kartta alan adı görünür.' },
+        { k: 'urlLabel', t: 'text', l: 'Düğme metni', ph: 'Kaynağa git', side: 'Bağlantılar' },
+        { k: 'links', t: 'links', l: 'Ek bağlantılar', side: 'Bağlantılar', help: 'Kaynak sayfasında ve yan panelde "Bağlantılar" listesi; ↑ ↓ ile sıralayın.' },
+        { k: 'related', t: 'related', l: 'Bu kaynağı anlattığım içerik', side: 'Sitedeki içerik', help: 'Seçtiğiniz videonun, yazının, bölümün ya da remixin sayfasında da "Bu içerikteki kaynaklar" listesi çıkar.' },
+        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Kaynak sayfasının üst kısmındaki yumuşak renkli ışık.' },
+        { k: 'tags', t: 'tags', l: 'Etiketler', side: 'Etiketler' },
+        ...SEO_FIELDS
+      ]
+    },
     remixes: {
       title: 'Remixler', one: 'Remix', icon: '♫',
       desc: 'Remixler sekmesi Podcast sekmesiyle aynı düzendedir: üstte sayfa kapağı ve tanıtımı, altında remix listesi. Her remixin kendi sayfasında kaydırınca menünün altına yapışan ses çubuğu ve hikâyesini anlatan metin bulunur.',
@@ -378,6 +405,16 @@
         { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Sayfanın üst kısmındaki yumuşak renkli ışık.' }
       ]
     },
+    resources: {
+      key: 'resourcesPage', title: 'Kaynaklar Sayfası', btn: 'Sayfa Ayarları',
+      desc: 'Kaynaklar sekmesinin başlığı, üst etiketi, tanıtım metni ve ışık rengi. Kaynakların kendisi Kaynaklar listesinde, türleri ▦ Türler ekranında.',
+      fields: [
+        { k: 'title', t: 'title', l: 'Sayfa başlığı' },
+        { k: 'eyebrow', t: 'text', l: 'Üst etiket', ph: 'Kaynak · Araçlar, rehberler ve bağlantılar', help: 'Başlığın üstünde küçük büyük harflerle görünür.' },
+        { k: 'intro', t: 'textarea', l: 'Tanıtım metni', rows: 4, help: 'Başlığın altında, arama kutusunun yanında görünür.' },
+        { k: 'tint', t: 'color', l: 'Işık rengi', side: 'Görünüm', help: 'Sayfanın üst kısmındaki yumuşak renkli ışık.' }
+      ]
+    },
     remixes: {
       key: 'remixPage', title: 'Remixler Sayfası', btn: 'Sayfa Ayarları',
       desc: 'Remixler sayfasının üstünde görünen kapak, ad, açıklama ve dinleme platformları (Podcast programıyla aynı düzen).',
@@ -402,6 +439,7 @@
   function newItem(type, kind, cat) {
     if (type === 'series') return { published: true, status: 'devam' };
     if (type === 'books') return { published: true, status: 'yayinda', format: 'karton', language: 'Türkçe' };
+    if (type === 'resources') return { published: true, date: today(), type: cat || ((D.settings.resourceTypes || [])[0] || {}).id || '', links: [], related: [], tags: [] };
     const base = { published: true, date: today(), tags: [] };
     if (type === 'podcasts') {
       // Ön seçim yoksa yayındaki ilk kendi seriniz (örnek seriye düşen bölüm yayına gitmez), o da yoksa ilk seri
@@ -439,6 +477,10 @@
           <div class="prev ${f.sq ? 'sq' : f.tall ? 'tall' : ''} ${val ? 'has' : ''}" style="${val ? `background-image:url('${esc(val)}')` : ''}">Görsel yüklemek için tıklayın<button type="button" class="x" title="Kaldır">×</button></div>
           <div class="ctl"><input type="url" data-k="${f.k}" value="${esc(val || '')}" placeholder="https://... veya dosya yükleyin"><button type="button" class="btn btn-sm" data-upload>Yükle</button></div>
           ${help(f)}</div>`;
+      case 'links':
+        return `<div class="fld linksf" data-links="${f.k}"><span class="fld-l">${f.l}</span><div class="lrows">${(val || []).map(linkRow).join('')}</div><button type="button" class="btn btn-sm" data-ladd>+ Bağlantı ekle</button>${help(f)}</div>`;
+      case 'related':
+        return `<div class="fld relf" data-related="${f.k}"><span class="fld-l">${f.l}</span><div class="rel-chips">${(val || []).map(relChip).join('')}</div><input type="search" class="rel-q" placeholder="Video, yazı, bölüm ya da remix ara…" autocomplete="off"><div class="rel-opts" hidden></div>${help(f)}</div>`;
       case 'tags':
         return `<div class="fld"><span class="fld-l">${f.l}</span><div class="tagin" data-tags="${f.k}">${(val || []).map(tagChip).join('')}<input type="text" placeholder="Yazıp Enter'a basın"></div><small>Virgül veya Enter ile ekleyin.</small></div>`;
       case 'youtube': {
@@ -448,7 +490,7 @@
       case 'richtext':
         return `<div class="fld"><span class="fld-l">${f.l}</span>${rte(f.k, val)}${help(f)}</div>`;
       case 'select':
-        return `<label class="fld"><span>${lbl(f)}</span><select data-k="${f.k}">${f.options.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>${help(f)}</label>`;
+        return `<label class="fld"><span>${lbl(f)}</span><select data-k="${f.k}">${(typeof f.options === 'function' ? f.options() : f.options).map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>${help(f)}</label>`;
       case 'cat': {
         // Seçenekler sekmenin güncel alt kategori listesinden gelir
         const list = S.cats(D, f.tab);
@@ -483,13 +525,30 @@
 
   /* SEO & GEO: puanlanan koleksiyonlar; başlık, açıklama ve görsel sitenin kullanacağı değerlerin aynısı (Render.seoOf).
      Kurallarla hesaplanır, yapay zekâ kullanılmaz; hiçbir alana otomatik değer yazılmaz */
-  const SEO_COLS = ['posts', 'podcasts', 'series', 'books', 'remixes', 'pages'];
+  const SEO_COLS = ['posts', 'podcasts', 'series', 'books', 'remixes', 'pages', 'resources'];
   const seoRender = () => window.Render.create(D, { mode: 'site', siteUrl: siteAddress() || 'https://alanadiniz.com/' });
   function seoBoxHTML(o, sc) {
     const url = o.url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/').join(' › ');
     return `<div class="seohead"><b class="seoscore ${SEO.level(sc.puan)}">${sc.puan}</b><span>SEO & GEO<small>Arama sonucunda böyle görünür</small></span></div>
       <div class="serp"><div class="serp-url">${esc(url)}</div><div class="serp-t">${esc(o.title || 'Başlık yok')}</div><div class="serp-d">${esc(o.desc || 'Açıklama yok')}</div></div>
       <ul class="seolist">${sc.maddeler.map((m) => `<li class="${m.ok === true ? 'ok' : 'no'}">${m.ok === true ? '✓ ' + esc(m.ad) : '! ' + esc(m.oneri)}</li>`).join('')}</ul>`;
+  }
+
+  /* Kaynaklar: tür adı, bağlantının alan adı, bağlantı satırı ve sitedeki içerik seçicisinin yardımcıları */
+  const resTypeName = (id) => ((D.settings.resourceTypes || []).find((t) => t.id === id) || {}).name || '';
+  function domainOf(u) {
+    try { const x = new URL(String(u || '')); return /^https?:$/.test(x.protocol) ? x.hostname.replace(/^www\./, '') : ''; } catch (e) { return ''; }
+  }
+  const linkRow = (l) => `<div class="lrow"><input type="text" data-l="label" placeholder="Ad (ör. Kullanım kılavuzu)" value="${esc(l.label || '')}"><input type="url" data-l="url" placeholder="https://…" value="${esc(l.url || '')}"><div class="lrow-acts"><button type="button" class="btn btn-sm btn-ghost" data-lup title="Yukarı taşı">↑</button><button type="button" class="btn btn-sm btn-ghost" data-ldown title="Aşağı taşı">↓</button><button type="button" class="btn btn-sm btn-ghost" data-ldel title="Sil">✕</button></div></div>`;
+  // Seçilebilecek içerik: videolar, yazılar, podcast bölümleri, remixler (anahtar 'koleksiyon:kimlik')
+  const relCandidates = () => [
+    ...(D.posts || []).map((x) => ({ key: 'posts:' + x.id, label: S.postKind(x) === 'video' ? 'Video' : 'Yazı', title: x.title || '(başlıksız)' })),
+    ...(D.podcasts || []).map((x) => ({ key: 'podcasts:' + x.id, label: 'Bölüm', title: x.title || '(başlıksız)' })),
+    ...(D.remixes || []).map((x) => ({ key: 'remixes:' + x.id, label: 'Remix', title: x.title || '(başlıksız)' }))
+  ];
+  function relChip(key) {
+    const c = relCandidates().find((x) => x.key === key) || { label: 'Silinmiş', title: 'bulunamayan içerik' };
+    return `<span class="rel-chip" data-key="${esc(key)}"><i>${esc(c.label)}</i>${esc(c.title)}<button type="button" title="Kaldır">✕</button></span>`;
   }
 
   // opt.commit === false: yalnızca okur (canlı önizleme); etiket kutusunda yazılmakta olan metin etikete çevrilmez
@@ -503,6 +562,10 @@
         if (pending && commit) addTag(box, pending);
         out[f.k] = $$('.tg-i', box).map((x) => x.dataset.v);
         if (pending && !commit) out[f.k].push(...pending.split(',').map((s) => s.trim()).filter(Boolean));
+      } else if (f.t === 'links') {
+        out[f.k] = $$(`[data-links="${f.k}"] .lrow`, root).map((r) => ({ label: $('[data-l="label"]', r).value.trim(), url: $('[data-l="url"]', r).value.trim() })).filter((l) => l.url);
+      } else if (f.t === 'related') {
+        out[f.k] = $$(`[data-related="${f.k}"] .rel-chip`, root).map((c) => c.dataset.key);
       } else if (f.t === 'richtext') {
         out[f.k] = rteValue($(`.rte[data-rte="${f.k}"]`, root));
       } else {
@@ -554,6 +617,39 @@
         else if (e.key === 'Backspace' && !input.value) { const last = $$('.tg-i', box).pop(); if (last) { last.remove(); markDirty(); } }
       });
       input.addEventListener('blur', () => { if (input.value.trim()) { addTag(box, input.value); markDirty(); } });
+    });
+
+    // Bağlantı satırları: ekle, sil, ↑ ↓ ile sırala
+    $$('.linksf', root).forEach((w) => {
+      w.addEventListener('click', (e) => {
+        const row = e.target.closest('.lrow');
+        if (e.target.closest('[data-ladd]')) { $('.lrows', w).insertAdjacentHTML('beforeend', linkRow({})); $$('.lrow [data-l="label"]', w).pop().focus(); }
+        else if (row && e.target.closest('[data-ldel]')) row.remove();
+        else if (row && e.target.closest('[data-lup]')) { if (row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); }
+        else if (row && e.target.closest('[data-ldown]')) { if (row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row); }
+        else return;
+        markDirty();
+      });
+    });
+
+    // Sitedeki içerik seçici: başlıkla ara, seçilenler çip olur
+    $$('.relf', root).forEach((w) => {
+      const q = $('.rel-q', w), opts = $('.rel-opts', w), chips = $('.rel-chips', w);
+      const paintOpts = () => {
+        const t = q.value.trim().toLocaleLowerCase('tr');
+        const have = new Set($$('.rel-chip', chips).map((c) => c.dataset.key));
+        const list = t ? relCandidates().filter((c) => !have.has(c.key) && c.title.toLocaleLowerCase('tr').includes(t)).slice(0, 8) : [];
+        opts.innerHTML = list.map((c) => `<button type="button" class="rel-opt" data-key="${esc(c.key)}"><i>${esc(c.label)}</i>${esc(c.title)}</button>`).join('') || (t ? '<div class="rel-none">Eşleşen içerik yok.</div>' : '');
+        opts.hidden = !t;
+      };
+      q.addEventListener('input', paintOpts);
+      q.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); const first = $('.rel-opt', opts); if (first) first.click(); } });
+      w.addEventListener('click', (e) => {
+        const o = e.target.closest('.rel-opt');
+        if (o) { chips.insertAdjacentHTML('beforeend', relChip(o.dataset.key)); q.value = ''; paintOpts(); q.focus(); markDirty(); return; }
+        const rm = e.target.closest('.rel-chip button');
+        if (rm) { rm.parentElement.remove(); markDirty(); }
+      });
     });
 
     // Slug otomatik
@@ -883,6 +979,9 @@
       if (a === 'cat' && CAT_TABS[v]) return listView(v, id);
       // Podcast: bölümler seriye göre süzülür; #series serilerin kendi ekranı
       if (a === 'seri' && v === 'podcasts') return listView(v, id);
+      // Kaynaklar: #resources/types tür ekranı, #resources/tur/kimlik türe göre süzülmüş liste
+      if (a === 'types' && v === 'resources') return resTypesView();
+      if (a === 'tur' && v === 'resources') return listView(v, id);
       if ((v === 'series' || v === 'books') && a !== 'new' && a !== 'edit') return orderedView(v);
       if (a === 'new') return formView(v, null, id);
       if (a === 'edit') return formView(v, id);
@@ -925,7 +1024,8 @@
       { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => (S.postKind(x) === 'video' ? '#/videolar/' : '#/yazilar/') + x.slug, thumb: (x) => (S.postKind(x) === 'video' ? S.ytThumb(x.video, 'maxresdefault') : x.cover), excerpt: (x) => x.excerpt },
       { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => '#/podcast/' + ((S.seriesOf(data, x) || {}).slug || '') + '/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => (x.description || '').replace(/<[^>]+>/g, '') },
       { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => '#/remixler/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt || x.original || (x.description || '').replace(/<[^>]+>/g, '') },
-      { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => '#/sayfa/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt }
+      { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => '#/sayfa/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.excerpt },
+      { type: 'resources', label: 'Kaynak', btn: 'İncele', href: (x) => '#/kaynaklar/' + x.slug, thumb: (x) => x.cover, excerpt: (x) => x.summary }
     ];
 
     if (mode === 'manual') {
@@ -1132,6 +1232,7 @@
     // Süzme: Videolar ve Yazılar'da alt kategori, Podcast'te seri (adreste #podcasts/seri/kimlik)
     const grp = type === 'podcasts'
       ? { key: 'series', list: (D.series || []).map((s) => ({ id: s.id, name: s.title })), route: 'seri', all: 'Tüm seriler', title: 'Seri' }
+      : type === 'resources' ? { key: 'type', list: (D.settings.resourceTypes || []).map((t) => ({ id: t.id, name: t.name })), route: 'tur', all: 'Tüm türler', none: 'Türsüz', title: 'Tür' }
       : CAT_TABS[type] ? { key: 'cat', list: catsOf(type), route: 'cat', all: 'Tüm alt kategoriler', none: 'Alt kategorisiz', title: 'Alt kategori' } : null;
     const cats = grp ? grp.list : [];
     const grpOf = (x) => (grp ? cats.find((c) => c.id === x[grp.key]) : undefined);
@@ -1141,7 +1242,7 @@
     crumbs(catId ? [`<a href="#${type}">${T.title}</a>`, cur ? esc(cur.name) : grp.none] : [T.title]);
     const newBtns = `<a class="btn btn-acid" href="#${type}/new${cur ? '/' + cur.id : ''}">+ Yeni ${T.one}</a>`;
     const nCat = (k) => arr.filter((x) => catKey(x) === k).length;
-    const grpBtn = type === 'podcasts' ? '<a class="btn btn-ghost" href="#series">◫ Seriler</a>' : CAT_TABS[type] ? `<a class="btn btn-ghost" href="#${type}/cats">▦ Alt Kategoriler</a>` : '';
+    const grpBtn = type === 'podcasts' ? '<a class="btn btn-ghost" href="#series">◫ Seriler</a>' : type === 'resources' ? '<a class="btn btn-ghost" href="#resources/types">▦ Türler</a>' : CAT_TABS[type] ? `<a class="btn btn-ghost" href="#${type}/cats">▦ Alt Kategoriler</a>` : '';
 
     view.innerHTML = `
       <div class="vh"><div><h1>${T.title}</h1><p>${T.desc}</p></div>
@@ -1162,7 +1263,7 @@
           const stray = sr && (S.isSample(sr) || sr.published === false);
           const sub = [cn ? `<b class="ccat">${esc(cn.name)}</b>` : '', esc(T.sub(x) || '')].filter(Boolean).join(' · ');
           return `<tr data-id="${x.id}" data-s="${esc((x.title + ' ' + (cn ? cn.name + ' ' : '') + (T.sub(x) || '')).toLocaleLowerCase('tr'))}" data-p="${x.published === false ? 0 : 1}" data-c="${esc(catKey(x))}">
-            <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}${stray ? '<span class="smp warn" title="Bağlı olduğu seri örnek ya da taslak: bu bölüm yayına gitmez. Bölümü kendi serinize taşıyın ya da seriyi yayına alın.">Yayına gitmez</span>' : ''}</div><div class="ts">${sub}</div></div></div></td>
+            <td><div class="ti"><span class="th ${T.sq ? 'sq' : ''}" style="${th ? `background-image:url('${esc(th)}')` : ''}"></span><div style="min-width:0"><div class="tn" data-edit>${esc(x.title || '(başlıksız)')}${x.featured || x.pinned ? '<span class="star" title="Öne çıkan">★</span>' : ''}${S.isSample(x) ? '<span class="smp" title="Örnek içerik: panelde ve önizlemede görünür, yayına gönderilmez">Örnek</span>' : ''}${stray ? '<span class="smp warn" title="Bağlı olduğu seri örnek ya da taslak: bu bölüm yayına gitmez. Bölümü kendi serinize taşıyın ya da seriyi yayına alın.">Yayına gitmez</span>' : ''}</div><div class="ts">${sub}</div></div></div></td>
             <td class="dt">${S.fmtDate(x.date)}</td>
             <td><button class="pill ${x.published === false ? '' : 'on'}" data-toggle title="Durumu değiştir">${x.published === false ? 'Taslak' : 'Yayında'}</button></td>
             <td><div class="acts">
@@ -1230,7 +1331,8 @@
     const C = collOf(type);
     const isNew = !id;
     // Ön seçim: Videolar / Yazılar'da alt kategori, Podcast'te seri
-    const preOk = type === 'podcasts' ? (D.series || []).some((s) => s.id === preCat) : catsOf(type).some((c) => c.id === preCat);
+    const preOk = type === 'podcasts' ? (D.series || []).some((s) => s.id === preCat)
+      : type === 'resources' ? (D.settings.resourceTypes || []).some((t) => t.id === preCat) : catsOf(type).some((c) => c.id === preCat);
     if (preCat && !preOk) preCat = '';
     let item = isNew ? newItem(C, T.kind, preCat) : (D[C] || []).find((x) => x.id === id);
     if (!item) { toast('İçerik bulunamadı', true); go('#' + type); return; }
@@ -1434,7 +1536,7 @@
       <div class="vh"><div><h1>${C.title}</h1><p>${C.desc}</p></div>
         <div class="vh-actions">
           <a class="btn btn-ghost" href="#${type}">← ${T.title}</a>
-          <a class="btn btn-ghost" href="index.html${{ videos: '#/videolar', posts: '#/yazilar', podcasts: '#/podcast', remixes: '#/remixler', books: '#/kitaplar' }[type]}" target="_blank">Görüntüle ↗</a>
+          <a class="btn btn-ghost" href="index.html${{ videos: '#/videolar', posts: '#/yazilar', podcasts: '#/podcast', remixes: '#/remixler', books: '#/kitaplar', resources: '#/kaynaklar' }[type]}" target="_blank">Görüntüle ↗</a>
           <button class="btn btn-acid" data-save>Kaydet</button>
         </div></div>
       <form class="form-grid" id="frm" novalidate>
@@ -1456,6 +1558,58 @@
      Alt kategoriler (Videolar, Yazılar, Podcast)
      Her sekmenin kendi listesi; sayfa ayarında "cats" olarak durur. İçerik, alt kategorisini kimliğiyle (cat) tutar.
      ====================================================================== */
+  /* Kaynak türleri (#resources/types): ekle, yeniden adlandır, sırala, sil. Silinen türdeki kaynaklar türsüz kalır */
+  function resTypesView() {
+    view.onclick = null;
+    crumbs(['<a href="#resources">Kaynaklar</a>', 'Türler']);
+    view.dataset.form = '1';
+    let draft = JSON.parse(JSON.stringify(D.settings.resourceTypes || []));
+    const count = (id) => (id ? (D.resources || []).filter((r) => r.type === id).length : 0);
+    const paint = () => {
+      view.innerHTML = `
+      <div class="vh"><div><h1>Kaynak Türleri</h1><p>Kaynaklar sayfasındaki süzgeç çipleri ve kartlardaki tür etiketi. Buradaki sıra çiplerin sırasıdır.</p></div>
+        <div class="vh-actions"><a class="btn btn-ghost" href="#resources">← Listeye dön</a><button class="btn btn-acid" data-save>Kaydet</button></div></div>
+      <div class="card"><div class="trows">${draft.map((t, i) => `<div class="trow" data-i="${i}">
+          <input type="text" data-tn value="${esc(t.name)}" placeholder="Tür adı">
+          <span class="muted">${count(t.id)} kaynak</span>
+          <div class="acts"><button type="button" class="btn btn-sm btn-ghost" data-tup ${i ? '' : 'disabled'} title="Yukarı">↑</button><button type="button" class="btn btn-sm btn-ghost" data-tdown ${i < draft.length - 1 ? '' : 'disabled'} title="Aşağı">↓</button><button type="button" class="btn btn-sm btn-danger" data-tdel>Sil</button></div>
+        </div>`).join('') || '<p class="muted">Henüz tür yok.</p>'}</div>
+        <button type="button" class="btn btn-sm" data-tadd>+ Tür ekle</button></div>`;
+    };
+    const sync = () => $$('.trow', view).forEach((r) => { draft[+r.dataset.i].name = $('[data-tn]', r).value; });
+    const save = () => {
+      sync();
+      const used = new Set();
+      draft = draft.filter((t) => t.name.trim()).map((t) => {
+        let id = t.id || S.slugify(t.name) || 'tur';
+        if (!t.id) { const b = id; let n = 2; while (used.has(id) || draft.some((x) => x !== t && x.id === id)) id = `${b}-${n++}`; }
+        used.add(id);
+        return { id, name: t.name.trim() };
+      });
+      const ids = new Set(draft.map((t) => t.id));
+      (D.resources || []).forEach((r) => { if (r.type && !ids.has(r.type)) r.type = ''; });
+      D.settings.resourceTypes = draft;
+      if (persist('Türler kaydedildi')) { dirty = false; resTypesView(); }
+    };
+    paint();
+    view._save = save;
+    view.onclick = (e) => {
+      const row = e.target.closest('.trow'), i = row ? +row.dataset.i : -1;
+      if (e.target.closest('[data-save]')) { save(); return; }
+      if (e.target.closest('[data-tadd]')) { sync(); draft.push({ id: '', name: '' }); paint(); $$('[data-tn]', view).pop().focus(); }
+      else if (row && e.target.closest('[data-tup]') && i > 0) { sync(); [draft[i - 1], draft[i]] = [draft[i], draft[i - 1]]; paint(); }
+      else if (row && e.target.closest('[data-tdown]') && i < draft.length - 1) { sync(); [draft[i + 1], draft[i]] = [draft[i], draft[i + 1]]; paint(); }
+      else if (row && e.target.closest('[data-tdel]')) {
+        sync();
+        const n = count(draft[i].id);
+        if (n && !confirm(`“${draft[i].name}” türünde ${n} kaynak var. Tür silinirse bu kaynaklar türsüz kalır. Silinsin mi?`)) return;
+        draft.splice(i, 1);
+        paint();
+      } else return;
+      markDirty();
+    };
+  }
+
   function catsView(type) {
     view.onclick = null;
     const T = TYPES[type], tabTitle = { videos: 'Videolar', posts: 'Yazılar', podcasts: 'Podcast' }[type], tab = CAT_TABS[type], key = S.CAT_KEYS[tab], route = SITE_ROUTE[type];
@@ -1648,7 +1802,7 @@
             published: x.published !== false,
             featured: !!x.featured,
             thumb: vid ? S.ytThumb(x.video, 'mqdefault') : x.cover,
-            excerpt: type === 'pages' ? (x.excerpt || '') : (x.excerpt || (x.description || '').replace(/<[^>]+>/g, '')),
+            excerpt: type === 'pages' ? (x.excerpt || '') : (x.excerpt || x.summary || (x.description || '').replace(/<[^>]+>/g, '')),
             raw: x
           });
         });
@@ -1657,6 +1811,7 @@
       add(D.podcasts, 'podcasts', 'Podcast', true);
       add(D.remixes, 'remixes', 'Remix', true);
       add(D.pages, 'pages', 'Sayfa', false);
+      add(D.resources, 'resources', 'Kaynak', false);
       return items.sort(byDate);
     };
 
@@ -1767,6 +1922,7 @@
               <button type="button" class="pill ${activeFilter === 'podcasts' ? 'on' : ''}" data-filter="podcasts">Podcast</button>
               <button type="button" class="pill ${activeFilter === 'remixes' ? 'on' : ''}" data-filter="remixes">Remixler</button>
               <button type="button" class="pill ${activeFilter === 'pages' ? 'on' : ''}" data-filter="pages">Sayfalar</button>
+              <button type="button" class="pill ${activeFilter === 'resources' ? 'on' : ''}" data-filter="resources">Kaynaklar</button>
             </div>
           </div>
           <div class="toolbar" style="margin-bottom:12px">
@@ -2036,9 +2192,9 @@
      ====================================================================== */
   const MENU_TYPES = [
     ['home', 'Ana Sayfa'], ['videos', 'Videolar'], ['blog', 'Yazılar'], ['podcast', 'Podcast'],
-    ['remixes', 'Remixler'], ['books', 'Kitaplar'], ['about', 'Hakkında'], ['page', 'Özel Sayfa'], ['url', 'Dış Bağlantı (URL)']
+    ['remixes', 'Remixler'], ['books', 'Kitaplar'], ['resources', 'Kaynaklar'], ['about', 'Hakkında'], ['page', 'Özel Sayfa'], ['url', 'Dış Bağlantı (URL)']
   ];
-  const AUTO_PATH = { home: '#/', videos: '#/videolar', blog: '#/yazilar', podcast: '#/podcast', remixes: '#/remixler', books: '#/kitaplar', about: '#/hakkinda' };
+  const AUTO_PATH = { home: '#/', videos: '#/videolar', blog: '#/yazilar', podcast: '#/podcast', remixes: '#/remixler', books: '#/kitaplar', resources: '#/kaynaklar', about: '#/hakkinda' };
 
   function menuView() {
     view.onclick = null;
@@ -2447,8 +2603,8 @@
     const st = D.settings, seo = st.seo || {}, a = D.about || {}, so = st.social || {};
     const O = window.AKCAN_ORNEK || {};
     const live = (c) => (D[c] || []).filter((x) => x.published !== false && !S.isSample(x));
-    const own = ['posts', 'podcasts', 'remixes', 'pages'].reduce((n, c) => n + live(c).length, 0);
-    const nSamples = ['posts', 'podcasts', 'remixes', 'pages', 'series', 'books'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
+    const own = ['posts', 'podcasts', 'remixes', 'pages', 'resources'].reduce((n, c) => n + live(c).length, 0);
+    const nSamples = ['posts', 'podcasts', 'remixes', 'pages', 'series', 'books', 'resources'].reduce((n, c) => n + (D[c] || []).filter(S.isSample).length, 0);
     const noDesc = ['posts', 'podcasts', 'remixes'].flatMap(live).filter((x) => !(x.seoDesc || x.excerpt));
     const noAlt = [...live('posts').filter((p) => S.postKind(p) === 'yazi'), ...live('podcasts'), ...live('remixes'), ...live('pages')].filter((x) => x.cover && !x.coverAlt);
     // SEO & GEO puanı: yayındaki kendi içerikler (görsel genişliği burada ölçülmez)
@@ -2468,6 +2624,8 @@
     const rc = st.remixPage || {};
     const badSeries = ownSeries.flatMap((s) => [['Spotify', s.spotify], ['Apple Podcasts', s.apple], ['YouTube', s.youtube]].filter(([, u]) => u && !S.isProfile(u)).map(([l]) => `${s.title} → ${l}`));
     // Kitapların satış sayfaları: ürün ya da arama sayfası olmalı (platformun ana sayfası gösterilmez)
+    // Kaynak bağlantıları: yalnızca sitenin ana adresi (ör. https://github.com/) yazılmışsa uyarılır
+    const badRes = live('resources').filter((r) => [r.url, ...(r.links || []).map((l) => l.url)].some((u) => u && !S.isProfile(u))).map((r) => r.title);
     const badBooks = live('books').flatMap((b) => S.BOOK_SHOPS.filter(([k]) => b[k] && !S.isProfile(b[k])).map(([, n]) => b.title + ' → ' + n));
     const badPlatforms = [...badSeries, ...badBooks, ...[['Remixler → SoundCloud', rc.soundcloud], ['Remixler → Mixcloud', rc.mixcloud], ['Remixler → Spotify', rc.spotify], ['Remixler → YouTube', rc.youtube]]
       .filter(([, u]) => u && !S.isProfile(u)).map(([l]) => l)];
@@ -2487,6 +2645,7 @@
       [strayEps.length ? 'warn' : ownSeries.length ? 'ok' : 'info', 'Podcast serileri', strayEps.length ? `${strayEps.length} bölüm yayında olmayan ya da örnek bir seriye bağlı; yayına gitmez. Bölümü kendi serinize taşıyın ya da seriyi yayına alın.` : ownSeries.length ? `${ownSeries.length} seri yayında.` : 'Yayında seri yok: Podcast sayfası boş görünür. ◫ Seriler’den kendi serinizi ekleyin.', '#series'],
       [sampleMail ? 'warn' : 'ok', 'E-posta adresi', sampleMail ? `“${esc(so.email)}” örnek bir adres; kendi adresinizi yazın, silin ya da pasif yapın.` : 'Örnek adres kullanılmıyor.', '#sosyal'],
       [picsum ? 'warn' : 'ok', 'Örnek görseller', picsum ? 'Yayına giden ayarlarda ya da içeriklerde örnek görsel (picsum.photos) var: manşet görseli, podcast kapağı, Hakkında fotoğrafı… Kendi görsellerinizi yükleyin.' : 'Örnek görsel kullanılmıyor.', '#settings'],
+      ...(live('resources').length ? [[badRes.length ? 'warn' : 'ok', 'Kaynak bağlantıları', badRes.length ? `${badRes.map(esc).join(', ')}: bağlantı yalnızca bir sitenin ana adresi (ör. https://github.com/). Kaynağın kendi sayfasının tam adresini yazın.` : 'Kaynak bağlantıları tam adres.', '#resources']] : []),
       ...seoRow,
       [noDesc.length ? 'warn' : 'ok', 'Özetler', noDesc.length ? `${noDesc.length} içeriğin özeti yok; arama sonucunda metnin başı gösterilir.` : 'Tüm içeriklerin özeti var.', ''],
       [noAlt.length ? 'info' : 'ok', 'Kapak açıklamaları', noAlt.length ? `${noAlt.length} kapak görselinin açıklaması (alt metin) yok; başlık kullanılacak.` : 'Kapak görsellerinin açıklaması var.', ''],
@@ -2587,10 +2746,10 @@
     });
     const del = $('#delSamples');
     if (del) del.addEventListener('click', () => {
-      if (!confirm('Panel’deki bütün örnek içerikler (videolar, yazılar, podcast serileri ve bölümleri, remixler, kitaplar, sayfalar) silinsin mi? Kendi içerikleriniz değişmez.')) return;
-      const ids = new Set(['posts', 'podcasts', 'remixes', 'pages', 'books'].flatMap((k) => (D[k] || []).filter(S.isSample).map((x) => x.id)));
+      if (!confirm('Panel’deki bütün örnek içerikler (videolar, yazılar, podcast serileri ve bölümleri, remixler, kitaplar, kaynaklar, sayfalar) silinsin mi? Kendi içerikleriniz değişmez.')) return;
+      const ids = new Set(['posts', 'podcasts', 'remixes', 'pages', 'books', 'resources'].flatMap((k) => (D[k] || []).filter(S.isSample).map((x) => x.id)));
       const slugs = new Set((D.pages || []).filter((p) => ids.has(p.id)).map((p) => p.slug));
-      ['posts', 'podcasts', 'remixes', 'pages', 'books'].forEach((k) => { D[k] = (D[k] || []).filter((x) => !ids.has(x.id)); });
+      ['posts', 'podcasts', 'remixes', 'pages', 'books', 'resources'].forEach((k) => { D[k] = (D[k] || []).filter((x) => !ids.has(x.id)); });
       // Örnek seriler de silinir; kendi bölümünüzün bağlı olduğu örnek seri kalır
       const used = new Set((D.podcasts || []).map((x) => x.series));
       D.series = (D.series || []).filter((s) => !S.isSample(s) || used.has(s.id));

@@ -8,7 +8,7 @@ Bu kılavuz, sitenin ve kontrol panelinin her özelliğini adım adım anlatır.
 | **Kontrol paneli** | Bu klasördeki `admin.html` (yalnızca bilgisayarınızda çalışır) |
 | **Bilgisayarınızdaki önizleme** | Paneldeki **Önizleme** ekranı (bu klasördeki `index.html`) |
 | **GitHub deposu** | https://github.com/akcanx/akcanx.github.io |
-| **İlk panel şifresi** | `admin` (hemen değiştirin, bkz. [Ayarlar & Tema](#18-ayarlar--tema)) |
+| **İlk panel şifresi** | `admin` (hemen değiştirin, bkz. [Ayarlar & Tema](#19-ayarlar--tema)) |
 
 ---
 
@@ -26,21 +26,22 @@ Bu kılavuz, sitenin ve kontrol panelinin her özelliğini adım adım anlatır.
 10. [Alt kategoriler](#10-alt-kategoriler)
 11. [Remixler](#11-remixler)
 12. [Kitaplar](#12-kitaplar)
-13. [Özel Sayfalar](#13-özel-sayfalar)
-14. [Öne Çıkan (Hero)](#14-öne-çıkan-hero)
-15. [Menü Yönetimi](#15-menü-yönetimi)
-16. [Hakkında](#16-hakkında)
-17. [Sosyal Medya](#17-sosyal-medya)
-18. [Ayarlar & Tema](#18-ayarlar--tema)
-19. [Yayın & SEO](#19-yayın--seo)
-20. [Yedekleme](#20-yedekleme)
-21. [Örnek içerikler](#21-örnek-içerikler)
-22. [Ziyaretçinin gördüğü site](#22-ziyaretçinin-gördüğü-site)
-23. [Arama motorları ve yapay zekâ: otomatik yapılanlar](#23-arama-motorları-ve-yapay-zekâ-otomatik-yapılanlar)
-24. [Görseller ve depolama alanı](#24-görseller-ve-depolama-alanı)
-25. [Kendi alan adınızı bağlamak](#25-kendi-alan-adınızı-bağlamak)
-26. [Sorun giderme](#26-sorun-giderme)
-27. [Teknik ek](#27-teknik-ek)
+13. [Kaynaklar](#13-kaynaklar)
+14. [Özel Sayfalar](#14-özel-sayfalar)
+15. [Öne Çıkan (Hero)](#15-öne-çıkan-hero)
+16. [Menü Yönetimi](#16-menü-yönetimi)
+17. [Hakkında](#17-hakkında)
+18. [Sosyal Medya](#18-sosyal-medya)
+19. [Ayarlar & Tema](#19-ayarlar--tema)
+20. [Yayın & SEO](#20-yayın--seo)
+21. [Yedekleme](#21-yedekleme)
+22. [Örnek içerikler](#22-örnek-içerikler)
+23. [Ziyaretçinin gördüğü site](#23-ziyaretçinin-gördüğü-site)
+24. [Arama motorları ve yapay zekâ: otomatik yapılanlar](#24-arama-motorları-ve-yapay-zekâ-otomatik-yapılanlar)
+25. [Görseller ve depolama alanı](#25-görseller-ve-depolama-alanı)
+26. [Kendi alan adınızı bağlamak](#26-kendi-alan-adınızı-bağlamak)
+27. [Sorun giderme](#27-sorun-giderme)
+28. [Teknik ek](#28-teknik-ek)
 
 ---
 
@@ -57,7 +58,7 @@ Sitenin dört parçası vardır:
 
 **İçeriğiniz nerede durur?**
 
-- Panelde girdiğiniz her şey **bu tarayıcının depolama alanında** saklanır. Tarayıcı verilerini temizlerseniz panel içeriği silinir. Bu yüzden düzenli [yedek](#20-yedekleme) alın.
+- Panelde girdiğiniz her şey **bu tarayıcının depolama alanında** saklanır. Tarayıcı verilerini temizlerseniz panel içeriği silinir. Bu yüzden düzenli [yedek](#21-yedekleme) alın.
 - Yayında olan içeriğin bir kopyası GitHub'da da durur. **Taslaklar ve örnek içerikler** yalnızca panelde ve yedek dosyasındadır.
 
 **Bir içerik nasıl yayına çıkar?**
@@ -80,6 +81,7 @@ Kendi içeriğinizin dışındaki hiçbir şey yayına gitmez: **taslaklar, örn
 - [ ] **Podcast → ◫ Seriler**: kendi serilerinizi ekleyin (kapak, kısa tanım, tanıtım, platform adresleri); örnek serileri silin ya da taslağa alın.
 - [ ] **Remixler → ⚙ Sayfa Ayarları**: kendi kapağınız, açıklamanız ve platform profil adresleriniz.
 - [ ] **Kitaplar** (isteğe bağlı): kendi kitaplarınızı ekleyin, örnekleri silin ve **Menü Yönetimi**'nde "Kitaplar"ı görünür yapın.
+- [ ] **Kaynaklar** (isteğe bağlı): kendi kaynaklarınızı ekleyin, örnekleri silin ve **Menü Yönetimi**'nde "Kaynaklar"ı görünür yapın.
 - [ ] **Videolar / Yazılar → ▦ Alt Kategoriler**: alt kategorileri kendi kanallarınıza göre düzenleyin ve kanal bağlantılarını yazın (bkz. [Alt kategoriler](#10-alt-kategoriler)).
 - [ ] İlk içeriğinizi ekleyin (bir video, yazı, podcast bölümü ya da remix).
 - [ ] **Yayın & SEO → Yayın öncesi kontrol listesi**'ndeki uyarıları tek tek giderin.
@@ -104,7 +106,7 @@ Kendi içeriğinizin dışındaki hiçbir şey yayına gitmez: **taslaklar, örn
 | Grup | Bölümler |
 |---|---|
 | **Genel** | Gösterge Paneli, Önizleme |
-| **İçerik** | Videolar, Yazılar, Podcast, Remixler, Kitaplar, Özel Sayfalar |
+| **İçerik** | Videolar, Yazılar, Podcast, Remixler, Kitaplar, Kaynaklar, Özel Sayfalar |
 | **Site** | Öne Çıkan (Hero), Menü Yönetimi, Hakkında, Sosyal Medya, Ayarlar & Tema, Yayın & SEO, Yedekleme |
 
 Kenar çubuğunun altında:
@@ -137,7 +139,7 @@ Panele girince açılan ilk ekran.
 - **Ana Sayfa Öne Çıkan Manşet** kartı: şu anki manşet ve **Öne Çıkanı Değiştir →**.
 - **Son içerikler**: en yeni 8 içerik (tür, başlık, taslaksa "Taslak", tarih). Başlığa tıklayınca düzenleme açılır.
 - **Hızlı işlemler**: Yeni video, Yeni yazı, Yeni bölüm, Yeni remix, Yeni sayfa, Öne çıkanı seç.
-- **Depolama**: tarayıcıdaki kullanılan alan (yaklaşık 5 MB sınır) ve doluluk çubuğu. Bkz. [Görseller ve depolama alanı](#24-görseller-ve-depolama-alanı).
+- **Depolama**: tarayıcıdaki kullanılan alan (yaklaşık 5 MB sınır) ve doluluk çubuğu. Bkz. [Görseller ve depolama alanı](#25-görseller-ve-depolama-alanı).
 
 ### Önizleme
 
@@ -181,7 +183,7 @@ Videolar, Yazılar, Podcast, Remixler ve Özel Sayfalar aynı liste düzenini ku
 | **Durum** | **Yayında** / **Taslak**. Rozete tıklamak durumu anında değiştirir. |
 | **İşlemler** | **Düzenle** · **↗** önizlemede aç · **⧉ Çoğalt** · **Sil** |
 
-- **⧉ Çoğalt**: içeriğin kopyasını "(kopya)" ekiyle ve **taslak** olarak oluşturur. Bağlantısının sonuna `-kopya` eklenir. Bir örnek içeriği kendi içeriğinize dönüştürmenin yolu budur (bkz. [Örnek içerikler](#21-örnek-içerikler)).
+- **⧉ Çoğalt**: içeriğin kopyasını "(kopya)" ekiyle ve **taslak** olarak oluşturur. Bağlantısının sonuna `-kopya` eklenir. Bir örnek içeriği kendi içeriğinize dönüştürmenin yolu budur (bkz. [Örnek içerikler](#22-örnek-içerikler)).
 - **Sil** onay ister ve geri alınamaz. Silinen bir özel sayfanın menü öğesi de kalkar.
 
 ---
@@ -210,7 +212,7 @@ Sayfanın adresidir. Örneğin `/yazilar/bir-remix-nasil-dogar/`.
 | Alan | Açıklama |
 |---|---|
 | **Yayında** | Kapalıysa içerik **taslaktır**: ne önizlemede ne yayında görünür, yalnızca panelde durur. |
-| **Öne çıkar** | Açarsanız içerik ana sayfanın en üstündeki büyük manşete yerleşir. Aynı anda yalnızca bir içerik öne çıkabilir; yenisini seçince eskisi kendiliğinden kapanır. Ayrıntılar: [Öne Çıkan (Hero)](#14-öne-çıkan-hero). |
+| **Öne çıkar** | Açarsanız içerik ana sayfanın en üstündeki büyük manşete yerleşir. Aynı anda yalnızca bir içerik öne çıkabilir; yenisini seçince eskisi kendiliğinden kapanır. Ayrıntılar: [Öne Çıkan (Hero)](#15-öne-çıkan-hero). |
 | **Yayın tarihi** | Listelerdeki sıralamayı belirler. Gelecek bir tarih verirseniz içerik yine hemen yayınlanır, yalnızca listede en üstte durur. |
 
 ### Görsel alanları (kapak, paylaşım görseli…)
@@ -218,7 +220,7 @@ Sayfanın adresidir. Örneğin `/yazilar/bir-remix-nasil-dogar/`.
 - Kutuya tıklayın ya da **Yükle**'ye basıp bilgisayarınızdan görsel seçin.
 - Ya da alttaki kutuya bir görsel **bağlantısı** (`https://…`) yapıştırın.
 - **×** görseli kaldırır.
-- Yüklenen görseller otomatik olarak küçültülür ve sıkıştırılır. Bkz. [Görseller ve depolama alanı](#24-görseller-ve-depolama-alanı).
+- Yüklenen görseller otomatik olarak küçültülür ve sıkıştırılır. Bkz. [Görseller ve depolama alanı](#25-görseller-ve-depolama-alanı).
 
 ### Kapak açıklaması (alt metin)
 
@@ -547,7 +549,46 @@ Kenar çubuğunda **İçerik → Kitaplar** (`#books`).
 
 ---
 
-## 13. Özel Sayfalar
+## 13. Kaynaklar
+
+Videolarınızda, yazılarınızda ve bölümlerinizde andığınız araçları, rehberleri ve bağlantıları paylaştığınız sekme. **Başlangıçta menüde gizlidir**: kendi kaynaklarınızı ekledikten sonra **Menü Yönetimi**'nde "Kaynaklar" satırındaki **Görünür** kutusunu işaretleyip **Menüyü Kaydet**'e basın.
+
+### Kaynaklar ekranı
+
+Kenar çubuğunda **İçerik → Kaynaklar** (`#resources`).
+
+- Kaynaklar en yeniden eskiye listelenir: kapak küçük resmi, ad (★ öne çıkan, örnekse **Örnek**), tür · alan adı.
+- Üstteki seçimle türe göre süzebilirsiniz; adres `#resources/tur/rehber` olur ve **+ Yeni Kaynak** o türde açılır.
+- **▦ Türler**: türleri ekleyin, adlandırın, ↑ ↓ ile sıralayın, silin. Buradaki sıra sitedeki süzgeç çiplerinin sırasıdır. Kullanımdaki bir tür silinirken onay istenir; o türdeki kaynaklar türsüz kalır. Başlangıç türleri: Rehber, Araç, Video, Kitap, Site.
+- **⚙ Sayfa Ayarları**: sayfanın başlığı, üst etiketi, tanıtım metni ve ışık rengi.
+
+### Kaynak alanları
+
+| Alan | Açıklama |
+|---|---|
+| **Kaynağın adı** | Zorunlu. |
+| **Kısa açıklama** | Kartta (iki satır), yan panelde ve kaynak sayfasının girişinde; arama sonucunda açıklama olarak kullanılır. 150–160 karakter önerilir. |
+| **Metin** | Kaynak sayfasında, zengin metin: nedir, nasıl kullanılır, neden öneriyorsunuz? Yan panelde görünmez. |
+| **Yayın** kartı | Yayında; **★ Öne çıkan kaynak** (Kaynaklar sayfasının en üstünde büyük kart); **Eklenme tarihi** (sıralama ve son 30 günde "Yeni" rozeti); **Bağlantı** (`/kaynaklar/baglanti/`). |
+| **Tür** | Türlerden biri ya da Türsüz. |
+| **Kapak** kartı | 16:9 kapak (ör. 1280×720) ve açıklaması. |
+| **Bağlantılar** kartı | **Ana bağlantı** (büyük "Kaynağa git" düğmesi; kartta alan adı görünür), **Düğme metni** (boşsa "Kaynağa git") ve **Ek bağlantılar**: **+ Bağlantı ekle** ile ad + adres satırları; ↑ ↓ ile sıralanır, ✕ ile silinir. Adresi boş satırlar kaydedilmez. |
+| **Sitedeki içerik** kartı | Bu kaynağı anlattığınız video, yazı, bölüm ya da remix: yazdıkça arar, seçtikleriniz çip olur (✕ ile kaldırılır). Seçtiğiniz içeriğin sayfasında da "Bu içerikteki kaynaklar" (videoda "Bu videodaki kaynaklar") listesi çıkar. |
+| Görünüm, Etiketler, Arama & paylaşım | Ortak alanlar (SEO & GEO puanı dahil). |
+
+> ★ yalnızca Kaynaklar sayfasında öne çıkarır. Bir kaynağı ana sayfanın manşetinde göstermek için [Öne Çıkan (Hero)](#15-öne-çıkan-hero) ekranında **Kaynaklar** süzgecinden seçin.
+
+### Sitede
+
+- **Liste** (`/kaynaklar/`): üst etiket, başlık ve tanıtım; yanında **arama kutusu** (başlık, kısa açıklama, alan adı ve bağlantı adlarında anında arar) ve "N / M kaynak" sayacı. Altında **tür çipleri** (Tümü ve kaynağı olan türler, sayılarıyla), en üstte **öne çıkan** kaynaklar büyük kartlarla, altında kart ızgarası (masaüstünde üç, tablette iki, telefonda bir sütun). Arama ya da çip etkinken öne çıkanlar da ızgarada görünür.
+- **Yan panel**: karta tıklayınca sayfa değişmeden açılır (masaüstünde sağdan, telefonda alttan): kapak, tür, ad, kısa açıklama, "Kaynağa git ↗", bağlantılar, anlattığınız içerik ve **Sayfasına git →**. Esc, arka plana tıklama ya da **Kapat** ile kapanır. Ctrl ile tıklamak kaynağın sayfasını yeni sekmede açar.
+- **Kaynak sayfası** (`/kaynaklar/kaynak-adi/`): "← Tüm kaynaklar", tür, ad, kısa açıklama, "Kaynağa git ↗", kapak, metin, **Bağlantılar**, **Bu kaynağı anlattığım içerik**, etiketler ve **Diğer kaynaklar** (önce aynı tür).
+- Menüde gizliyken de yayındaki kendi kaynaklarınızın sayfaları yayına girer (adresiyle açılır, site haritasında yer alır); yalnızca menüde bağlantı görünmez.
+- Arama motorlarına liste koleksiyon, her kaynak makale olarak (ana bağlantı ve ek bağlantılarıyla) bildirilir. Kaynaklar site içi aramada, `llms.txt` ve `llms-full.txt`'de de yer alır ve IndexNow ile bildirilir.
+
+---
+
+## 14. Özel Sayfalar
 
 İletişim, Ekipmanlar, Etkinlikler gibi istediğiniz kadar sayfa oluşturabilirsiniz. Adresleri `/sayfa/bağlantı/` biçimindedir.
 
@@ -563,7 +604,7 @@ Kenar çubuğunda **İçerik → Kitaplar** (`#books`).
 
 ---
 
-## 14. Öne Çıkan (Hero)
+## 15. Öne Çıkan (Hero)
 
 Ana sayfanın en üstündeki tam genişlikteki büyük manşet.
 
@@ -575,7 +616,7 @@ Yaptığınız her değişiklik burada anında görünür.
 
 | Mod | Ne gösterir |
 |---|---|
-| **📌 Mevcut İçeriklerden Seç (Manuel)** | Seçtiğiniz bir video, yazı, bölüm, remix ya da sayfa. |
+| **📌 Mevcut İçeriklerden Seç (Manuel)** | Seçtiğiniz bir video, yazı, bölüm, remix, sayfa ya da kaynak (listede **Kaynaklar** süzgeci; manşette "Öne çıkan kaynak" ve **İncele** düğmesi). |
 | **⚡ En Son Eklenen İçerik (Otomatik)** | Her zaman en son yayınlanan içerik (yazı, video, podcast ya da remix). |
 | **✍️ Bağımsız Özel Manşet** | Sitedeki bir içeriğe bağlı olmayan, kendi başlığınız, görseliniz ve bağlantınız. |
 
@@ -606,7 +647,7 @@ Yaptığınız her değişiklik burada anında görünür.
 
 ---
 
-## 15. Menü Yönetimi
+## 16. Menü Yönetimi
 
 Sitenin üst menüsü (ve alt bilgideki "Menü" listesi).
 
@@ -614,7 +655,7 @@ Sitenin üst menüsü (ve alt bilgideki "Menü" listesi).
 - Her satırda:
   - **⋮⋮** tutamacı: sürükleyerek sıralama.
   - **Ad**: menüde görünen yazı.
-  - **Tür**: Ana Sayfa, Videolar, Yazılar, Podcast, Remixler, Kitaplar, Hakkında, Özel Sayfa, Dış Bağlantı.
+  - **Tür**: Ana Sayfa, Videolar, Yazılar, Podcast, Remixler, Kitaplar, Kaynaklar, Hakkında, Özel Sayfa, Dış Bağlantı.
   - **Hedef**:
     - Standart sayfalarda otomatiktir (ör. `#/podcast`).
     - Özel Sayfa'da listeden sayfa seçilir.
@@ -629,7 +670,7 @@ Sitenin üst menüsü (ve alt bilgideki "Menü" listesi).
 
 ---
 
-## 16. Hakkında
+## 17. Hakkında
 
 Sitenin Hakkında sayfası (`/hakkinda/`): tam ekran fotoğraf, üzerinde iki yana ayrılmış büyük italik yazı, altında vurgu renginde ortalanmış başlık ve biyografi.
 
@@ -643,11 +684,11 @@ Sitenin Hakkında sayfası (`/hakkinda/`): tam ekran fotoğraf, üzerinde iki ya
 | **Kapak fotoğrafı** | Yatay, yüksek çözünürlüklü bir portre; yüzünüz üst-orta bölgede kalmalı. |
 | **Vurgu rengi** | Vurgulu başlığın ve bağlantıların rengi (sitenin genel vurgu renginden bağımsız). |
 
-Sosyal medya bağlantıları burada değil, kendi bölümündedir: [Sosyal Medya](#17-sosyal-medya).
+Sosyal medya bağlantıları burada değil, kendi bölümündedir: [Sosyal Medya](#18-sosyal-medya).
 
 ---
 
-## 17. Sosyal Medya
+## 18. Sosyal Medya
 
 Kenar çubuğunda **Site → Sosyal Medya**. Hesaplarınızın adreslerini girdiğiniz ve her birini sitede **aktif** ya da **pasif** yaptığınız yer. Hesaplar: YouTube, Instagram, TikTok, X, LinkedIn, Spotify, SoundCloud ve E-posta.
 
@@ -678,7 +719,7 @@ Her hesabın bir satırı var: solda sitedeki simgesi, ortada adres kutusu, sağ
 
 ---
 
-## 18. Ayarlar & Tema
+## 19. Ayarlar & Tema
 
 ### Site kimliği
 
@@ -695,7 +736,7 @@ Her hesabın bir satırı var: solda sitedeki simgesi, ortada adres kutusu, sağ
 
 Öne Çıkan bölümündeki karartma ayarının aynısı (açma/kapama ve opaklık).
 
-Sosyal medya hesapları ayrı bölümdedir: [Sosyal Medya](#17-sosyal-medya).
+Sosyal medya hesapları ayrı bölümdedir: [Sosyal Medya](#18-sosyal-medya).
 
 ### Renk teması
 
@@ -711,7 +752,7 @@ En alttaki **Ayarları Kaydet**, şifre dışındaki her şeyi kaydeder.
 
 ---
 
-## 19. Yayın & SEO
+## 20. Yayın & SEO
 
 ### Yayın durumu
 
@@ -723,7 +764,7 @@ Sayfanın en üstündeki kart ve kenar çubuğundaki rozet şu durumlardan birin
 | **Değişiklikler birkaç saniye içinde gönderilecek… / Yayınlanıyor…** | Gönderim sürüyor. Bu sırada paneli kapatmaya çalışırsanız tarayıcı uyarır. |
 | **✓ Gönderildi / Yayında · saat** | Gönderim başarılı. GitHub siteyi yaklaşık 1 dakikada günceller. |
 | **✓ Yayındaki site güncel** | Değişen bir şey yoktu, gönderim yapılmadı. |
-| **✕ Gönderilemedi / Yayın hatası** | Sebebi kartta yazar (bkz. [Sorun giderme](#26-sorun-giderme)). |
+| **✕ Gönderilemedi / Yayın hatası** | Sebebi kartta yazar (bkz. [Sorun giderme](#27-sorun-giderme)). |
 | **Otomatik yayın kapalı** | Bağlantı kurulu ama "Her kaydetmede otomatik yayınla" kapalı. |
 
 Kartın altındaki bağlantılar:
@@ -757,7 +798,7 @@ Bu site için bağlantı kuruldu. Değerler şöyle:
 
 | Alan | Açıklama |
 |---|---|
-| **Site adresi** | Kendi alan adınızı bağladıysanız yazın (bkz. [bölüm 25](#25-kendi-alan-adınızı-bağlamak)). Boşsa GitHub Pages adresi kullanılır. |
+| **Site adresi** | Kendi alan adınızı bağladıysanız yazın (bkz. [bölüm 26](#26-kendi-alan-adınızı-bağlamak)). Boşsa GitHub Pages adresi kullanılır. |
 | **Varsayılan paylaşım görseli** | Kendi görseli olmayan sayfalar paylaşıldığında görünür. 1200×630 önerilir. |
 | **Google Search Console doğrulama kodu** | HTML etiketinin `content="…"` değeri; etiketin tamamını da yapıştırabilirsiniz. |
 | **Bing Webmaster Tools doğrulama kodu** | Bing'de "Google Search Console'dan içe aktar" seçerseniz gerekmez. |
@@ -776,6 +817,7 @@ Panel sitenizi tarar ve her maddeyi ✓ (tamam), ! (uyarı) ya da i (bilgi) olar
 - Kısa tanım.
 - Sosyal medya profilleri: aktif hesaplarda profil olmayan adresler var mı?
 - Podcast, remix ve kitap platformları: serilerde, kitaplarda ya da Remixler → Sayfa Ayarları'nda yalnızca platformun ana adresi (ör. `https://open.spotify.com/`) yazılı mı? Bunlar sitede gösterilmez.
+- Kaynak bağlantıları: yayındaki kaynaklarda ana ya da ek bağlantı olarak yalnızca bir sitenin ana adresi (ör. `https://github.com/`) yazılı mı? Kaynağın kendi sayfasının tam adresini yazın.
 - Podcast serileri: yayında kendi seriniz var mı? Örnek ya da yayında olmayan bir seriye bağlı bölümleriniz yayına gitmez.
 - E-posta adresi: örnek adres (`@ornek.com`) aktif mi?
 - Örnek görseller: yayına giden ayarlarda ya da içeriklerde picsum.photos görseli var mı (manşet görseli, podcast/remix kapağı, Hakkında fotoğrafı…)?
@@ -803,7 +845,7 @@ Kodla yapılamayan ama sıralamayı en çok etkileyen işler:
 
 ---
 
-## 20. Yedekleme
+## 21. Yedekleme
 
 | Kart | İşlev |
 |---|---|
@@ -825,9 +867,9 @@ Kodla yapılamayan ama sıralamayı en çok etkileyen işler:
 
 ---
 
-## 21. Örnek içerikler
+## 22. Örnek içerikler
 
-Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu, 7 blog yazısı, 3 podcast serisi (Frekans, Sofra ve "Yakında" durumundaki Satır Arası) ile 9 podcast bölümü, 6 remix, 3 kitap (biri "Ön sipariş"), 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
+Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu, 7 blog yazısı, 3 podcast serisi (Frekans, Sofra ve "Yakında" durumundaki Satır Arası) ile 9 podcast bölümü, 6 remix, 3 kitap (biri "Ön sipariş"), 6 kaynak (ikisi öne çıkan), 2 özel sayfa (Ekipmanlar, İletişim) ve örnek Hakkında metni.
 
 - Örnek videolar ve yazılar **Müzik** alt kategorisindedir; örnek podcast bölümleri **Frekans** ve **Sofra** serilerindedir, **Satır Arası** henüz bölümü olmayan, fragmanlı bir "Yakında" serisidir. **Gıda** (bir yemek hikâyesi) ve **Gündem** (haber paylaşmadan önce sorulacak sorular) alt kategorilerinde birer örnek yazı vardır; rehber yazısı alt kategorisizdir.
 
@@ -844,7 +886,7 @@ Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu
 
 ---
 
-## 22. Ziyaretçinin gördüğü site
+## 23. Ziyaretçinin gördüğü site
 
 ### Sayfalar ve adresleri
 
@@ -855,6 +897,7 @@ Site, kullanımı öğrenmek için örnek içeriklerle gelir: 12 YouTube videosu
 | Yazılar listesi / bir yazı | `/yazilar/` · `/yazilar/yazi-adi/` |
 | Podcast vitrini / bir seri / bir bölüm | `/podcast/` · `/podcast/seri-adi/` · `/podcast/seri-adi/bolum-adi/` |
 | Kitaplar / bir kitap | `/kitaplar/` · `/kitaplar/kitap-adi/` |
+| Kaynaklar / bir kaynak | `/kaynaklar/` · `/kaynaklar/kaynak-adi/` |
 | Alt kategori sayfası | `/videolar/gundem/` · `/yazilar/gida/` |
 | Remixler / bir remix | `/remixler/` · `/remixler/remix-adi/` |
 | Hakkında | `/hakkinda/` |
@@ -865,7 +908,7 @@ Bilgisayarınızdaki önizlemede (`index.html`) aynı sayfalar `#/yazilar/yazi-a
 
 ### Üst menü
 
-Solda site adı; sağda menü bağlantıları, sosyal medya simgeleri ve **🔍** arama düğmesi. Simgeler panelin **Sosyal Medya** bölümünden yönetilir (bkz. [Sosyal Medya](#17-sosyal-medya)); üzerine gelince vurgu rengine döner, yeni sekmede açılır.
+Solda site adı; sağda menü bağlantıları, sosyal medya simgeleri ve **🔍** arama düğmesi. Simgeler panelin **Sosyal Medya** bölümünden yönetilir (bkz. [Sosyal Medya](#18-sosyal-medya)); üzerine gelince vurgu rengine döner, yeni sekmede açılır.
 
 ### Ana sayfa
 
@@ -920,7 +963,7 @@ Bütün sayfalar 360 piksel genişliğindeki telefonlardan geniş ekranlara kada
 
 ---
 
-## 23. Arama motorları ve yapay zekâ: otomatik yapılanlar
+## 24. Arama motorları ve yapay zekâ: otomatik yapılanlar
 
 Bunların hiçbiri için bir şey yapmanız gerekmez; site her yayında bunları kendisi üretir.
 
@@ -930,7 +973,7 @@ Bunların hiçbiri için bir şey yapmanız gerekmez; site her yayında bunları
 - **Arama motorlarına anında haber (IndexNow)**: her yayından sonra yeni, değişen ve silinen sayfaların adresleri IndexNow'a bildirilir; Bing, Yandex, Seznam, Naver ve Yep bu bildirimi paylaşır. Ayar gerekmez: anahtar dosyası (`<anahtar>.txt`) her yayında üretilir. Google IndexNow'u desteklemez; site haritasındaki güncelleme tarihlerini kendisi okur. Bildirim başarısız olursa yayın etkilenmez (GitHub'da **Actions** sekmesinde "Arama motorlarına bildir" adımında görünür).
 - **Yapılandırılmış veri (schema.org)**:
   - kişi (sosyal profillerinizle ve içeriklerinizde en çok geçen konularla: "uzmanlık alanları"), site, blog yazısı, video (süresiyle; Google video sonuçları için);
-  - podcast serisi ve bölümü (bölüm kendi serisine bağlı), müzik kaydı (remix), kitap (ISBN, yayınevi, satın alma bağlantılarıyla), konum satırı, profil sayfası;
+  - podcast serisi ve bölümü (bölüm kendi serisine bağlı), müzik kaydı (remix), kitap (ISBN, yayınevi, satın alma bağlantılarıyla), kaynak (ana bağlantı ve ek bağlantılarıyla), konum satırı, profil sayfası;
   - yazılardaki kaynaklar.
 - **`sitemap.xml`**: görsellerle birlikte site haritası (içeriği olan alt kategori sayfaları dahil). Her sayfanın son güncelleme tarihi, Hakkında ve özel sayfalar için kaydettiğiniz gün.
 - **`robots.txt`**: arama motorlarına ve yapay zekâ arama botlarına izin; "Yapay zekâ eğitimine izin ver" kapalıysa eğitim botlarına yasak.
@@ -957,7 +1000,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 24. Görseller ve depolama alanı
+## 25. Görseller ve depolama alanı
 
 - Panelden yüklenen görseller en uzun kenarı **1600 piksel** olacak şekilde küçültülür ve **WebP** biçiminde sıkıştırılır.
 - Panel içeriği tarayıcıda yaklaşık **5 MB**'lık bir alanda tutulur. Gösterge Paneli'ndeki **Depolama** çubuğundan doluluğu izleyin.
@@ -979,7 +1022,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 25. Kendi alan adınızı bağlamak
+## 26. Kendi alan adınızı bağlamak
 
 Şu an site `https://akcanx.github.io/` adresinde. Kendi alan adınızı (ör. `akcan.com`) bağlamak arama sonuçlarında daha güçlüdür.
 
@@ -992,7 +1035,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 26. Sorun giderme
+## 27. Sorun giderme
 
 **Panelde kaydettim ama site değişmedi.**
 
@@ -1051,7 +1094,7 @@ Bunları en iyi şekilde desteklemek için sizin yapacaklarınız:
 
 ---
 
-## 27. Teknik ek
+## 28. Teknik ek
 
 ### Klasör yapısı
 
