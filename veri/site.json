@@ -1,6 +1,6 @@
 {
- "version": 5,
- "sampleVersion": 6,
+ "version": 6,
+ "sampleVersion": 7,
  "settings": {
   "siteName": "Akcan Akdağ",
   "tagline": "Müzik, hikâyeler ve sesler",
@@ -96,6 +96,34 @@
    "intro": "Basılmış ve yayımlanmış kitaplarım: her birinin hikâyesi, künyesi ve satın alabileceğiniz yerler.",
    "tint": "#4A3A1E"
   },
+  "resourcesPage": {
+   "title": "Kaynaklar",
+   "eyebrow": "Kaynak · Araçlar, rehberler ve bağlantılar",
+   "intro": "Videolarımda, yazılarımda ve bölümlerimde andığım araçlar, rehberler ve bağlantılar: hepsi tek yerde, kısa notlarıyla.",
+   "tint": "#2A3550"
+  },
+  "resourceTypes": [
+   {
+    "id": "rehber",
+    "name": "Rehber"
+   },
+   {
+    "id": "arac",
+    "name": "Araç"
+   },
+   {
+    "id": "video",
+    "name": "Video"
+   },
+   {
+    "id": "kitap",
+    "name": "Kitap"
+   },
+   {
+    "id": "site",
+    "name": "Site"
+   }
+  ],
   "remixPage": {
    "name": "Remixler",
    "eyebrow": "Remix · Edit · Bootleg",
@@ -178,7 +206,15 @@
    "label": "Kitaplar",
    "type": "books",
    "target": "",
-   "visible": false,
+   "visible": true,
+   "newTab": false
+  },
+  {
+   "id": "mvgr4wbt33sr5",
+   "label": "Kaynaklar",
+   "type": "resources",
+   "target": "",
+   "visible": true,
    "newTab": false
   },
   {
@@ -194,7 +230,7 @@
    "label": "İletişim",
    "type": "page",
    "target": "iletisim",
-   "visible": false,
+   "visible": true,
    "newTab": false
   },
   {
@@ -211,5 +247,6 @@
  "podcasts": [],
  "remixes": [],
  "books": [],
+ "resources": [],
  "pages": []
 }
