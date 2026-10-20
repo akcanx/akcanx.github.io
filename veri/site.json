@@ -1,6 +1,6 @@
 {
- "version": 3,
- "sampleVersion": 4,
+ "version": 5,
+ "sampleVersion": 6,
  "settings": {
   "siteName": "Akcan Akdağ",
   "tagline": "Müzik, hikâyeler ve sesler",
@@ -85,39 +85,16 @@
    ]
   },
   "podcast": {
-   "name": "Frekans",
-   "eyebrow": "Podcast · Her Pazartesi",
-   "description": "Bazı hikâyeler ancak dinlenerek anlaşılır. Her bölümde müziğin, sesin ve hafızanın izini sürüyorum; görüntüden arınmış, sadece sesin gücüne yaslanan bir yolculuk.",
-   "note": "Bölümleri dinleme platformlarından takip edebilir ya da görsellerle zenginleştirilmiş halini okuyup dinlemek için buradan devam edebilirsiniz:",
-   "cover": "https://picsum.photos/seed/pod-show/900/900",
-   "spotify": "https://open.spotify.com/",
-   "apple": "https://podcasts.apple.com/",
-   "youtube": "",
-   "readText": "Oku + Dinle",
-   "tint": "#1F5A50",
-   "cats": [
-    {
-     "id": "muzik",
-     "name": "Müzik",
-     "slug": "muzik",
-     "desc": "Prodüksiyon, remix, canlı performans ve sesin hikâyeleri üzerine bölümler.",
-     "link": ""
-    },
-    {
-     "id": "gida",
-     "name": "Gıda",
-     "slug": "gida",
-     "desc": "Yemek hikâyeleri: mutfaklardan, sofralardan ve tariflerin arkasındaki insanlardan bölümler.",
-     "link": ""
-    },
-    {
-     "id": "gundem",
-     "name": "Gündem",
-     "slug": "gundem",
-     "desc": "Gündemi eleştirel bir gözle ele aldığım bölümler.",
-     "link": ""
-    }
-   ]
+   "name": "Podcast",
+   "eyebrow": "Podcast · Sesin hikâyeleri",
+   "description": "Her seri ayrı bir merak: müzik, sofralar ve gündem. Bir seri seçin; ister baştan dinleyin, ister en yeni bölümden başlayın.",
+   "tint": "#1F5A50"
+  },
+  "booksPage": {
+   "title": "Kitaplar",
+   "eyebrow": "Kitap · Basılı ve yayımlanmış",
+   "intro": "Basılmış ve yayımlanmış kitaplarım: her birinin hikâyesi, künyesi ve satın alabileceğiniz yerler.",
+   "tint": "#4A3A1E"
   },
   "remixPage": {
    "name": "Remixler",
@@ -197,6 +174,14 @@
    "newTab": false
   },
   {
+   "id": "mvgb7zs8xa8bu",
+   "label": "Kitaplar",
+   "type": "books",
+   "target": "",
+   "visible": false,
+   "newTab": false
+  },
+  {
    "id": "mv8mzh9pzofhu",
    "label": "Hakkında",
    "type": "about",
@@ -211,10 +196,20 @@
    "target": "iletisim",
    "visible": false,
    "newTab": false
+  },
+  {
+   "id": "m5",
+   "label": "Ekipmanlar",
+   "type": "page",
+   "target": "ekipmanlar",
+   "visible": true,
+   "newTab": false
   }
  ],
  "posts": [],
+ "series": [],
  "podcasts": [],
  "remixes": [],
+ "books": [],
  "pages": []
 }
