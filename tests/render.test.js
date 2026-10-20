@@ -281,3 +281,120 @@ test('snippet-sira-sayisi-ve-kisaltma', () => { // "20. yüzyıl", "Dr. Ayşe" c
     assert.ok(!/(20|Dr)\.$/.test(r), r);
   }
 });
+
+/* ---------- Kaynaklar ---------- */
+const tagOf = (html, id) => (html.match(new RegExp(`<a [^>]*data-res="${id}"[^>]*>`)) || [''])[0];
+
+test('kaynak-listesi', () => {
+  const pg = R.page('kaynaklar');
+  assert.match(pg.html, /<h1[^>]*>Kaynaklar<\/h1>/);
+  assert.match(pg.html, /id="rescount"[^>]*><b>6<\/b> \/ 6 kaynak/);
+  assert.deepEqual([...pg.html.matchAll(/<button[^>]*data-t="([^"]*)"/g)].map((m) => m[1]), ['', 'rehber', 'arac', 'video', 'kitap', 'site']);
+  const pinned = pg.html.slice(pg.html.indexOf('id="respinned"'), pg.html.indexOf('id="resgrid"'));
+  const grid = pg.html.slice(pg.html.indexOf('id="resgrid"'));
+  assert.equal(count(pinned, /class="rcard[ "]/g), 2);
+  assert.equal(count(grid, /class="rcard[ "]/g), 4);
+  assert.match(tagOf(pg.html, 'kaynak-2'), /href="#\/kaynaklar\/audacity"/);
+  assert.match(tagOf(pg.html, 'kaynak-2'), /data-type="arac"/);
+  assert.match(pg.html, />audacityteam\.org</);
+  assert.equal(pg.schema[0]['@type'], 'CollectionPage');
+});
+
+test('kaynak-sayfasi', () => {
+  const pg = R.page('kaynaklar/ev-studyosu-kurulum-rehberi');
+  for (const t of ['Tüm kaynaklar', 'Kayıt stüdyosu nedir?', 'Bağlantılar', 'Bu kaynağı anlattığım içerik', 'Diğer kaynaklar']) assert.ok(pg.html.includes(t), t);
+  assert.match(pg.html, /<h1[^>]*>Ev stüdyosu kurulum rehberi<\/h1>/);
+  const art = pg.schema.find((n) => n['@type'] === 'Article');
+  assert.equal(art.about.url, 'https://en.wikipedia.org/wiki/Recording_studio');
+  assert.equal(art.citation.length, 3);
+  assert.equal(pg.crumbs.length, 2);
+});
+
+test('asgari-kaynak', () => {
+  const d = S.normalize({});
+  d.resources = [{ id: 'a', title: 'Yalnız Ad', slug: 'yalniz-ad' }];
+  const RS = Render.create(d, { mode: 'local' });
+  const pg = RS.page('kaynaklar/yalniz-ad'), li = RS.page('kaynaklar');
+  for (const h of [pg.html, li.html, JSON.stringify(pg.schema)]) assert.ok(!/undefined|null|NaN/.test(h), h.slice(0, 80));
+  assert.ok(!/Bağlantılar|Bu kaynağı anlattığım|Kaynağa git|Diğer kaynaklar/.test(pg.html));
+});
+
+test('kaynak-bozuk-baglantilar', () => { // protokolsüz/bozuk adres ve yayına gitmeyen içeriğe bağ: çökme yok, düğme ve kart yok
+  const d = S.normalize({});
+  const ep = d.podcasts.find((x) => S.seriesOf(d, x));
+  S.seriesOf(d, ep).published = false;
+  d.resources = [
+    { id: 'a', title: 'A', slug: 'a', url: 'github.com/x', related: ['posts:yok', 'podcasts:' + ep.id] },
+    { id: 'b', title: 'B', slug: 'b', url: '::' }
+  ];
+  const RS = Render.create(d, { mode: 'local' });
+  for (const s of ['a', 'b']) {
+    const pg = RS.page('kaynaklar/' + s);
+    assert.notEqual(pg.status, 404, s);
+    assert.match(pg.html, new RegExp(`<h1[^>]*>${s.toUpperCase()}</h1>`));
+    assert.ok(!/Kaynağa git|undefined/.test(pg.html), s);
+  }
+  assert.ok(!/Bu kaynağı anlattığım içerik/.test(RS.page('kaynaklar/a').html));
+  assert.ok(!/undefined/.test(RS.page('kaynaklar').html));
+});
+
+test('kaynak-silinen-tur', () => {
+  const d = S.normalize({});
+  d.resources = [{ id: 'a', title: 'A', slug: 'a', type: 'yok', url: 'https://ornek.test/a' }];
+  const h = Render.create(d, { mode: 'local' }).page('kaynaklar').html;
+  assert.deepEqual([...h.matchAll(/<button[^>]*data-t="([^"]*)"/g)].map((m) => m[1]), ['']);
+  assert.ok(!/class="rtype"/.test(h));
+});
+
+test('cift-yonlu-bag', () => { // kaynağı bağlanan videonun sayfasında "Bu videodaki kaynaklar"
+  const v = S.normalize({}).posts.find((p) => p.id === 'vid-bicep');
+  const h = R.page('videolar/' + v.slug).html;
+  assert.match(h, /Bu videodaki kaynaklar/);
+  assert.match(h, /#\/kaynaklar\/bicep-printworks-seti/);
+});
+
+test('kaynak-rotalari-gizli-menu', () => {
+  const d = S.forPublish(S.normalize({}));
+  const site = (x) => Render.create(x, { mode: 'site', siteUrl: 'https://ornek.test/' });
+  assert.ok(!site(d).routes().some((r) => r.startsWith('kaynaklar')));
+  const d2 = JSON.parse(JSON.stringify(d));
+  d2.resources.push({ id: 'k', title: 'Kendi', slug: 'kendi', published: true });
+  assert.ok(site(d2).routes().includes('kaynaklar') && site(d2).routes().includes('kaynaklar/kendi'));
+  const d3 = JSON.parse(JSON.stringify(d));
+  d3.menu.find((m) => m.type === 'resources').visible = true;
+  assert.ok(site(d3).routes().includes('kaynaklar'));
+});
+
+test('seoOf-kaynak', () => {
+  const D = S.normalize({});
+  const RS = Render.create(D, { mode: 'site', siteUrl: 'https://ornek.test/' });
+  const x = D.resources[0], a = RS.seoOf('resources', x), p = RS.page('kaynaklar/' + x.slug);
+  assert.equal(a.title, p.title);
+  assert.equal(a.desc, p.desc);
+  assert.equal(a.image, p.image);
+  assert.equal(a.url, 'https://ornek.test/kaynaklar/' + x.slug + '/');
+});
+
+test('hero-kaynak', () => {
+  const D = S.normalize({});
+  D.settings.featured = { mode: 'manual', type: 'resources', id: 'kaynak-1' };
+  const h = Render.create(D, { mode: 'local' }).page('').html;
+  assert.match(h, /Öne çıkan kaynak/);
+  assert.match(h, /Ev stüdyosu kurulum rehberi/);
+  assert.match(h, /#\/kaynaklar\/ev-studyosu-kurulum-rehberi/);
+  D.resources[0].published = false;
+  assert.ok(!/Öne çıkan kaynak/.test(Render.create(D, { mode: 'local' }).page('').html));
+});
+
+test('kaynak-404', () => {
+  assert.equal(R.page('kaynaklar/yok').status, 404);
+  assert.equal(R.page('kaynaklar/a/b').status, 404);
+});
+
+test('bos-kaynak-listesi', () => {
+  const d = S.normalize({});
+  d.resources = [];
+  const pg = Render.create(d, { mode: 'local' }).page('kaynaklar');
+  assert.match(pg.html, /Henüz kaynak yok\./);
+  assert.equal(pg.noindex, true);
+});

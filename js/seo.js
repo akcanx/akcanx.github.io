@@ -11,8 +11,8 @@
 
   const S = global.Store;
   // Kullanıcının yazdığı kısa açıklama alanı ve ana metin (türe göre)
-  const SUMMARY = { posts: 'excerpt', podcasts: 'excerpt', remixes: 'excerpt', pages: 'excerpt', books: 'tagline', series: 'tagline' };
-  const BODY = { posts: 'content', pages: 'content' };
+  const SUMMARY = { posts: 'excerpt', podcasts: 'excerpt', remixes: 'excerpt', pages: 'excerpt', books: 'tagline', series: 'tagline', resources: 'summary' };
+  const BODY = { posts: 'content', pages: 'content', resources: 'body' };
   const NO_TAGS = ['pages', 'series'];
 
   /** Önerilen en az kelime: blog yazısı ve özel sayfa 300, diğerleri 80 */

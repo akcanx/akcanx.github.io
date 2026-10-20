@@ -56,3 +56,9 @@ test('puan-seviyeler', () => {
   assert.equal(SEO.level(50), 'orta');
   assert.equal(SEO.level(49), 'zayif');
 });
+
+test('puan-kaynak', () => { // kaynakta özet alanı summary, ana metin body
+  const r = SEO.score('resources', { id: 'k', title: 'K', slug: 'k', summary: 'x'.repeat(150), body: uzun(100), cover: 'https://ornek.test/k.jpg', coverAlt: 'K', tags: ['t'] }, { R });
+  assert.equal(madde(r, 'Açıklama').ok, true);
+  assert.equal(madde(r, 'İçerik derinliği').ok, true);
+});

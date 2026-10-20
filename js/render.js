@@ -265,11 +265,12 @@
       const subs = catPages().map((x) => ({ type: 'cat', label: 'Alt kategori', title: x.tabName + ' › ' + x.cat.name, href: href(x.route), text: x.cat.desc || '', tags: [] }));
       const sers = seriesList().map((s) => ({ type: 'series', label: 'Podcast serisi', title: s.title, href: href(seriesRoute(s)), text: [s.tagline, s.description].filter(Boolean).join(' '), tags: [] }));
       const books = bookList().map((b) => ({ type: 'book', label: 'Kitap', title: b.title, href: href(bookRoute(b)), text: [b.subtitle, b.tagline, S.strip(b.description), b.publisher].filter(Boolean).join(' '), tags: b.tags || [] }));
-      return [...items(), ...sers, ...books, ...subs, ...pages];
+      const res = resourceList().map((r) => ({ type: 'resource', label: 'Kaynak', title: r.title, href: href(resRoute(r)), text: [r.summary, S.strip(r.body), domainOf(r.url), ...resLinks(r).map((l) => l.label)].filter(Boolean).join(' '), tags: r.tags || [] }));
+      return [...items(), ...sers, ...books, ...res, ...subs, ...pages];
     }
 
     /* ---------- Menü & alt bilgi ---------- */
-    const ROUTE_OF = { home: '', videos: 'videolar', blog: 'yazilar', podcast: 'podcast', remixes: 'remixler', books: 'kitaplar', about: 'hakkinda' };
+    const ROUTE_OF = { home: '', videos: 'videolar', blog: 'yazilar', podcast: 'podcast', remixes: 'remixler', books: 'kitaplar', resources: 'kaynaklar', about: 'hakkinda' };
     function menuHref(m) {
       switch (m.type) {
         case 'home': return href('');
@@ -278,6 +279,7 @@
         case 'podcast': return href('podcast');
         case 'remixes': return href('remixler');
         case 'books': return href('kitaplar');
+        case 'resources': return href('kaynaklar');
         case 'about': return href('hakkinda');
         case 'page': return href('sayfa/' + (m.target || ''));
         case 'url': return link(m.target) || '#';
@@ -420,7 +422,8 @@
             { type: 'posts', label: 'Yazı', btn: 'Oku', href: (x) => href(postRoute(x)), thumb: postThumb, excerpt: (x) => x.excerpt },
             { type: 'podcasts', label: 'Podcast', btn: 'Dinle', href: (x) => href(epRoute(x)), thumb: (x) => asset(x.cover), excerpt: (x) => S.strip(x.description) },
             { type: 'remixes', label: 'Remix', btn: 'Dinle', href: (x) => href('remixler/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt || x.original || S.strip(x.description) },
-            { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => href('sayfa/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt }
+            { type: 'pages', label: 'Sayfa', btn: 'İncele', href: (x) => href('sayfa/' + x.slug), thumb: (x) => asset(x.cover), excerpt: (x) => x.excerpt },
+            { type: 'resources', label: 'Kaynak', btn: 'İncele', href: (x) => href(resRoute(x)), thumb: (x) => asset(x.cover), excerpt: (x) => x.summary }
           ];
 
           for (const c of colls) {
@@ -744,7 +747,7 @@
         ${p.content ? `<div class="prose dropcap">${fixHtml(p.content)}</div>` : ''}
         ${sourcesBlock(p.sources, 'Notlar ve kaynaklar')}
         ${sourcesBlock(p.credits, 'Görsel kaynaklar ve lisanslar', 'credits')}
-        <div class="afoot">${chipsBlock(p.tags, yt ? 'Bu videodaki kavramlar' : 'Bu yazıdaki kavramlar')}${relatedBlock('post', p)}</div>
+        <div class="afoot">${chipsBlock(p.tags, yt ? 'Bu videodaki kavramlar' : 'Bu yazıdaki kavramlar')}${resourcesOf('posts:' + p.id, yt ? 'Bu videodaki kaynaklar' : 'Bu içerikteki kaynaklar')}${relatedBlock('post', p)}</div>
         ${prevNext(list, idx, (x) => href(postRoute(x)), (x) => S.fmtDate(x.date))}
       </div>
     </article>`
@@ -921,7 +924,7 @@
       <div class="wrap">
         ${emb ? `<div class="embedbox ${emb.kind}">${emb.html}</div>` : ''}
         ${x.description ? `<div class="prose dropcap">${fixHtml(x.description)}</div>` : ''}
-        <div class="afoot">${chipsBlock(x.tags, '')}${sourcesBlock(x.sources, 'Kaynaklar')}${relatedBlock('podcast', x)}</div>
+        <div class="afoot">${chipsBlock(x.tags, '')}${sourcesBlock(x.sources, 'Kaynaklar')}${resourcesOf('podcasts:' + x.id, 'Bu içerikteki kaynaklar')}${relatedBlock('podcast', x)}</div>
         ${prevNext(list, idx, (y) => href(epRoute(y)), (y) => (y.number ? 'Bölüm ' + y.number : S.fmtDate(y.date)))}
       </div>
     </article>`
@@ -1022,6 +1025,147 @@
       };
     }
 
+    /* ---------- Kaynaklar (liste, kaynak sayfası, yan panel) ---------- */
+    const resourceList = () => pub(D.resources);
+    const resRoute = (r) => 'kaynaklar/' + r.slug;
+    const resName = () => (st.resourcesPage || {}).title || 'Kaynaklar';
+    const resTypeName = (id) => ((st.resourceTypes || []).find((t) => t.id === id) || {}).name || '';
+    // Bağlantının alan adı (www. olmadan); geçerli bir http(s) adresi değilse boş
+    function domainOf(u) {
+      try { const x = new URL(String(u || '')); return /^https?:$/.test(x.protocol) ? x.hostname.replace(/^www\./, '') : ''; } catch (e) { return ''; }
+    }
+    // "Yeni": son 30 günde eklenen (tarayıcıda app.js aynı kuralla yeniden hesaplar)
+    const isNewRes = (r) => { const t = Date.parse(r.date || ''); return !isNaN(t) && Date.now() - t >= 0 && Date.now() - t < 30 * 864e5; };
+    const resLinks = (r) => (r.links || []).filter((l) => domainOf(l.url));
+    // Sitedeki ilgili içerik: yalnızca yayındaki içerik (bölümde serisi yayında olan)
+    function relItem(key) {
+      const [col, id] = String(key || '').split(':');
+      if (col === 'posts') { const x = pub(D.posts).find((p) => p.id === id); return x ? { label: S.postKind(x) === 'video' ? 'Video' : 'Yazı', title: x.title, href: href(postRoute(x)), thumb: postThumb(x) } : null; }
+      if (col === 'podcasts') { const x = liveEps().find((p) => p.id === id); return x ? { label: 'Bölüm', title: x.title, href: href(epRoute(x)), thumb: asset(x.cover) || asset((serOf(x) || {}).cover) } : null; }
+      if (col === 'remixes') { const x = pub(D.remixes).find((p) => p.id === id); return x ? { label: 'Remix', title: x.title, href: href('remixler/' + x.slug), thumb: asset(x.cover) } : null; }
+      return null;
+    }
+    const relItems = (r) => (r.related || []).map(relItem).filter(Boolean);
+    const relCard = (i) => `<a class="rrel" href="${i.href}">${i.thumb ? `<img src="${esc(i.thumb)}" alt="" loading="lazy" decoding="async" width="160" height="90">` : '<span class="rrel-ph"></span>'}<span class="rrel-b"><span class="rrel-k">${esc(i.label)}</span><span class="rrel-t">${esc(i.title)}</span></span></a>`;
+    const linkList = (links) => `<ul class="rlist">${links.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener"><span class="rl-t">${esc(l.label || domainOf(l.url))}</span><span class="rl-d">${esc(domainOf(l.url))} ↗</span></a></li>`).join('')}</ul>`;
+    const goBtn = (r, cls) => (domainOf(r.url) ? `<a class="rbtn ${cls || ''}" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.urlLabel || 'Kaynağa git')} ↗</a><span class="rdom">${esc(domainOf(r.url))}</span>` : '');
+
+    /** Kart: kaynağın sayfasına giden bağlantı; liste sayfasında tıklanınca yan panel açılır (app.js) */
+    function resCard(r, big) {
+      const tn = resTypeName(r.type), dom = domainOf(r.url);
+      const q = [r.title, r.summary, dom, ...resLinks(r).map((l) => l.label)].filter(Boolean).join(' ').toLocaleLowerCase('tr');
+      return `<a class="rcard${big ? ' big' : ''} reveal" href="${href(resRoute(r))}" data-res="${esc(r.id)}" data-type="${esc(tn ? r.type : '')}" data-date="${esc(r.date || '')}" data-q="${esc(q)}">
+        <span class="rcover">${r.cover ? `<img src="${esc(asset(r.cover))}" alt="${esc(r.coverAlt || r.title)}" loading="lazy" decoding="async">` : ''}</span>
+        <span class="rbody">
+          <span class="rtop">${tn ? `<span class="rtype">${esc(tn)}</span>` : ''}<span class="rnew"${isNewRes(r) ? '' : ' hidden'}>Yeni</span></span>
+          <span class="rt">${esc(r.title)}</span>
+          ${r.summary ? `<span class="rs">${esc(r.summary)}</span>` : ''}
+          <span class="rfoot"><span class="rdom">${esc(dom)}</span><span class="ropen">Aç →</span></span>
+        </span>
+      </a>`;
+    }
+
+    function resourcesIndex() {
+      const rp = st.resourcesPage || {};
+      const name = resName();
+      const list = resourceList();
+      const pinned = list.filter((r) => r.pinned);
+      const used = (st.resourceTypes || []).filter((t) => list.some((r) => r.type === t.id));
+      const chip = (t, label, n, on) => `<button type="button"${on ? ' class="on"' : ''} data-t="${esc(t)}" aria-pressed="${on ? 'true' : 'false'}">${esc(label)} <span>${n}</span></button>`;
+      const chips = [chip('', 'Tümü', list.length, true), ...used.map((t) => chip(t.id, t.name, list.filter((r) => r.type === t.id).length))].join('');
+      return {
+        title: name + ' — ' + st.siteName, name, desc: rp.intro, image: asset((list[0] || {}).cover), imageAlt: name, ogType: 'website',
+        noindex: !list.length, crumbs: crumbs([[name, 'kaynaklar']]),
+        schema: [listNode('CollectionPage', 'kaynaklar', name, rp.intro, list.map((r) => ({ href: href(resRoute(r)), title: r.title })))],
+        html: `<div class="page-wash" style="--wash:${esc(rp.tint || '#2A3550')}"></div>
+      <header class="rhead"><div class="wrap rhead-grid">
+        <div class="rhead-txt">
+          ${rp.eyebrow ? `<div class="pcast-eyebrow rise d1">${esc(rp.eyebrow)}</div>` : ''}
+          <h1 class="rise d1">${esc(name)}</h1>
+          ${rp.intro ? `<p class="rintro rise d2">${esc(rp.intro)}</p>` : ''}
+        </div>
+        ${list.length ? `<div class="rsearch rise d2">
+          <label class="rsearch-box"><span class="sr-only">Kaynaklarda ara</span><input id="resq" type="search" placeholder="Kaynaklarda ara…" autocomplete="off" spellcheck="false"></label>
+          <div class="rsearch-meta"><span id="rescount" aria-live="polite"><b>${list.length}</b> / ${list.length} kaynak</span><span>Başlık, açıklama ve bağlantılarda arar</span></div>
+        </div>` : ''}
+      </div></header>
+      <div class="wrap rwrap">
+        ${list.length ? `<div id="reschips" class="rchips" role="group" aria-label="Türe göre süz">${chips}</div>` : ''}
+        ${pinned.length ? `<section id="respinned" class="rpinned" aria-label="Öne çıkan kaynaklar">${pinned.map((r) => resCard(r, true)).join('')}</section>` : ''}
+        ${list.length
+          ? `<div id="resgrid" class="rgrid">${list.filter((r) => !r.pinned).map((r) => resCard(r)).join('')}</div><p id="resempty" class="pnote" hidden>Aramanıza uygun kaynak yok.</p>`
+          : '<p class="pnote">Henüz kaynak yok.</p>'}
+      </div>`
+      };
+    }
+
+    function resourcePage(r) {
+      const name = resName();
+      const route = resRoute(r);
+      const tn = resTypeName(r.type), dom = domainOf(r.url);
+      const links = resLinks(r), rel = relItems(r);
+      const others = resourceList().filter((x) => x.id !== r.id).sort((a, b) => (b.type === r.type) - (a.type === r.type)).slice(0, 6);
+      const sb = seoBase('resources', r);
+      const cover = asset(r.cover);
+      const tint = r.tint || (st.resourcesPage || {}).tint || '#2A3550';
+      return {
+        title: sb.title, name: r.title, desc: sb.desc, image: sb.image, imageAlt: r.coverAlt || r.title, ogType: 'article',
+        published: r.date, modified: r.updated || r.date, tags: r.tags,
+        ctx: { crail: [{ label: name, href: href('kaynaklar') }, ...(tn ? [{ label: tn }] : [])], tint: r.tint, tintSrc: cover },
+        crumbs: crumbs([[name, 'kaynaklar'], [r.title, route]]),
+        schema: [{
+          '@type': 'Article', '@id': pageUrl(route) + '#kaynak', mainEntityOfPage: pageUrl(route), url: pageUrl(route), headline: clip(r.title, 110),
+          description: clip(S.strip(sb.desc), 300), image: abs(sb.image), datePublished: isoDate(r.date), dateModified: isoDate(r.updated || r.date),
+          inLanguage: 'tr-TR', author: { '@id': personId() }, publisher: { '@id': personId() }, keywords: (r.tags || []).join(', '), articleSection: tn,
+          about: dom ? { '@type': 'Thing', name: r.title, url: r.url } : undefined,
+          citation: links.length ? links.map((l) => ({ '@type': 'CreativeWork', name: l.label || domainOf(l.url), url: l.url })) : undefined
+        }],
+        html: `<article class="rpage tinted" style="--tint:${esc(tint)}">
+      <div class="page-wash" style="--wash:${esc(tint)}"></div>
+      <header class="rhero"><div class="wrap">
+        <a class="rback rise d1" href="${href('kaynaklar')}">← Tüm kaynaklar</a>
+        ${tn ? `<div class="pcast-eyebrow rise d1">${esc(tn)}</div>` : ''}
+        <h1 class="rise d2">${esc(r.title)}</h1>
+        ${r.summary ? `<p class="rlede rise d2">${esc(r.summary)}</p>` : ''}
+        ${dom ? `<div class="rcta rise d3">${goBtn(r)}</div>` : ''}
+        ${cover ? `<figure class="rfig rise d3"><img src="${esc(cover)}" alt="${esc(r.coverAlt || r.title)}" fetchpriority="high"></figure>` : ''}
+      </div></header>
+      <div class="wrap">
+        ${r.body ? `<div class="prose rprose">${fixHtml(r.body)}</div>` : ''}
+        ${links.length ? `<section class="blk rlinks"><h4>Bağlantılar</h4>${linkList(links)}</section>` : ''}
+        ${rel.length ? `<section class="blk rrels"><h4>Bu kaynağı anlattığım içerik</h4><div class="rrel-list">${rel.map(relCard).join('')}</div></section>` : ''}
+        <div class="afoot">${chipsBlock(r.tags, '')}</div>
+        ${others.length ? `<section class="blk bmore"><h4>Diğer kaynaklar</h4><div class="rgrid">${others.map((x) => resCard(x)).join('')}</div></section>` : ''}
+      </div>
+    </article>`
+      };
+    }
+
+    /** Yan panelin içi (liste sayfasında karta tıklanınca app.js açar); kaynak yoksa boş */
+    function resourceDrawer(id) {
+      const r = resourceList().find((x) => x.id === id);
+      if (!r) return '';
+      const tn = resTypeName(r.type), links = resLinks(r), rel = relItems(r);
+      return `<div class="rd-in">
+        <button type="button" class="rd-close" data-rclose>Kapat ✕</button>
+        ${r.cover ? `<img class="rd-cover" src="${esc(asset(r.cover))}" alt="${esc(r.coverAlt || r.title)}" width="1280" height="720">` : ''}
+        ${tn ? `<div class="rd-type">${esc(tn)}</div>` : ''}
+        <h2 id="rdTitle" class="rd-title">${esc(r.title)}</h2>
+        ${r.summary ? `<p class="rd-sum">${esc(r.summary)}</p>` : ''}
+        ${domainOf(r.url) ? `<div class="rd-cta">${goBtn(r, 'wide')}</div>` : ''}
+        ${links.length ? `<div class="rd-sec"><h3>Bağlantılar</h3>${linkList(links)}</div>` : ''}
+        ${rel.length ? `<div class="rd-sec"><h3>Bu kaynağı anlattığım içerik</h3><div class="rrel-list">${rel.map(relCard).join('')}</div></div>` : ''}
+        <a class="rd-page" href="${href(resRoute(r))}">Sayfasına git →</a>
+      </div>`;
+    }
+
+    /** Bir yazı, video, bölüm ya da remixe bağlanmış yayındaki kaynaklar (kaynağın "Sitedeki içerik" alanından) */
+    function resourcesOf(key, title) {
+      const list = resourceList().filter((r) => (r.related || []).includes(key));
+      if (!list.length) return '';
+      return `<div class="blk rof"><h4>${title}</h4>${list.map((r) => `<a href="${href(resRoute(r))}"><span class="rof-t">${esc(r.title)}</span>${domainOf(r.url) ? `<span class="rof-d">${esc(domainOf(r.url))}</span>` : ''}</a>`).join('')}</div>`;
+    }
+
     /* ---------- Remixler (Podcast sekmesinin ikizi) ---------- */
     const REMIX_DESC = 'Yeniden yorumladığım parçalar, editler ve bootlegler.';
     const rmRow = (r) => audioRow('remix:' + r.id, href('remixler/' + r.slug), r.audio, r.title, '', [r.genre, r.bpm ? r.bpm + ' BPM' : '', S.fmtDateShort(r.date)]);
@@ -1087,7 +1231,7 @@
       <div class="wrap">
         ${emb ? `<div class="embedbox ${emb.kind}">${emb.html}</div>` : ''}
         ${x.description ? `<div class="prose dropcap">${fixHtml(x.description)}</div>` : ''}
-        <div class="afoot">${chipsBlock(x.tags, '')}${sourcesBlock(x.sources, 'Notlar ve kaynaklar')}${relatedBlock('remix', x)}</div>
+        <div class="afoot">${chipsBlock(x.tags, '')}${sourcesBlock(x.sources, 'Notlar ve kaynaklar')}${resourcesOf('remixes:' + x.id, 'Bu içerikteki kaynaklar')}${relatedBlock('remix', x)}</div>
         ${prevNext(list, idx, (y) => href('remixler/' + y.slug), (y) => y.genre || S.fmtDate(y.date))}
       </div>
     </article>`
@@ -1184,6 +1328,11 @@
             desc: x.seoDesc || x.excerpt || [x.original, S.strip(x.description)].filter(Boolean).join(' — '),
             image: asset(x.ogImage) || asset(x.cover) || asset((st.remixPage || {}).cover)
           };
+        case 'resources':
+          return {
+            route: 'kaynaklar/' + slugged.slug, title: x.seoTitle || `${title} — ${st.siteName}`,
+            desc: x.seoDesc || x.summary || S.strip(x.body), image: asset(x.ogImage) || asset(x.cover)
+          };
         case 'pages':
           return {
             route: 'sayfa/' + slugged.slug, title: x.seoTitle || `${title} — ${st.siteName}`,
@@ -1239,6 +1388,11 @@
             pg = !arg ? booksIndex() : b ? bookPage(b) : notFound();
             break;
           }
+          case 'kaynaklar': {
+            const r = arg && resourceList().find((x) => x.slug === arg);
+            pg = !arg ? resourcesIndex() : r ? resourcePage(r) : notFound();
+            break;
+          }
           case 'hakkinda': pg = aboutPage(); break;
           case 'sayfa': pg = customPage(arg); break;
           default: pg = notFound();
@@ -1270,6 +1424,9 @@
       const books = bookList();
       if (books.length || menuHas('books')) r.push('kitaplar');
       books.forEach((b) => r.push(bookRoute(b)));
+      const res = resourceList();
+      if (res.length || menuHas('resources')) r.push('kaynaklar');
+      res.forEach((x) => r.push(resRoute(x)));
       if (pub(D.remixes).length || menuHas('remixes')) r.push('remixler');
       pub(D.remixes).forEach((p) => r.push('remixler/' + p.slug));
       const a = D.about || {};
@@ -1345,7 +1502,7 @@
       return t.filter(Boolean).join('\n  ');
     }
 
-    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages, seriesList, bookList, seoOf };
+    return { href, abs, asset, link, normalize, items, findItem, searchIndex, page, head, navLinks, socials, socialIcons, footerHTML, crail, feedHTML, routes, isActive, pub, catPages, seriesList, bookList, resourceList, resourceDrawer, seoOf };
   }
 
   global.Render = { create, ICON, SOCIAL_ICON, PAGE_SIZE, clip, snippet };

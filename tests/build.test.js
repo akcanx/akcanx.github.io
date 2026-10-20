@@ -77,3 +77,29 @@ test('derleme-indexnow-anahtari', () => { // IndexNow anahtar dosyası; kendi al
   assert.ok(fs.existsSync(path.join(dir, '_site', anahtar('akcan.com') + '.txt')));
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('derleme-kaynaklar', () => { // kendi kaynağı: sayfası, site haritası, llms bölümleri; yalnız örnek + gizli menüde hiçbiri
+  const derle = (raw) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'akcan-'));
+    fs.mkdirSync(path.join(dir, 'veri'));
+    fs.writeFileSync(path.join(dir, 'veri', 'site.json'), JSON.stringify(raw));
+    execFileSync(process.execPath, [path.join(__dirname, '..', 'build.js'), '--veri', path.join(dir, 'veri'), '--cikti', path.join(dir, '_site'), '--site-url', 'https://ornek.test/'], { stdio: 'pipe' });
+    return dir;
+  };
+  const raw = v3({ name: 'Kendi' });
+  Object.assign(raw, { podcasts: [], series: [], version: 6 });
+  raw.resources = [{ id: 'k1', title: 'Kendi Kaynağım', slug: 'kendi-kaynagim', published: true, date: '2026-10-01', summary: 'Kısa açıklama burada.', url: 'https://ornek.test/arac', links: [{ label: 'Belge', url: 'https://ornek.test/belge' }] }];
+  let dir = derle(raw);
+  const site = (f) => fs.readFileSync(path.join(dir, '_site', f), 'utf8');
+  assert.ok(fs.existsSync(path.join(dir, '_site', 'kaynaklar', 'kendi-kaynagim', 'index.html')));
+  assert.match(site('sitemap.xml'), /kaynaklar\/kendi-kaynagim\//);
+  assert.match(site('llms.txt'), /## Kaynaklar[\s\S]*Kendi Kaynağım/);
+  assert.match(site('llms-full.txt'), /Kısa açıklama burada\.[\s\S]*Bağlantılar:[\s\S]*https:\/\/ornek\.test\/belge/);
+  fs.rmSync(dir, { recursive: true, force: true });
+  const bos = v3({ name: 'Kendi' });
+  Object.assign(bos, { podcasts: [], series: [], version: 6 });
+  dir = derle(bos);
+  assert.ok(!fs.existsSync(path.join(dir, '_site', 'kaynaklar')));
+  assert.ok(!/kaynaklar/.test(site('sitemap.xml')) && !/## Kaynaklar/.test(site('llms.txt')));
+  fs.rmSync(dir, { recursive: true, force: true });
+});
